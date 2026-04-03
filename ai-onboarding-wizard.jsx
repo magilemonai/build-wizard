@@ -904,6 +904,15 @@ const WelcomeScreen = ({ onBegin }) => (
         One finished project. No experience required.
       </p>
 
+      {/* Desktop recommendation — gentle nudge, not a blocker */}
+      <p style={{
+        fontSize: 13, color: T.color.textLight, maxWidth: 380,
+        margin: "0 auto 40px", lineHeight: 1.6,
+      }}>
+        This works best on a laptop or desktop, where you can keep Claude
+        open in another tab while you build.
+      </p>
+
       {/* Button — visible immediately */}
       <ContinueButton onClick={onBegin} label="Let's go" />
 
