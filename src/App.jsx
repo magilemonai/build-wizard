@@ -210,7 +210,7 @@ export default function App() {
 
         <div style={{
           maxWidth: 680, margin: "0 auto", padding: "0 20px",
-          paddingTop: showProgress ? 72 : 48, paddingBottom: 80,
+          paddingTop: showProgress ? 88 : 48, paddingBottom: 80,
         }}>
           {screen === "interview" && currentStep && (
             <PageTransition transitionKey={stepIndex} type="page"
