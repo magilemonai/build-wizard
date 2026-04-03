@@ -193,6 +193,7 @@ function buildStepSequence(exercises, isWork) {
   steps.push({ type: "exercise", index: 0 });
   steps.push({ type: "exercise", index: 1 });
   steps.push({ type: "safety", variant: isWork ? "work" : "personal" });
+  steps.push({ type: "models" });
   if (exercises.length > 2) {
     steps.push({ type: "exercise", index: 2 });
   }
@@ -297,6 +298,50 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
               That habit is the difference between using AI well and using it carelessly.
             </p>
           </SafetyInterstitial>
+        </div>
+      );
+    }
+
+    if (currentStep.type === "models") {
+      return (
+        <div>
+          <BackButton onClick={goBack} />
+          <div style={{
+            background: T.color.bgCard,
+            border: `1.5px solid ${T.color.border}`,
+            borderRadius: 16,
+            padding: "24px",
+          }}>
+            <div style={{
+              fontSize: 11, fontWeight: 500, letterSpacing: "0.1em",
+              textTransform: "uppercase", color: T.color.copper,
+              marginBottom: 8, fontFamily: T.font.body,
+            }}>
+              Quick note: models matter
+            </div>
+            <h3 style={{
+              fontFamily: T.font.display, fontSize: 22, fontWeight: 400,
+              fontStyle: "italic", lineHeight: 1.3,
+              color: T.color.text, margin: "0 0 12px 0",
+            }}>
+              Not all AI is the same under the hood.
+            </h3>
+            <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.65, margin: "0 0 12px 0" }}>
+              Claude has different models: Haiku is fast and light, Sonnet balances speed
+              with depth, and Opus is the most capable. When something feels too shallow,
+              try a stronger model. When something feels slow, try a lighter one.
+            </p>
+            <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.65, margin: "0 0 12px 0" }}>
+              You can also turn on "extended thinking" for complex tasks. This lets Claude
+              reason through problems step by step before responding. It takes longer but
+              produces noticeably better results on hard questions.
+            </p>
+            <p style={{ fontSize: 14, color: T.color.textLight, lineHeight: 1.6, margin: 0 }}>
+              You don't need to change anything right now. Just know the dial exists. Every
+              AI tool has a version of this: faster/cheaper vs slower/smarter.
+            </p>
+          </div>
+          <ContinueButton onClick={advance} label="Got it" />
         </div>
       );
     }
