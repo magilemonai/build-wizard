@@ -12,10 +12,11 @@ import WelcomeScreen from "./sections/WelcomeScreen.jsx";
 import ThresholdInterstitial from "./sections/ThresholdInterstitial.jsx";
 import getInterviewSteps from "./data/interviewSteps.js";
 import { derivePathCard } from "./data/projectTemplates.js";
+import IceBreaker from "./sections/IceBreaker.jsx";
 
 /* ━━━ Main App ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function App() {
-  const [screen, setScreen] = useState("welcome"); // welcome | transition | interview | pathcard
+  const [screen, setScreen] = useState("welcome"); // welcome | transition | interview | pathcard | icebreaker-transition | icebreaker
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [currentValue, setCurrentValue] = useState(null);
@@ -85,6 +86,17 @@ export default function App() {
     return <ThresholdInterstitial onComplete={() => setScreen("interview")} />;
   }
 
+  // ── Threshold transition (pathcard → icebreaker) ──
+  if (screen === "icebreaker-transition") {
+    return (
+      <ThresholdInterstitial
+        headline="Time to get your hands dirty."
+        subtext="Three quick exercises. Copy, paste, run."
+        onComplete={() => setScreen("icebreaker")}
+      />
+    );
+  }
+
   // ── Interview + Path Card ──
   return (
     <>
@@ -96,6 +108,9 @@ export default function App() {
       }}>
         {screen === "interview" && (
           <JourneyProgress currentSection="interview" questionProgress={stepIndex / totalSteps} />
+        )}
+        {screen === "icebreaker" && (
+          <JourneyProgress currentSection="icebreaker" questionProgress={0} />
         )}
 
         <div style={{
@@ -150,7 +165,7 @@ export default function App() {
                   Here's what we're building.
                 </h2>
                 <SetupPrompt status={answers.setup} />
-                <PathCard data={derivePathCard(answers)} onContinue={() => {}} />
+                <PathCard data={derivePathCard(answers)} onContinue={() => setScreen("icebreaker-transition")} />
                 <p style={{
                   marginTop: 36, fontSize: 13, color: T.color.textLight,
                   lineHeight: 1.65, textAlign: "center",
@@ -160,6 +175,14 @@ export default function App() {
                 </p>
               </div>
             </PageTransition>
+          )}
+
+          {screen === "icebreaker" && (
+            <IceBreaker
+              answers={answers}
+              onComplete={() => {/* Section 3 not yet built */}}
+              onBack={() => setScreen("pathcard")}
+            />
           )}
         </div>
       </div>

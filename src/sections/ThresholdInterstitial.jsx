@@ -3,7 +3,11 @@ import T from "../tokens.js";
 import GrainOverlay from "../components/GrainOverlay.jsx";
 
 /* ━━━ Threshold Interstitial (self-contained, auto-advances) ━━━━ */
-export default function ThresholdInterstitial({ onComplete }) {
+export default function ThresholdInterstitial({
+  onComplete,
+  headline = "Let's find your project.",
+  subtext = "A few questions, then we build.",
+}) {
   const [phase, setPhase] = useState(0); // 0=entering, 1=visible, 2=exiting
 
   useEffect(() => {
@@ -38,10 +42,10 @@ export default function ThresholdInterstitial({ onComplete }) {
             fontFamily: T.font.display, fontSize: 28, fontStyle: "italic",
             color: T.color.text, marginBottom: 8,
           }}>
-            Let's find your project.
+            {headline}
           </div>
           <div style={{ fontSize: 15, color: T.color.textMuted }}>
-            A few questions, then we build.
+            {subtext}
           </div>
         </div>
       </div>
