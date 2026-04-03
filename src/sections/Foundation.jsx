@@ -4,6 +4,7 @@ import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
+import OrganicShape from "../components/OrganicShape.jsx";
 
 /* ━━━ Build steps: tailored prompts per project type ━━━━━━━━━━━━ */
 function getBuildSteps(answers) {
@@ -108,17 +109,28 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 prompt refers to what you built in the previous step.
               </p>
               <div style={{
-                padding: "14px 18px",
-                background: T.color.copperSoft,
-                border: `1px solid rgba(191,123,94,0.15)`,
-                borderRadius: 10,
-                fontSize: 14, color: T.color.textMuted, lineHeight: 1.6,
+                padding: "16px 20px",
+                background: T.color.bgCard,
+                border: `2px solid ${T.color.copper}`,
+                borderRadius: 12,
                 marginBottom: 16,
               }}>
-                <strong style={{ color: T.color.copper }}>Lost your conversation?</strong> Start
-                a new one and paste this to catch Claude up: "I'm building a project
-                about {idea}. We've been working on it together. Here's the best version so far:"
-                then paste your latest output.
+                <div style={{ fontSize: 14, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
+                  Lost your conversation?
+                </div>
+                <p style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6, margin: "0 0 10px 0" }}>
+                  Start a new one and paste something like this to catch Claude up:
+                </p>
+                <div style={{
+                  padding: "10px 14px",
+                  background: "rgba(44,41,37,0.05)",
+                  borderRadius: 8,
+                  fontFamily: "'Courier New', Courier, monospace",
+                  fontSize: 13, lineHeight: 1.6, color: T.color.text,
+                }}>
+                  I'm building a project about {idea}. We've been working on it
+                  together. Here's the best version so far: [paste your latest output]
+                </div>
               </div>
               <ContinueButton onClick={advance} label="Got it, let's build" />
             </div>
@@ -145,34 +157,16 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
         }
 
         if (step.type === "safety") {
-          if (step.variant === "work") {
-            return (
-              <div>
-                {BackButton}
-                <SafetyInterstitial title="Two things about trust and data." onContinue={advance}>
-                  <p style={{ margin: "0 0 16px 0" }}>
-                    <strong style={{ color: T.color.text }}>AI gets things wrong confidently.</strong>{" "}
-                    If something in your output looked right but felt off, that's called a hallucination.
-                    These models fill gaps with plausible fiction and never flag it.
-                    Your job: <strong>verify anything that matters.</strong>
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: T.color.text }}>Think before you paste work data.</strong>{" "}
-                    Before sharing real work data with Claude, check: does your company have an AI policy?
-                    What plan are you on? Is your data covered by any agreements?
-                    If you don't know, that's fine. Ask your IT team or manager.
-                  </p>
-                </SafetyInterstitial>
-              </div>
-            );
-          }
+          // Both paths get hallucination awareness here (data handling moved to S2 for work)
           return (
             <div>
               {BackButton}
               <SafetyInterstitial title="AI gets things wrong confidently." onContinue={advance}>
                 <p style={{ margin: "0 0 12px 0" }}>
                   If something in your output looked right but felt off, pay attention to that instinct.
-                  These models fill gaps with plausible fiction and never flag it.
+                  These models fill gaps with plausible fiction and never flag it. They'll cite sources
+                  that don't exist, give advice that sounds authoritative but is wrong, and present
+                  guesses as facts.
                 </p>
                 <p style={{ margin: 0 }}>
                   This is called a hallucination. Your job: <strong>verify anything that matters.</strong>{" "}
@@ -187,6 +181,14 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
           return (
             <div style={{ padding: "40px 0" }}>
               {BackButton}
+              {/* Celebration shapes */}
+              <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+                {[0, 1, 2].map((idx) => (
+                  <div key={idx} style={{ animation: `celebratePop 0.5s ${T.ease.spring} ${idx * 0.1}s both` }}>
+                    <OrganicShape shapeIndex={idx + 2} size={12} color={idx === 0 ? T.color.copper : T.color.sage} />
+                  </div>
+                ))}
+              </div>
               <h2 style={{
                 fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,

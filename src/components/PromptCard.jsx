@@ -24,22 +24,28 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
 
   const handleOutcome = useCallback((result) => {
     setOutcome(result);
-    // Brief celebration/acknowledgment before advancing
-    const delay = result === "worked" ? 800 : result === "snag" ? 2500 : 400;
-    setTimeout(() => onConfirm(result), delay);
+    // "snag" stays visible until user clicks Continue (manual advance)
+    // "worked" gets a brief celebration, "skip" advances quickly
+    if (result === "worked") {
+      setTimeout(() => onConfirm(result), 800);
+    } else if (result === "skip") {
+      setTimeout(() => onConfirm(result), 600);
+    }
+    // "snag" waits for manual Continue click
   }, [onConfirm]);
 
   const outcomeMessages = {
     worked: "Nice. Let's keep going.",
-    snag: "No worries. The next one might click better.",
-    skip: "Totally fine. Moving on.",
+    snag: "That's okay. Try this:",
+    skip: "Skipping this one. Moving on.",
   };
 
   // Show celebration/acknowledgment state
   if (outcome) {
     return (
       <div style={{
-        marginTop: 24, marginBottom: 8, padding: outcome === "snag" ? "24px" : "32px 24px",
+        marginTop: 24, marginBottom: 8,
+        padding: outcome === "snag" ? "24px" : "32px 24px",
         background: outcome === "worked" ? T.color.copperSoft : T.color.bgSubtle,
         border: `1.5px solid ${outcome === "worked" ? "rgba(191,123,94,0.2)" : T.color.border}`,
         borderRadius: 14,
@@ -55,11 +61,26 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
           {outcomeMessages[outcome]}
         </div>
         {outcome === "snag" && (
-          <div style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6 }}>
-            <strong style={{ color: T.color.text }}>Quick tip:</strong> Try telling Claude
-            what went wrong. "That didn't work because..." or "I wanted X but got Y" teaches
-            it what you need. Iteration is the skill.
-          </div>
+          <>
+            <div style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6, marginBottom: 16 }}>
+              Tell Claude what went wrong. "That didn't work because..." or "I wanted X
+              but got Y" teaches it what you need. Go back to your Claude tab, iterate on the
+              result, then come back here when you're ready.
+            </div>
+            <button
+              onClick={() => onConfirm("snag")}
+              style={{
+                padding: "10px 20px",
+                background: T.color.copper,
+                color: "#fff",
+                border: "none", borderRadius: 8,
+                fontFamily: T.font.body, fontSize: 14, fontWeight: 500,
+                cursor: "pointer",
+              }}
+            >
+              Ready to continue
+            </button>
+          </>
         )}
       </div>
     );
@@ -78,7 +99,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
       {context && (
         <div style={{
           padding: "12px 20px 0",
-          fontSize: 13,
+          fontSize: 14,
           color: T.color.textMuted,
           lineHeight: 1.6,
         }}>
@@ -95,30 +116,31 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
         color: T.color.text,
         whiteSpace: "pre-wrap",
         wordBreak: "break-word",
-        background: "rgba(44,41,37,0.02)",
+        background: "rgba(44,41,37,0.05)",
+        borderTop: `1px solid ${T.color.border}`,
+        borderBottom: `1px solid ${T.color.border}`,
       }}>
         {prompt}
       </div>
 
       {/* Action bar: copy + outcome choices */}
       <div style={{
-        padding: "12px 20px",
-        borderTop: `1px solid ${T.color.border}`,
+        padding: "14px 20px",
         background: T.color.bgSubtle,
       }}>
         {/* Copy button */}
-        <div style={{ marginBottom: 10 }}>
+        <div style={{ marginBottom: 12 }}>
           <button
             onClick={handleCopy}
             onMouseEnter={() => setCopyHovered(true)}
             onMouseLeave={() => setCopyHovered(false)}
             style={{
               display: "inline-flex", alignItems: "center", gap: 6,
-              padding: "7px 14px",
+              padding: "8px 16px",
               background: copied ? T.color.sageSoft : copyHovered ? T.color.bgCard : "transparent",
               border: `1px solid ${copied ? T.color.sageBorder : copyHovered ? T.color.borderHover : T.color.border}`,
               borderRadius: 8,
-              fontFamily: T.font.body, fontSize: 13,
+              fontFamily: T.font.body, fontSize: 14,
               color: copied ? T.color.sage : T.color.textMuted,
               cursor: "pointer",
               transition: `all 0.25s ${T.ease.smooth}`,
@@ -132,10 +154,12 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
 
         {/* Outcome choices */}
         <div style={{
-          fontSize: 12, color: T.color.textLight,
+          fontSize: 13, color: T.color.textLight,
           marginBottom: 8, fontFamily: T.font.body,
         }}>
-          Paste it into Claude, then tell us how it went:
+          {hasPlaceholders
+            ? "Fill in the [brackets], paste into Claude, then tell us how it went:"
+            : "Paste it into Claude, then tell us how it went:"}
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {[
@@ -161,11 +185,11 @@ function OutcomeButton({ children, onClick }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        padding: "7px 14px",
+        padding: "8px 16px",
         background: hovered ? T.color.bgCard : "transparent",
         border: `1px solid ${hovered ? T.color.borderHover : T.color.border}`,
         borderRadius: 8,
-        fontFamily: T.font.body, fontSize: 13,
+        fontFamily: T.font.body, fontSize: 14,
         color: T.color.textMuted,
         cursor: "pointer",
         transition: `all 0.25s ${T.ease.smooth}`,

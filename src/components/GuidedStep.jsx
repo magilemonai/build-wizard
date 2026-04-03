@@ -84,12 +84,17 @@ export default function GuidedStep({
 
       {/* Hint */}
       {showThinkingNote && (
-        <p style={{
-          fontSize: 13, color: T.color.textLight,
-          marginTop: 14, lineHeight: 1.6,
+        <div style={{
+          marginTop: 14, padding: "10px 14px",
+          background: T.color.bgSubtle,
+          border: `1px solid ${T.color.border}`,
+          borderRadius: 8,
+          display: "flex", alignItems: "center", gap: 8,
+          fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
         }}>
+          <span style={{ fontSize: 16 }}>⏳</span>
           Claude may take a moment on this one. That's normal for longer responses.
-        </p>
+        </div>
       )}
 
       {hint && (

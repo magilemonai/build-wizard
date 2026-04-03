@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import T from "../tokens.js";
 import SectionShell from "../components/SectionShell.jsx";
 import SectionLabel from "../components/SectionLabel.jsx";
@@ -84,9 +84,9 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
           How to save your project
         </div>
         {[
-          "In your Claude conversation, find the best version of what you built",
-          "Click the copy button on Claude's response (or select all and copy)",
-          "Paste it into a doc, note, or file you'll find again",
+          "In your Claude conversation, find the artifact or response with your best output",
+          "Click the copy icon on that response, or use the \"Publish\" option on any artifact to get a shareable link",
+          "Save the link or paste the content into a doc you'll find again",
         ].map((step, i) => (
           <div key={i} style={{
             display: "flex", gap: 10, padding: "6px 0",
@@ -109,9 +109,9 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
           Want to share what you built?
         </div>
         <p style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
-          If Claude created an artifact for you, you can publish it and share the link.
-          Click the share button on any artifact in Claude to get a public URL.
-          You built something worth showing off.
+          If Claude created an artifact, click the copy icon on it, then select
+          "Publish" from the dropdown. That gives you a public URL you can send
+          to anyone. You built something worth showing off.
         </p>
       </div>
 
@@ -235,6 +235,13 @@ function NextStepsScreen({ answers, BackButton }) {
     });
   }
 
+  if (isComfortable) {
+    nextSteps.push({
+      title: "Explore agents, APIs, and MCP",
+      body: "You've used Claude in conversation. The next level: agents that take actions autonomously, APIs that integrate Claude into your own tools, and MCP (Model Context Protocol) that connects Claude to your data sources. Search for 'Claude API quickstart' or 'MCP servers' to get started.",
+    });
+  }
+
   nextSteps.push({
     title: "Monthly check-in",
     body: "Your AI usage will grow. Your data footprint grows with it. Once a month, take five minutes: review what tools have access to what, check your privacy settings, make sure your practices still match your current needs.",
@@ -279,59 +286,89 @@ function NextStepsScreen({ answers, BackButton }) {
         </div>
       ))}
 
-      {/* ── Visual climax: shapes return ── */}
-      <div style={{
-        textAlign: "center", marginTop: 48, paddingTop: 36,
-        borderTop: `1px solid ${T.color.border}`,
-      }}>
-        <div style={{
-          display: "flex", justifyContent: "center", gap: 12,
-          marginBottom: 20,
-        }}>
-          {sectionShapes.map((shapeIdx, i) => (
-            <div key={shapeIdx} style={{
-              opacity: 0,
-              animation: `softFadeUp 0.4s ${T.ease.smooth} ${0.2 + i * 0.12}s both`,
-            }}>
-              <OrganicShape
-                shapeIndex={shapeIdx}
-                size={i === 4 ? 22 : 18}
-                color={T.color.sage}
-              />
-            </div>
-          ))}
-        </div>
-        <h2 style={{
-          fontFamily: T.font.display, fontSize: 28,
-          fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
-          color: T.color.text, margin: "0 0 10px 0",
-        }}>
-          You built something real.
-        </h2>
-        <p style={{
-          fontSize: 15, color: T.color.textMuted,
-          lineHeight: 1.65, maxWidth: 400, margin: "0 auto 28px",
-        }}>
-          That was the whole promise. Everything from here is refinement and ambition.
-        </p>
+      {/* ── Visual climax ── */}
+      <FinaleScreen />
+    </div>
+  );
+}
 
-        <a
-          href="https://claude.ai"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            padding: "13px 28px",
-            background: T.color.copper,
-            color: "#fff",
-            border: "none", borderRadius: 10, fontFamily: T.font.body,
-            fontSize: 15, fontWeight: 500, textDecoration: "none",
-            letterSpacing: "0.01em",
-          }}
-        >
-          Open Claude →
-        </a>
+/* ━━━ Finale: scroll-triggered shapes + closing ━━━━━━━━━━━━━━━━ */
+function FinaleScreen() {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} style={{
+      textAlign: "center", marginTop: 48, paddingTop: 36,
+      borderTop: `1px solid ${T.color.border}`,
+    }}>
+      <div style={{
+        display: "flex", justifyContent: "center", gap: 14,
+        marginBottom: 24,
+      }}>
+        {sectionShapes.map((shapeIdx, i) => (
+          <div key={shapeIdx} style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateX(0)" : "translateX(-60px)",
+            transition: `all 0.6s ${T.ease.spring} ${0.15 + i * 0.12}s`,
+          }}>
+            <OrganicShape
+              shapeIndex={shapeIdx}
+              size={i === 4 ? 26 : 20}
+              color={i === 4 ? T.color.copper : T.color.sage}
+            />
+          </div>
+        ))}
       </div>
+      <h2 style={{
+        fontFamily: T.font.display, fontSize: 30,
+        fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
+        color: T.color.text, margin: "0 0 12px 0",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(16px)",
+        transition: `all 0.6s ${T.ease.smooth} 0.7s`,
+      }}>
+        You built something real.
+      </h2>
+      <p style={{
+        fontSize: 16, color: T.color.textMuted,
+        lineHeight: 1.65, maxWidth: 400, margin: "0 auto 32px",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(12px)",
+        transition: `all 0.5s ${T.ease.smooth} 0.9s`,
+      }}>
+        That was the whole promise. Everything from here is refinement and ambition.
+      </p>
+
+      <a
+        href="https://claude.ai"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: "inline-flex", alignItems: "center", gap: 8,
+          padding: "14px 32px",
+          background: T.color.copper,
+          color: "#fff",
+          border: "none", borderRadius: 10, fontFamily: T.font.body,
+          fontSize: 16, fontWeight: 500, textDecoration: "none",
+          letterSpacing: "0.01em",
+          opacity: visible ? 1 : 0,
+          transition: `opacity 0.5s ${T.ease.smooth} 1.1s`,
+        }}
+      >
+        Open Claude →
+      </a>
     </div>
   );
 }

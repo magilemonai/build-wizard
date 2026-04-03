@@ -89,7 +89,7 @@ export default function WelcomeScreen({ onBegin }) {
             padding: "8px 16px", borderRadius: 20,
             border: `1px solid ${T.color.border}`,
             background: T.color.bgSubtle,
-            marginTop: 20,
+            marginTop: 28,
             fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
           }}>
             Open <strong style={{ color: T.color.copper }}>claude.ai</strong> in another tab before you start

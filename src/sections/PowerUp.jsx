@@ -4,6 +4,7 @@ import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
+import OrganicShape from "../components/OrganicShape.jsx";
 
 /* ━━━ Build steps: system prompts, workflows, tools, agents ━━━━ */
 function getBuildSteps(answers) {
@@ -154,6 +155,14 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
           return (
             <div style={{ padding: "40px 0" }}>
               {BackButton}
+              {/* Celebration shapes */}
+              <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+                {[0, 1, 3, 4].map((idx, i) => (
+                  <div key={idx} style={{ animation: `celebratePop 0.5s ${T.ease.spring} ${i * 0.1}s both` }}>
+                    <OrganicShape shapeIndex={idx} size={idx === 4 ? 14 : 12} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
+                  </div>
+                ))}
+              </div>
               <h2 style={{
                 fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
