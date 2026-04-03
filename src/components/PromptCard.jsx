@@ -1,0 +1,177 @@
+import { useState, useCallback } from "react";
+import T from "../tokens.js";
+
+/* ━━━ PromptCard ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Shows a prompt the user should copy into Claude in their other tab.
+   Includes copy-to-clipboard and outcome feedback.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }) {
+  const [copied, setCopied] = useState(false);
+  const [outcome, setOutcome] = useState(null); // null | "worked" | "snag" | "skip"
+  const [copyHovered, setCopyHovered] = useState(false);
+
+  const hasPlaceholders = /\[.+?\]/.test(prompt);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(prompt);
+    } catch {
+      // Clipboard API unavailable: user can select & copy manually
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), hasPlaceholders ? 4000 : 2000);
+  }, [prompt, hasPlaceholders]);
+
+  const handleOutcome = useCallback((result) => {
+    setOutcome(result);
+    // Brief celebration/acknowledgment before advancing
+    const delay = result === "worked" ? 800 : result === "snag" ? 2500 : 400;
+    setTimeout(() => onConfirm(result), delay);
+  }, [onConfirm]);
+
+  const outcomeMessages = {
+    worked: "Nice. Let's keep going.",
+    snag: "No worries. The next one might click better.",
+    skip: "Totally fine. Moving on.",
+  };
+
+  // Show celebration/acknowledgment state
+  if (outcome) {
+    return (
+      <div style={{
+        marginTop: 24, marginBottom: 8, padding: outcome === "snag" ? "24px" : "32px 24px",
+        background: outcome === "worked" ? T.color.copperSoft : T.color.bgSubtle,
+        border: `1.5px solid ${outcome === "worked" ? "rgba(191,123,94,0.2)" : T.color.border}`,
+        borderRadius: 14,
+        textAlign: outcome === "snag" ? "left" : "center",
+        animation: "fadeInNotice 0.3s ease",
+      }}>
+        <div style={{
+          fontSize: 15, fontWeight: 500,
+          color: outcome === "worked" ? T.color.copper : T.color.textMuted,
+          fontFamily: T.font.body,
+          marginBottom: outcome === "snag" ? 10 : 0,
+        }}>
+          {outcomeMessages[outcome]}
+        </div>
+        {outcome === "snag" && (
+          <div style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6 }}>
+            <strong style={{ color: T.color.text }}>Quick tip:</strong> Try telling Claude
+            what went wrong. "That didn't work because..." or "I wanted X but got Y" teaches
+            it what you need. Iteration is the skill.
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      background: T.color.bgCard,
+      border: `1.5px solid ${T.color.border}`,
+      borderRadius: 14,
+      overflow: "hidden",
+      marginTop: 24,
+      marginBottom: 8,
+    }}>
+      {/* Context line above the prompt */}
+      {context && (
+        <div style={{
+          padding: "12px 20px 0",
+          fontSize: 13,
+          color: T.color.textMuted,
+          lineHeight: 1.6,
+        }}>
+          {context}
+        </div>
+      )}
+
+      {/* The prompt itself */}
+      <div style={{
+        padding: "16px 20px",
+        fontFamily: "'Courier New', Courier, monospace",
+        fontSize: 14.5,
+        lineHeight: 1.7,
+        color: T.color.text,
+        whiteSpace: "pre-wrap",
+        wordBreak: "break-word",
+        background: "rgba(44,41,37,0.02)",
+      }}>
+        {prompt}
+      </div>
+
+      {/* Action bar: copy + outcome choices */}
+      <div style={{
+        padding: "12px 20px",
+        borderTop: `1px solid ${T.color.border}`,
+        background: T.color.bgSubtle,
+      }}>
+        {/* Copy button */}
+        <div style={{ marginBottom: 10 }}>
+          <button
+            onClick={handleCopy}
+            onMouseEnter={() => setCopyHovered(true)}
+            onMouseLeave={() => setCopyHovered(false)}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 14px",
+              background: copied ? T.color.sageSoft : copyHovered ? T.color.bgCard : "transparent",
+              border: `1px solid ${copied ? T.color.sageBorder : copyHovered ? T.color.borderHover : T.color.border}`,
+              borderRadius: 8,
+              fontFamily: T.font.body, fontSize: 13,
+              color: copied ? T.color.sage : T.color.textMuted,
+              cursor: "pointer",
+              transition: `all 0.25s ${T.ease.smooth}`,
+            }}
+          >
+            {copied
+            ? (hasPlaceholders ? "✓ Copied — fill in the [brackets] before pasting" : "✓ Copied")
+            : "Copy to clipboard"}
+          </button>
+        </div>
+
+        {/* Outcome choices */}
+        <div style={{
+          fontSize: 12, color: T.color.textLight,
+          marginBottom: 8, fontFamily: T.font.body,
+        }}>
+          Paste it into Claude, then tell us how it went:
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {[
+            { key: "worked", label: outcomeLabels?.worked || "It worked!" },
+            { key: "snag", label: outcomeLabels?.snag || "Hit a snag" },
+            { key: "skip", label: outcomeLabels?.skip || "Skip for now" },
+          ].map((opt) => (
+            <OutcomeButton key={opt.key} onClick={() => handleOutcome(opt.key)}>
+              {opt.label}
+            </OutcomeButton>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OutcomeButton({ children, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: "7px 14px",
+        background: hovered ? T.color.bgCard : "transparent",
+        border: `1px solid ${hovered ? T.color.borderHover : T.color.border}`,
+        borderRadius: 8,
+        fontFamily: T.font.body, fontSize: 13,
+        color: T.color.textMuted,
+        cursor: "pointer",
+        transition: `all 0.25s ${T.ease.smooth}`,
+      }}
+    >
+      {children}
+    </button>
+  );
+}

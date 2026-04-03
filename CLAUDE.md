@@ -1,220 +1,284 @@
 # CLAUDE.md — AI Onboarding Wizard
 
-This file captures every design decision, technical pattern, and implementation detail established during prototyping. The PDD (`ai-onboarding-wizard-pdd.md`) describes the vision. This file describes what we actually built, where we deviated, and why.
+This file captures every design decision, technical pattern, and implementation detail. The PDD (`ai-onboarding-wizard-pdd.md`) describes the vision. This file describes what we actually built, where we deviated, and why.
 
-Read both files before making changes. When they conflict, this file wins — it reflects tested decisions.
+Read both files before making changes. When they conflict, this file wins.
 
 ---
 
 ## Project Structure
 
-Vite + React SPA. Single-page app, client-side routing between sections.
+Vite + React SPA. All five sections built. No external routing library; screen state managed in App.jsx.
 
 ```
 src/
-  App.jsx              # Main app shell, screen routing, state management
+  App.jsx              # Screen router, interview state, section progress
   tokens.js            # Design tokens (colors, easing, fonts)
-  components/          # Shared UI components
-  sections/            # Section 1 (Interview), Section 2 (Ice Breaker), etc.
-  data/                # Interview flow definitions, project templates
-  styles/              # Global CSS with keyframe animations
+  hooks.js             # useIsMobile, usePrefersReducedMotion, getModKey
+  main.jsx             # React root + ErrorBoundary
+  components/
+    BackButton.jsx
+    ChoiceButton.jsx     # Stagger-gated selection button
+    ContinueButton.jsx   # Copper action button
+    ErrorBoundary.jsx    # Crash recovery with "Show details" for testing
+    GrainOverlay.jsx     # SVG noise texture
+    GuidedStep.jsx       # Teach-then-do pattern for build sections
+    InterviewQuestion.jsx
+    JourneyProgress.jsx  # Shape-based progress bar (responsive)
+    OrganicShape.jsx     # CSS clip-path shape system
+    PageTransition.jsx   # Direction-aware animated content swapper
+    PathCard.jsx         # Boarding pass layout
+    PromptCard.jsx       # Copy-to-clipboard with outcome feedback
+    SafetyInterstitial.jsx # "While we're at it" safety lessons
+    SectionLabel.jsx
+    SectionShell.jsx     # Shared navigation/transition wrapper for sections
+    SetupPrompt.jsx
+    TextInput.jsx
+  sections/
+    WelcomeScreen.jsx
+    ThresholdInterstitial.jsx  # Auto-advancing section transition
+    IceBreaker.jsx       # Section 2: exercises + safety
+    Foundation.jsx       # Section 3: prompting, structured output, context
+    PowerUp.jsx          # Section 4: system prompts, workflows, tools
+    Ship.jsx             # Section 5: review, reflection, next steps
+  data/
+    interviewSteps.js    # Adaptive question flow
+    projectTemplates.js  # 18 templates + matching + path card derivation
+  styles/
+    global.css           # Reset, keyframes, prefers-reduced-motion
+public/
+  favicon.svg            # Copper triangle
 ```
-
-The prototype is currently a single JSX file. Split it along these boundaries when scaffolding. The component APIs are already clean enough to extract directly.
 
 ---
 
 ## Design System
 
 ### Typography
-- **Display:** Instrument Serif (italic for headlines). Warm, editorial, slightly imperfect. Loaded via Google Fonts with preconnect hints.
+- **Display:** Instrument Serif (italic for headlines). Loaded via `<link>` in index.html (not @import, which caused FOUT).
 - **Body:** DM Sans. Clean, legible, good weight range.
-- **Do not substitute.** These were chosen specifically. Inter, Roboto, system fonts are explicitly off-limits per the design direction.
+- **Do not substitute.** These were chosen specifically.
 
 ### Color — Split Accent System
-The PDD says "one accent color." We split it into two roles after testing showed a single sage accent was too quiet for action elements.
-
-- **Sage (#7A8B6A):** Environmental accent. Selection states, section labels, text input focus rings, past-progress markers, the "where you've been" color.
-- **Copper (#BF7B5E):** Action accent. Primary buttons, active progress waypoint, emphasis moments, CTAs. The "where you're going" color.
-- **Background:** Warm cream (#F7F5F0) with a subtle SVG noise grain overlay rendered as a fixed-position element (not per-screen background — this avoids frame drops during transitions).
+- **Sage (#7A8B6A):** Environmental accent. Selection states, focus rings, past-progress markers, safety interstitials.
+- **Copper (#BF7B5E):** Action accent. Primary buttons, active progress, CTAs, skill labels.
+- **Background:** Warm cream (#F7F5F0) with SVG noise grain overlay (fixed position, rendered once by GrainOverlay).
 - **Text:** Near-black warm (#2C2925), muted (#6B665F), light (#9E9890).
-- **Borders/shadows:** All use the text color at low opacity for warmth. No pure gray.
-
-### Spacing & Layout
-- Max content width: 600px, centered.
-- Side padding: 20px (mobile-safe on 375px screens).
-- Single-column for all reading/interaction. Never edge-to-edge.
+- **Borders/shadows:** All use text color at low opacity. No pure gray.
 
 ### The Shape System
-A visual motif that runs through the entire experience. Organic CSS shapes using `clip-path` with hand-wobbled polygon coordinates. Not SVG. Not mathematically precise. They should feel slightly hand-drawn.
+Organic CSS shapes using `clip-path` with hand-wobbled polygon coordinates. Progression: triangle(3) → square(4) → pentagon(5) → hexagon(6) → circle(inf). Maps to the five sections.
 
-**The shapes:**
-- **Triangle** (index 0): `clip-path: polygon(50% 4%, 96% 88%, 6% 84%)` — one side slightly longer
-- **Square** (index 1): `clip-path: polygon(8% 6%, 94% 8%, 92% 94%, 6% 92%)` — subtle lean
-- **Pentagon** (index 2): `clip-path: polygon(50% 3%, 97% 38%, 80% 95%, 20% 95%, 3% 38%)`
-- **Hexagon** (index 3): `clip-path: polygon(50% 2%, 95% 26%, 95% 74%, 50% 98%, 5% 74%, 5% 26%)`
-- **Circle** (index 4): No clip-path; uses `border-radius: 50%`
-
-**Progression metaphor:** Complexity increases (3 sides → 4 → 5 → 6 → infinite). Maps to the five sections: Interview (triangle) → Ice Breaker (square) → Foundation (pentagon) → Power Up (hexagon) → Ship (circle).
-
-**Where shapes appear:**
-- Welcome screen: Triangle, square, circle fall into place as the hero motif. CSS `@keyframes` animation, not transitions (transitions don't animate on mount).
-- Journey progress bar: Each section waypoint is its corresponding shape. Active shape scales up 1.3x in copper; past shapes turn sage; future shapes use border color.
-- Welcome screen journey pills: Small shapes inline with section labels.
+Shapes appear in: welcome screen falling animation, journey progress bar, welcome journey pills, and the final Ship screen (shapes return as visual climax).
 
 ---
 
 ## Animation Architecture
 
+### Reduced Motion
+All animations respect `prefers-reduced-motion: reduce` via a CSS media query in global.css that sets `animation-duration` and `transition-duration` to near-zero. A `usePrefersReducedMotion` hook is available in hooks.js for any JS-side checks needed.
+
 ### Three Motion Types
-Every transition in the app uses one of three patterns. Never mix them within a single context.
+1. **"page"** — Horizontal slide with slight scale. Used within sections.
+2. **"rise"** — Float up with spring easing. Used for reveals (path card).
+3. **"threshold"** — Scale with blur effect. Used for section transitions.
 
-1. **"page"** — Horizontal slide with slight scale. Used for question-to-question transitions within a section. Outgoing content exits left, incoming enters from right (reversed when navigating back). This is the most-used motion.
-
-2. **"rise"** — Float up from below with spring easing. Used for reveals: the path card appearing, section introductions. Has overshoot via `cubic-bezier(0.34, 1.4, 0.64, 1)`.
-
-3. **"morph"** — Vertical compress/expand. Reserved for section-to-section transitions (not yet implemented, but the pattern exists in PageTransition).
-
-### Easing Curves
-```js
-smooth: "cubic-bezier(0.22, 1, 0.36, 1)"    // General purpose, slightly decelerated
-page:   "cubic-bezier(0.4, 0, 0.2, 1)"      // Exit animations, quick out
-settle: "cubic-bezier(0.25, 0.46, 0.45, 0.94)" // Physical settling
-spring: "cubic-bezier(0.34, 1.4, 0.64, 1)"  // Overshoot for playful moments
-```
-
-### Welcome Screen Falling Shapes
-Uses CSS `@keyframes` (not React state transitions). Three custom animations:
-- `fallBounce`: Triangle falls from upper-left, tilted -40°, one bounce, settle.
-- `fallBounceRight`: Square falls from upper-right, tilted +35°, opposite arc.
-- `fallBounceStraight`: Circle falls nearly vertical, gentle tilt.
-
-Each shape: fast fall to landing (0-55% of timeline), one upward bounce of ~12-14px (55-70%), gentle settle to rest (70-100%). Easing: `cubic-bezier(0.12, 0, 0.25, 1)` — front-loaded speed, slow finish.
-
-Stagger: 0.3s, 0.9s, 1.5s delays. Text and button are visible immediately. Journey pills fade in after shapes land (~2.6s).
-
-**Critical:** The previous approach using CSS `transition` with React state changes did not work because transitions don't animate from an initial state on mount. Always use `@keyframes` for entrance animations.
-
-### PageTransition Component — Architecture Notes
-The `PageTransition` component manages animated content swaps. Key implementation detail: the effect that handles key-change transitions and the effect that handles child content updates MUST be separate. If `children` is in the transition effect's dependency array, React's cleanup function kills the transition timers mid-flight when parent state changes cause re-renders.
-
-Pattern:
-- Effect 1: watches `transitionKey` only, owns all animation timers
-- Effect 2: watches `children`, updates display child only when NOT mid-transition
-- A `transitioning` ref prevents the two from interfering
-- Cleanup runs on unmount only
+### PageTransition Component
+Effect 1 watches `transitionKey` only, owns animation timers. Effect 2 watches `children`, updates display child only when NOT mid-transition. A `transitioning` ref prevents interference. Cleanup runs on unmount only.
 
 ### Stagger Gating
-Choice buttons have staggered entrance animations. These MUST be gated by the page transition completing, otherwise the stagger plays behind the parent's opacity:0 state and is invisible. The `ChoiceButton` component accepts a `ready` prop; the parent sets this to `false` during transitions and `true` via `onEntered` callback.
+ChoiceButton animations are gated by `ready` prop. Parent sets `false` during transitions, `true` via `onEntered` callback. Without this, staggers play behind the parent's opacity:0 state.
+
+---
+
+## Section Architecture
+
+### SectionShell Pattern
+Sections 3-5 use a shared `SectionShell` component that handles:
+- Step index state and direction tracking
+- Forward/back navigation with progress reporting
+- PageTransition wrapping
+- BackButton rendering
+
+Each section provides a step sequence array and a render function. This eliminated ~150 lines of duplicated navigation boilerplate.
+
+### Step Sequence Pattern
+Every section defines steps as an array of `{ type, index? }` objects. Types include: `"exercise"`, `"build"`, `"safety"`, `"anchor"`, `"continuity"`, `"review"`, `"reflection"`, `"nextsteps"`. The section's render function switches on type.
+
+### Section Transitions
+Auto-advancing ThresholdInterstitial screens between sections. Config stored in `SECTION_TRANSITIONS` lookup in App.jsx. Transitions are skipped on re-entry (tracked via a `visited` Set ref).
+
+---
+
+## Screen Flow
+
+```
+welcome → transition → interview (8 questions) → pathcard
+  → icebreaker-transition → icebreaker (5 steps)
+  → foundation-transition → foundation (6 steps)
+  → powerup-transition → powerup (6 steps)
+  → ship-transition → ship (4 steps)
+```
+
+App.jsx manages: `screen` (current screen), `answers` (accumulated interview data), `sectionProgress` (one object for all sections), `visited` (Set of sections seen).
+
+Document title updates per screen via SECTION_TITLES lookup.
 
 ---
 
 ## Interview Flow — Deviations from PDD
 
 ### Restructured Question Order
-The PDD describes: assessment questions (Part A) → fork (Part B) → project scoping (Part C) → calibration (Part D).
-
-We changed this to: **fork → project idea → assessment → adaptive follow-up → calibration.**
-
-The project conversation comes first because the welcome screen promises "We'll figure out what you want to make." Putting three assessment questions before the fork broke that promise. Assessment now weaves in after the user is emotionally invested in their project. This was the single most impactful structural change in the prototype.
-
-### Question Inventory (in order)
-1. **fork** (choice): Work or personal?
-2. **project_idea** (textarea): What specifically? (Question text varies by fork)
-3. **experience** (choice): AI tool experience level
-4. **code_feeling** (choice): Reaction to the word "code"
-5. **long_output** (choice): Ever produced something substantial with AI?
-6. **followup** (textarea): Adaptive based on experience level (3 variants)
-7. **time** (choice): How much time do you have?
-8. **setup** (choice): Do you have Claude ready?
+PDD: assessment → fork → project scoping → calibration.
+We changed to: **fork → project idea → assessment → adaptive follow-up → calibration.**
+Project conversation comes first because the welcome screen promises "We'll figure out what you want to make."
 
 ### What Each Answer Drives
-- `fork`: Determines project_idea question text, project template matching, path card framing
-- `project_idea`: Keyword-matched against template library for path card
-- `experience`: Determines follow-up question variant, path card level label
-- `long_output`: Adjusts "what you'll learn" text on path card (users who've built long things skip the "running code for the first time" framing)
-- `setup`: Drives the setup prompt on the path card screen (ready / open Claude / sign up)
+- `fork`: Project prompts throughout all sections (work vs personal framing)
+- `project_idea`: Keyword-matched for path card; interpolated into every prompt in Sections 2-5
+- `experience`: Ice Breaker exercise difficulty (novice gets plain-language, experienced gets Python), follow-up question variant, path card level label
+- `code_feeling`: Section 4 tools step (comfortable users get Claude Code intro, others get capabilities overview); next steps personalization
+- `long_output`: Adjusts "what you'll learn" text on path card
+- `time`: Path card duration estimate (adjusted to be honest: 30min→~45min, 1hr→~60min)
+- `setup`: Setup prompt on path card screen
 
-### Work Governance Notice
-When the user selects "Something for work" on the fork question, a sage-tinted contextual notice appears below the choices with the "While we're at it" tone. It flags that their workplace may have AI policies and suggests checking with IT/manager. Uses the PDD's "friend tapping your shoulder" framing, not anxiety-inducing. The notice component is generic (`notice` prop on `InterviewQuestion`) and can be reused for safety interstitials throughout.
+---
+
+## Section Details
+
+### Section 2: Ice Breaker
+3 exercises + 1 safety interstitial + anchor. Exercises adapt by experience level:
+- **Novice:** Plain-language prompts, no code execution assumed
+- **Experienced:** Python scripts with "run it" framing
+
+Safety lessons consolidated into one card after exercise 2 (data privacy + review-before-run). Exercises 1-2 flow uninterrupted to build momentum.
+
+Exercise 3 bridges to the user's project idea from Section 1.
+
+### Section 3: Foundation
+Conversation continuity note → 3 guided builds + safety + anchor.
+
+Skills: prompting well, structured output, adding personal context. Each prompt adapts for work/personal and interpolates the user's project idea.
+
+Opens with a continuity note explaining to keep the same Claude conversation open.
+
+Safety: hallucination awareness (all users) + data handling (work users only).
+
+### Section 4: Power Up
+4 guided builds + safety + anchor.
+
+Skills: system prompts, multi-step workflows (draft-critique-revise), tools/Claude Code.
+
+Includes a "roast your project" exercise between workflows and tools as a playful break that secretly reinforces the critique pattern.
+
+Tools step adapts based on `code_feeling`.
+
+Safety: permission scoping (valet keys analogy) + prompt injection awareness.
+
+### Section 5: Ship
+Review → safety (the long game) → reflection → next steps.
+
+Review: one final prompt asking Claude to walk through what was built.
+
+Reflection: dynamic skills checklist (skipped items shown with strikethrough). Personalized message based on experience level and fork.
+
+Next steps: personalized recommendations based on interview data. Final screen: organic shapes return with staggered animation + "Open Claude" link.
+
+---
+
+## Component Notes
+
+### PromptCard
+- Copy-to-clipboard with navigator.clipboard API
+- Detects `[placeholder]` brackets in prompt text; shows "fill in the [brackets] before pasting" warning on copy with extended 4s display
+- Outcome choices are contextual via `outcomeLabels` prop: "It worked!" for exercises, "Output looks good" for guided builds, "Review done" for review
+- Brief celebration/acknowledgment beat before advancing (800ms for success, 400ms for others)
+
+### GuidedStep
+The teach-then-do component for Sections 3-4. Structure: skill label (copper) → headline → explanation → "The move:" tip callout → PromptCard → hint.
+
+### SafetyInterstitial
+Sage-tinted "While we're at it" pattern. Used across all sections with varying content. The label "While we're at it" is consistent; the title and content change.
 
 ---
 
 ## Project Template Lookup Table
 
-The PDD describes AI-powered project scoping via the Claude API. Until that's wired up, we have a client-side keyword matching system with 18 pre-written templates (10 personal, 8 work).
+18 pre-written templates (10 personal, 8 work). Client-side keyword matching via `input.toLowerCase().includes(keyword)`.
 
-Each template has: `keywords` (array of partial-match strings), `name` (specific, not generic), `desc` (what gets built today), `learns` (skills delivered).
-
-**Personal templates:** cooking/meal planning, writing/blogging, fitness/workout, reading/books, music/instruments, budget/finance, gaming/D&D/RPG, travel/itinerary, photography, gardening.
-
-**Work templates:** email/drafting, data/reports/spreadsheets, meetings/notes, presentations/slides, coding/automation, documentation/SOPs, customer support, hiring/recruiting.
-
-**Matching:** Simple `input.toLowerCase().includes(keyword)` against the user's project_idea text. First match wins. Falls back to a generic template if no keywords match.
-
-**When the Claude API is integrated:** The API's job narrows from "invent from scratch" to "pick the best template and personalize the framing" — which is what the PDD prescribes. The lookup table becomes the template library the API selects from.
+**When Claude API is integrated:** The API's job narrows to "pick the best template and personalize the framing." The lookup table becomes the template library the API selects from.
 
 ---
 
-## Component Inventory
+## Testing & Development
 
-### Built and Working
-- `OrganicShape` — CSS clip-path shape with wobbled coordinates
-- `ChoiceButton` — Selection button with stagger entrance, sage selection state
-- `TextInput` — Text/textarea with sage focus ring, platform-aware keyboard hint
-- `ContinueButton` — Copper action button with hover lift and arrow animation
-- `BackButton` — Subtle "← Back" link, appears on all questions after the first
-- `SectionLabel` — Uppercase sage label, shown only on first question of each section
-- `JourneyProgress` — Responsive shape-based progress (full labels desktop, dots+name mobile)
-- `PageTransition` — Direction-aware animated content swapper (page/morph/rise types)
-- `InterviewQuestion` — Composite: headline + subtext + input type + notice + continue button
-- `PathCard` — Boarding pass layout with perforation, gradient stripe, tear-off stub
-- `SetupPrompt` — Copper-tinted callout for users who need to set up Claude
-- `ThresholdInterstitial` — Self-advancing transitional screen between welcome and interview
-- `WelcomeScreen` — Hero with falling shapes, static text, journey pills
+### Restart
+- **Keyboard:** Ctrl+Shift+R resets all state to welcome screen
+- **Console:** `window.__restart()` for programmatic reset
+- Useful for testing different interview paths without hard refresh
 
-### Not Yet Built (from PDD)
-- Section 2: Ice Breaker (warm-up exercises, safety interstitials)
-- Section 3: Foundation (prompting skills, hallucination awareness)
-- Section 4: Power Up (system prompts, agents, Claude Code intro)
-- Section 5: Ship & Sustain (reflection, ongoing practice, next steps)
-- Claude API integration for adaptive interview and project scoping
-- Embedded code execution sandbox
-- Quick Path variant (30-minute compressed version)
-- Bookmark-and-return / progress persistence
+### Error Handling
+- ErrorBoundary wraps the entire app
+- "Show details" toggle reveals error message and component stack trace
+- Errors logged to console with `[Build Wizard Error]` prefix
+- Friendly recovery UI with Refresh button
+
+### Testing Checklist
+Test three paths: newcomer/personal, experienced/work, fallback/obscure project idea. Check:
+- Adaptive content (exercise difficulty, prompt framing, safety variants)
+- Navigation (back works everywhere, transitions skip on re-entry)
+- Progress bar fills across all sections
+- Tab title updates per section
+- Copy + placeholder warning behavior
+- Final screen shapes + Open Claude link
+
+Log bugs in `testing-notes.md` with format: `- [ ] [Section] Description`
 
 ---
 
 ## Responsive Behavior
 
-- **Breakpoint:** 480px (single breakpoint, detected via `window.innerWidth` with resize listener)
-- **Below 480px:** Journey progress collapses to dots + active label. Textarea keyboard hint hidden (no modifier keys on mobile). Side padding 20px.
-- **Above 480px:** Full journey progress with labels. Keyboard hint shows platform-appropriate modifier.
-
----
-
-## Tone & Voice Reminders
-
-From the PDD, reinforced by testing:
-- "While we're at it" energy for all safety/governance notices. Never scolding.
-- Placeholder text in textareas does real work: it models the kind of answer that's useful. ("The thing I keep meaning to try is..." not "Type your answer here")
-- The path card off-ramp line ("Even if you stop here...") honors standalone value without expecting the user to quit.
-- Section labels and progress indicators orient without nagging. Show once, then let the journey shapes handle it.
+- **Breakpoint:** 480px (single breakpoint, `useIsMobile` hook)
+- **Below 480px:** Journey progress collapses to dots + active label. Textarea keyboard hint hidden. Mobile users see copper-tinted callout on welcome screen recommending desktop.
+- **Above 480px:** Full journey progress with labels. Desktop note is a subtle text line.
 
 ---
 
 ## Known Issues & Watch-Fors
 
-- The path card notch circles use `background: T.color.bg` to fake the perforation cutout. If the card ever renders over a different background, the illusion breaks. Would need CSS mask for a robust solution.
-- The `useMemo` for interview steps depends on a serialized key string (`fork|experience`). If branching logic ever depends on additional answer keys, update the key string.
-- Font loading via `@import` inside a style tag can cause FOUT. Consider self-hosting fonts or adding `font-display: swap` for production.
-- The grain overlay SVG filter may cause performance issues on low-end mobile during animations. Test on real devices. Consider a static PNG noise tile as fallback.
+- Path card notch circles use `background: T.color.bg` to fake the perforation cutout. Breaks over different backgrounds. Would need CSS mask for robustness.
+- Keyword matching is substring-based (`includes`), not word-boundary. "recipe" matches "prescribe." Low-risk given the domain but fragile.
+- The grain overlay SVG filter may cause performance issues on low-end mobile. Consider a static PNG noise tile as fallback.
+- Section prompts assume conversational continuity in Claude (each builds on the previous). Foundation opens with a note about this, but there's no technical enforcement.
+
+---
+
+## Not Yet Built
+
+- Claude API integration for adaptive interview and project scoping
+- Progress persistence (localStorage for pause-and-return)
+- Quick Path variant (compressed version for 30-minute users)
+- Clickable journey progress bar for section navigation
+
+---
+
+## Development Workflow
+
+### Self-Critique Pattern
+After building a feature, run a structured critique through five lenses before shipping:
+1. **Code:** Architecture, duplication, performance, error handling
+2. **Design:** Visual consistency, rhythm, monotony, climax
+3. **UX:** Navigation, friction, assumptions, dead ends
+4. **Product:** Promise vs delivery, unused data, broken contracts
+5. **Alpha user:** Tab-switching fatigue, delight curve, pacing, confusion
+
+Prioritize findings as P0 (blocking), P1 (important), P2 (quality), P3 (polish). Implement in order. This process caught significant issues in every round.
 
 ---
 
 ## Deployment Plan
 
-- **Static hosting:** GitHub Pages serves the Vite build output (`dist/` folder)
+- **Static hosting:** GitHub Pages serves the Vite build output (`dist/`)
 - **CDN:** Cloudflare in front of GitHub Pages
 - **API proxy:** Cloudflare Worker handles Claude API calls, keeps API key server-side
 - **Cost:** ~$0.15-$0.50 per user for API calls (see PDD Section 7)
