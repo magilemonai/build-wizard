@@ -155,13 +155,41 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
           return (
             <div style={{ padding: "40px 0" }}>
               {BackButton}
-              {/* Celebration shapes */}
-              <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-                {[0, 1, 2, 3, 4].map((idx, i) => (
-                  <div key={idx} style={{ animation: `celebrateSpin 0.6s ${T.ease.spring} ${i * 0.08}s both` }}>
-                    <OrganicShape shapeIndex={idx} size={i === 4 ? 26 : 20} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
+              {/* Celebration: bigger burst for Section 4 */}
+              <div style={{ position: "relative", height: 80, marginBottom: 16 }}>
+                {[
+                  { x: -100, y: -45, rot: -50, idx: 0, size: 10, color: T.color.copper },
+                  { x: 85, y: -55, rot: 35, idx: 1, size: 9, color: T.color.sage },
+                  { x: -60, y: -65, rot: -25, idx: 4, size: 7, color: `${T.color.copper}88` },
+                  { x: 110, y: -30, rot: 55, idx: 2, size: 8, color: T.color.sage },
+                  { x: -120, y: -20, rot: -65, idx: 3, size: 10, color: `${T.color.sage}88` },
+                  { x: 50, y: -70, rot: 20, idx: 0, size: 6, color: T.color.copper },
+                  { x: -35, y: -60, rot: -30, idx: 4, size: 7, color: `${T.color.sage}66` },
+                  { x: 95, y: -40, rot: 45, idx: 1, size: 8, color: `${T.color.copper}66` },
+                  { x: -75, y: -50, rot: -40, idx: 2, size: 5, color: T.color.copper },
+                  { x: 25, y: -62, rot: 12, idx: 3, size: 6, color: T.color.sage },
+                ].map((p, i) => (
+                  <div key={i} style={{
+                    position: "absolute", left: "50%", top: "60%",
+                    "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
+                    "--scatter-rot": `${p.rot}deg`,
+                    animation: `celebrateScatter 0.9s ${T.ease.smooth} ${i * 0.03}s both`,
+                  }}>
+                    <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
                   </div>
                 ))}
+                <div style={{
+                  position: "absolute", bottom: 0, left: 0,
+                  display: "flex", gap: 14, alignItems: "flex-end",
+                }}>
+                  {[0, 1, 2, 3, 4].map((idx, i) => (
+                    <div key={idx} style={{
+                      animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.07}s both, celebrateFloat 3s ease-in-out ${1.2 + i * 0.25}s infinite`,
+                    }}>
+                      <OrganicShape shapeIndex={idx} size={idx === 4 ? 28 : 22} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
+                    </div>
+                  ))}
+                </div>
               </div>
               <h2 style={{
                 fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",

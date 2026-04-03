@@ -313,23 +313,52 @@ function FinaleScreen() {
       textAlign: "center", marginTop: 48, paddingTop: 36,
       borderTop: `1px solid ${T.color.border}`,
     }}>
-      <div style={{
-        display: "flex", justifyContent: "center", gap: 14,
-        marginBottom: 24,
-      }}>
-        {sectionShapes.map((shapeIdx, i) => (
-          <div key={shapeIdx} style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? "translateX(0)" : "translateX(-60px)",
-            transition: `all 0.6s ${T.ease.spring} ${0.15 + i * 0.12}s`,
+      {/* The big finale: scatter + bounce + float */}
+      <div style={{ position: "relative", height: 100, marginBottom: 24 }}>
+        {/* Scatter particles */}
+        {visible && [
+          { x: -130, y: -50, rot: -55, idx: 0, size: 12, color: T.color.copper },
+          { x: 110, y: -60, rot: 40, idx: 1, size: 10, color: T.color.sage },
+          { x: -70, y: -75, rot: -20, idx: 4, size: 8, color: `${T.color.copper}88` },
+          { x: 140, y: -35, rot: 60, idx: 2, size: 11, color: T.color.sage },
+          { x: -150, y: -25, rot: -70, idx: 3, size: 12, color: `${T.color.sage}88` },
+          { x: 60, y: -80, rot: 15, idx: 0, size: 7, color: T.color.copper },
+          { x: -40, y: -70, rot: -35, idx: 4, size: 9, color: `${T.color.sage}66` },
+          { x: 120, y: -50, rot: 50, idx: 1, size: 8, color: `${T.color.copper}66` },
+          { x: -100, y: -60, rot: -45, idx: 2, size: 6, color: T.color.copper },
+          { x: 30, y: -72, rot: 8, idx: 3, size: 7, color: T.color.sage },
+          { x: -20, y: -82, rot: -10, idx: 0, size: 5, color: `${T.color.copper}55` },
+          { x: 90, y: -68, rot: 35, idx: 4, size: 6, color: `${T.color.sage}55` },
+        ].map((p, i) => (
+          <div key={`s-${i}`} style={{
+            position: "absolute", left: "50%", top: "65%",
+            "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
+            "--scatter-rot": `${p.rot}deg`,
+            animation: `celebrateScatter 1s ${T.ease.smooth} ${i * 0.03}s both`,
           }}>
-            <OrganicShape
-              shapeIndex={shapeIdx}
-              size={i === 4 ? 26 : 20}
-              color={i === 4 ? T.color.copper : T.color.sage}
-            />
+            <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
           </div>
         ))}
+        {/* Main shapes: bounce in and float */}
+        <div style={{
+          position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+          display: "flex", gap: 16, alignItems: "flex-end",
+        }}>
+          {sectionShapes.map((shapeIdx, i) => (
+            <div key={shapeIdx} style={{
+              opacity: visible ? 1 : 0,
+              animation: visible
+                ? `celebrateBounce 0.8s ${T.ease.spring} ${0.3 + i * 0.1}s both, celebrateFloat 3s ease-in-out ${1.5 + i * 0.25}s infinite`
+                : "none",
+            }}>
+              <OrganicShape
+                shapeIndex={shapeIdx}
+                size={i === 2 ? 36 : i === 4 ? 32 : 26}
+                color={i % 2 === 0 ? T.color.copper : T.color.sage}
+              />
+            </div>
+          ))}
+        </div>
       </div>
       <h2 style={{
         fontFamily: T.font.display, fontSize: 30,

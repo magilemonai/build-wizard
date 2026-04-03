@@ -218,13 +218,42 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
           return (
             <div style={{ padding: "40px 0" }}>
               {BackButton}
-              {/* Celebration shapes */}
-              <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-                {[0, 1, 2, 4, 3].map((idx, i) => (
-                  <div key={i} style={{ animation: `celebrateSpin 0.6s ${T.ease.spring} ${i * 0.08}s both` }}>
-                    <OrganicShape shapeIndex={idx} size={i === 2 ? 24 : 18} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
+              {/* Celebration */}
+              <div style={{ position: "relative", height: 70, marginBottom: 16 }}>
+                {[
+                  { x: -80, y: -35, rot: -40, idx: 2, size: 8, color: T.color.copper },
+                  { x: 65, y: -50, rot: 25, idx: 0, size: 7, color: T.color.sage },
+                  { x: -45, y: -55, rot: -15, idx: 4, size: 6, color: `${T.color.copper}77` },
+                  { x: 90, y: -25, rot: 45, idx: 3, size: 8, color: `${T.color.sage}77` },
+                  { x: -100, y: -15, rot: -55, idx: 1, size: 6, color: T.color.copper },
+                  { x: 35, y: -60, rot: 10, idx: 4, size: 5, color: T.color.sage },
+                ].map((p, i) => (
+                  <div key={i} style={{
+                    position: "absolute", left: "50%", top: "60%",
+                    "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
+                    "--scatter-rot": `${p.rot}deg`,
+                    animation: `celebrateScatter 0.8s ${T.ease.smooth} ${i * 0.04}s both`,
+                  }}>
+                    <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
                   </div>
                 ))}
+                <div style={{
+                  position: "absolute", bottom: 0, left: 0,
+                  display: "flex", gap: 12, alignItems: "flex-end",
+                }}>
+                  {[
+                    { idx: 2, size: 22, color: T.color.copper },
+                    { idx: 4, size: 18, color: T.color.sage },
+                    { idx: 0, size: 20, color: T.color.copper },
+                    { idx: 3, size: 16, color: T.color.sage },
+                  ].map((s, i) => (
+                    <div key={i} style={{
+                      animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.25 + i * 0.08}s both, celebrateFloat 3s ease-in-out ${1.0 + i * 0.3}s infinite`,
+                    }}>
+                      <OrganicShape shapeIndex={s.idx} size={s.size} color={s.color} />
+                    </div>
+                  ))}
+                </div>
               </div>
               <h2 style={{
                 fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",

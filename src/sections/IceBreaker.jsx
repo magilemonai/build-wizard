@@ -225,13 +225,47 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
           return (
             <div style={{ textAlign: "center", padding: "40px 0" }}>
               {BackButton}
-              {/* Celebration */}
-              <div style={{ display: "flex", justifyContent: "center", gap: 12, marginBottom: 20 }}>
-                {[0, 1, 2, 4, 3].map((idx, i) => (
-                  <div key={i} style={{ animation: `celebrateSpin 0.6s ${T.ease.spring} ${i * 0.08}s both` }}>
-                    <OrganicShape shapeIndex={idx} size={i === 2 ? 24 : 18} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
+              {/* Celebration: shapes scatter outward then bounce into a row */}
+              <div style={{ position: "relative", height: 80, marginBottom: 16 }}>
+                {/* Scatter particles (fly out and fade) */}
+                {[
+                  { x: -90, y: -40, rot: -45, idx: 0, size: 10, color: T.color.copper },
+                  { x: 70, y: -50, rot: 30, idx: 1, size: 8, color: T.color.sage },
+                  { x: -50, y: -60, rot: -20, idx: 4, size: 6, color: `${T.color.copper}88` },
+                  { x: 100, y: -30, rot: 50, idx: 2, size: 7, color: T.color.sage },
+                  { x: -110, y: -20, rot: -60, idx: 3, size: 9, color: `${T.color.sage}88` },
+                  { x: 40, y: -65, rot: 15, idx: 0, size: 5, color: T.color.copper },
+                  { x: -30, y: -55, rot: -35, idx: 4, size: 8, color: `${T.color.sage}66` },
+                  { x: 80, y: -45, rot: 40, idx: 1, size: 6, color: `${T.color.copper}66` },
+                ].map((p, i) => (
+                  <div key={`scatter-${i}`} style={{
+                    position: "absolute", left: "50%", top: "60%",
+                    "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
+                    "--scatter-rot": `${p.rot}deg`,
+                    animation: `celebrateScatter 0.8s ${T.ease.smooth} ${i * 0.04}s both`,
+                  }}>
+                    <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
                   </div>
                 ))}
+                {/* Bouncing shapes that stay */}
+                <div style={{
+                  position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+                  display: "flex", gap: 14, alignItems: "flex-end",
+                }}>
+                  {[
+                    { idx: 0, size: 22, color: T.color.copper },
+                    { idx: 1, size: 18, color: T.color.sage },
+                    { idx: 4, size: 26, color: T.color.copper },
+                    { idx: 2, size: 18, color: T.color.sage },
+                    { idx: 3, size: 20, color: T.color.copper },
+                  ].map((s, i) => (
+                    <div key={`bounce-${i}`} style={{
+                      animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.08}s both, celebrateFloat 3s ease-in-out ${1.2 + i * 0.3}s infinite`,
+                    }}>
+                      <OrganicShape shapeIndex={s.idx} size={s.size} color={s.color} />
+                    </div>
+                  ))}
+                </div>
               </div>
               <h2 style={{
                 fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
