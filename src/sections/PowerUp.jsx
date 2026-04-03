@@ -48,7 +48,7 @@ function getBuildSteps(answers) {
     // Playful interlude before the tools step
     {
       id: "roast",
-      skillLabel: "Bonus round",
+      skillLabel: "Quick break",
       title: "Let's have some fun before the last one.",
       explanation:
         "You've been serious for a while. Before we cover tools and capabilities, " +
@@ -156,10 +156,10 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
             <div style={{ padding: "40px 0" }}>
               {BackButton}
               {/* Celebration shapes */}
-              <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-                {[0, 1, 3, 4].map((idx, i) => (
-                  <div key={idx} style={{ animation: `celebratePop 0.5s ${T.ease.spring} ${i * 0.1}s both` }}>
-                    <OrganicShape shapeIndex={idx} size={idx === 4 ? 14 : 12} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
+              <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+                {[0, 1, 2, 3, 4].map((idx, i) => (
+                  <div key={idx} style={{ animation: `celebrateSpin 0.6s ${T.ease.spring} ${i * 0.08}s both` }}>
+                    <OrganicShape shapeIndex={idx} size={i === 4 ? 26 : 20} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
                   </div>
                 ))}
               </div>

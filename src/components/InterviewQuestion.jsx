@@ -38,7 +38,7 @@ export default function InterviewQuestion({ question, subtext, type, options, va
       {notice && (
         <div style={{
           marginTop: 16, padding: "16px 20px",
-          background: noticeAcknowledged ? T.color.sageSoft : T.color.sageSoft,
+          background: noticeAcknowledged ? "rgba(122,139,106,0.14)" : T.color.sageSoft,
           border: `${noticeAcknowledged ? "2px" : "1px"} solid ${noticeAcknowledged ? T.color.sage : T.color.sageBorder}`,
           borderRadius: 12,
           animation: noticeAcknowledged ? "none" : "fadeInNotice 0.4s ease",

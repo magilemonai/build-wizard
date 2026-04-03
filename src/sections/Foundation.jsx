@@ -182,10 +182,10 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
             <div style={{ padding: "40px 0" }}>
               {BackButton}
               {/* Celebration shapes */}
-              <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-                {[0, 1, 2].map((idx) => (
-                  <div key={idx} style={{ animation: `celebratePop 0.5s ${T.ease.spring} ${idx * 0.1}s both` }}>
-                    <OrganicShape shapeIndex={idx + 2} size={12} color={idx === 0 ? T.color.copper : T.color.sage} />
+              <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+                {[0, 1, 2, 4, 3].map((idx, i) => (
+                  <div key={i} style={{ animation: `celebrateSpin 0.6s ${T.ease.spring} ${i * 0.08}s both` }}>
+                    <OrganicShape shapeIndex={idx} size={i === 2 ? 24 : 18} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
                   </div>
                 ))}
               </div>

@@ -17,7 +17,6 @@ export default function GuidedStep({
   explanation,
   tip,
   prompt,
-  promptContext,
   hint,
   showThinkingNote,
   onConfirm,
@@ -77,7 +76,7 @@ export default function GuidedStep({
       <PromptCard
         key={prompt}
         prompt={prompt}
-        context={promptContext || "Try this in Claude:"}
+        context="Try this in Claude:"
         outcomeLabels={{ worked: "Output looks good", snag: "Need to iterate", skip: "Skip for now" }}
         onConfirm={onConfirm}
       />

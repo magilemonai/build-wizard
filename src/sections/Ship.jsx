@@ -351,24 +351,59 @@ function FinaleScreen() {
         That was the whole promise. Everything from here is refinement and ambition.
       </p>
 
-      <a
-        href="https://claude.ai"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          display: "inline-flex", alignItems: "center", gap: 8,
-          padding: "14px 32px",
-          background: T.color.copper,
-          color: "#fff",
-          border: "none", borderRadius: 10, fontFamily: T.font.body,
-          fontSize: 16, fontWeight: 500, textDecoration: "none",
-          letterSpacing: "0.01em",
-          opacity: visible ? 1 : 0,
-          transition: `opacity 0.5s ${T.ease.smooth} 1.1s`,
-        }}
-      >
-        Open Claude →
-      </a>
+      <div style={{
+        opacity: visible ? 1 : 0,
+        transition: `opacity 0.5s ${T.ease.smooth} 1.1s`,
+      }}>
+        <a
+          href="https://claude.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "14px 32px",
+            background: T.color.copper,
+            color: "#fff",
+            border: "none", borderRadius: 10, fontFamily: T.font.body,
+            fontSize: 16, fontWeight: 500, textDecoration: "none",
+            letterSpacing: "0.01em",
+          }}
+        >
+          Open Claude →
+        </a>
+
+        <div style={{
+          marginTop: 32, display: "flex", justifyContent: "center",
+          gap: 24, fontSize: 14, fontFamily: T.font.body,
+        }}>
+          <button
+            onClick={() => { if (window.__restart) window.__restart(); }}
+            style={{
+              background: "none", border: "none", cursor: "pointer",
+              color: T.color.textLight, fontFamily: T.font.body, fontSize: 14,
+              textDecoration: "underline", textUnderlineOffset: 3,
+            }}
+          >
+            Start over
+          </button>
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({ title: "Build Something Real with AI", url: window.location.href });
+              } else {
+                navigator.clipboard?.writeText(window.location.href);
+              }
+            }}
+            style={{
+              background: "none", border: "none", cursor: "pointer",
+              color: T.color.textLight, fontFamily: T.font.body, fontSize: 14,
+              textDecoration: "underline", textUnderlineOffset: 3,
+            }}
+          >
+            Share with a friend
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
