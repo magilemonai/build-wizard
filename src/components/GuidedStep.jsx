@@ -74,6 +74,7 @@ export default function GuidedStep({
 
       {/* Prompt card */}
       <PromptCard
+        key={prompt}
         prompt={prompt}
         context={promptContext || "Try this in Claude:"}
         outcomeLabels={{ worked: "Output looks good", snag: "Need to iterate", skip: "Skip for now" }}

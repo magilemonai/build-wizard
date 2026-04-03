@@ -26,6 +26,7 @@ function ExerciseScreen({ exercise, onConfirm, showLabel }) {
         {exercise.description}
       </p>
       <PromptCard
+        key={exercise.id}
         prompt={exercise.prompt}
         context={exercise.context}
         onConfirm={onConfirm}
