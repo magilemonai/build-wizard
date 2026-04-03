@@ -17,13 +17,18 @@ import Foundation from "./sections/Foundation.jsx";
 import PowerUp from "./sections/PowerUp.jsx";
 import Ship from "./sections/Ship.jsx";
 
+/* ━━━ Section transition config ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const SECTION_TRANSITIONS = {
+  icebreaker:  { headline: "Time to get your hands dirty.", subtext: "A few quick exercises. Copy, paste, see what happens." },
+  foundation:  { headline: "Now let's build your project.", subtext: "Three skills, one real thing at the end." },
+  powerup:     { headline: "Time to level up.", subtext: "System prompts, workflows, and what's possible beyond conversation." },
+  ship:        { headline: "Let's finish this.", subtext: "Review, reflect, and set up what comes next." },
+};
+
+const SECTIONS_WITH_PROGRESS = ["interview", "icebreaker", "foundation", "powerup", "ship"];
+
 /* ━━━ Main App ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function App() {
-  // welcome | transition | interview | pathcard
-  // | icebreaker-transition | icebreaker
-  // | foundation-transition | foundation
-  // | powerup-transition | powerup
-  // | ship-transition | ship
   const [screen, setScreen] = useState("welcome");
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -31,20 +36,13 @@ export default function App() {
   const [direction, setDirection] = useState(1);
   const [staggerReady, setStaggerReady] = useState(true);
   const [showFirstLabel, setShowFirstLabel] = useState(true);
-  const [icebreakerProgress, setIcebreakerProgress] = useState(0);
-  const [foundationProgress, setFoundationProgress] = useState(0);
-  const [powerupProgress, setPowerupProgress] = useState(0);
-  const [shipProgress, setShipProgress] = useState(0);
-  // Track whether user has visited sections before (skip transition on re-entry)
-  const hasVisitedIcebreaker = useRef(false);
-  const hasVisitedFoundation = useRef(false);
-  const hasVisitedPowerup = useRef(false);
-  const hasVisitedShip = useRef(false);
+  const [sectionProgress, setSectionProgress] = useState({
+    icebreaker: 0, foundation: 0, powerup: 0, ship: 0,
+  });
+  const visited = useRef(new Set());
 
   // Scroll to top on screen changes
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [screen]);
+  useEffect(() => { window.scrollTo(0, 0); }, [screen]);
 
   const steps = useMemo(
     () => getInterviewSteps(answers),
@@ -53,7 +51,6 @@ export default function App() {
   const currentStep = steps[stepIndex] || null;
   const totalSteps = steps.length;
 
-  // Hide section label after first question
   useEffect(() => {
     if (stepIndex > 0) setShowFirstLabel(false);
   }, [stepIndex]);
@@ -65,7 +62,6 @@ export default function App() {
     setCurrentValue(null);
     setStaggerReady(false);
     setDirection(1);
-
     if (currentStep.id === "setup") {
       setScreen("pathcard");
     } else {
@@ -85,44 +81,29 @@ export default function App() {
     setStaggerReady(true);
   }, []);
 
-  // Preload the previous answer when going back
   useEffect(() => {
     if (currentStep && answers[currentStep.id] !== undefined && currentValue === null) {
       setCurrentValue(answers[currentStep.id]);
     }
   }, [stepIndex, currentStep]);
 
-  const goToIcebreaker = useCallback(() => {
-    if (hasVisitedIcebreaker.current) {
-      setScreen("icebreaker");
+  // Generic section navigation: skip transition on re-entry
+  const goToSection = useCallback((section) => {
+    if (visited.current.has(section)) {
+      setScreen(section);
     } else {
-      setScreen("icebreaker-transition");
+      setScreen(`${section}-transition`);
     }
   }, []);
 
-  const goToFoundation = useCallback(() => {
-    if (hasVisitedFoundation.current) {
-      setScreen("foundation");
-    } else {
-      setScreen("foundation-transition");
-    }
+  const updateProgress = useCallback((section) => (value) => {
+    setSectionProgress((prev) => ({ ...prev, [section]: value }));
   }, []);
 
-  const goToPowerup = useCallback(() => {
-    if (hasVisitedPowerup.current) {
-      setScreen("powerup");
-    } else {
-      setScreen("powerup-transition");
-    }
-  }, []);
-
-  const goToShip = useCallback(() => {
-    if (hasVisitedShip.current) {
-      setScreen("ship");
-    } else {
-      setScreen("ship-transition");
-    }
-  }, []);
+  // Determine if current screen is a section transition
+  const transitionMatch = screen.match(/^(.+)-transition$/);
+  const transitionSection = transitionMatch?.[1];
+  const transitionConfig = transitionSection && SECTION_TRANSITIONS[transitionSection];
 
   // ── Welcome ──
   if (screen === "welcome") {
@@ -134,7 +115,7 @@ export default function App() {
     );
   }
 
-  // ── Threshold transition (welcome → interview) ──
+  // ── Welcome → Interview transition ──
   if (screen === "transition") {
     return (
       <>
@@ -144,75 +125,29 @@ export default function App() {
     );
   }
 
-  // ── Threshold transition (pathcard → icebreaker) ──
-  if (screen === "icebreaker-transition") {
+  // ── Section transitions (icebreaker, foundation, powerup, ship) ──
+  if (transitionConfig) {
     return (
       <>
         <GrainOverlay />
         <ThresholdInterstitial
-          headline="Time to get your hands dirty."
-          subtext="A few quick exercises. Copy, paste, see what happens."
+          headline={transitionConfig.headline}
+          subtext={transitionConfig.subtext}
           onComplete={() => {
-            hasVisitedIcebreaker.current = true;
-            setScreen("icebreaker");
+            visited.current.add(transitionSection);
+            setScreen(transitionSection);
           }}
         />
       </>
     );
   }
 
-  // ── Threshold transition (icebreaker → foundation) ──
-  if (screen === "foundation-transition") {
-    return (
-      <>
-        <GrainOverlay />
-        <ThresholdInterstitial
-          headline="Now let's build your project."
-          subtext="Three skills, one real thing at the end."
-          onComplete={() => {
-            hasVisitedFoundation.current = true;
-            setScreen("foundation");
-          }}
-        />
-      </>
-    );
-  }
+  // ── Active sections ──
+  const showProgress = SECTIONS_WITH_PROGRESS.includes(screen);
+  const progressValue = screen === "interview"
+    ? stepIndex / totalSteps
+    : sectionProgress[screen] || 0;
 
-  // ── Threshold transition (foundation → powerup) ──
-  if (screen === "powerup-transition") {
-    return (
-      <>
-        <GrainOverlay />
-        <ThresholdInterstitial
-          headline="Time to level up."
-          subtext="System prompts, workflows, and what's possible beyond conversation."
-          onComplete={() => {
-            hasVisitedPowerup.current = true;
-            setScreen("powerup");
-          }}
-        />
-      </>
-    );
-  }
-
-  // ── Threshold transition (powerup → ship) ──
-  if (screen === "ship-transition") {
-    return (
-      <>
-        <GrainOverlay />
-        <ThresholdInterstitial
-          headline="Let's finish this."
-          subtext="Review, reflect, and set up what comes next."
-          onComplete={() => {
-            hasVisitedShip.current = true;
-            setScreen("ship");
-          }}
-        />
-      </>
-    );
-  }
-
-  // ── All active sections ──
   return (
     <>
       <GrainOverlay />
@@ -221,26 +156,13 @@ export default function App() {
         fontFamily: T.font.body, color: T.color.text,
         overflowX: "hidden", position: "relative", zIndex: 1,
       }}>
-        {screen === "interview" && (
-          <JourneyProgress currentSection="interview" questionProgress={stepIndex / totalSteps} />
-        )}
-        {screen === "icebreaker" && (
-          <JourneyProgress currentSection="icebreaker" questionProgress={icebreakerProgress} />
-        )}
-        {screen === "foundation" && (
-          <JourneyProgress currentSection="foundation" questionProgress={foundationProgress} />
-        )}
-        {screen === "powerup" && (
-          <JourneyProgress currentSection="powerup" questionProgress={powerupProgress} />
-        )}
-        {screen === "ship" && (
-          <JourneyProgress currentSection="ship" questionProgress={shipProgress} />
+        {showProgress && (
+          <JourneyProgress currentSection={screen} questionProgress={progressValue} />
         )}
 
         <div style={{
           maxWidth: 600, margin: "0 auto", padding: "0 20px",
-          paddingTop: (screen === "interview" || screen === "icebreaker" || screen === "foundation" || screen === "powerup" || screen === "ship") ? 72 : 48,
-          paddingBottom: 80,
+          paddingTop: showProgress ? 72 : 48, paddingBottom: 80,
         }}>
           {screen === "interview" && currentStep && (
             <PageTransition transitionKey={stepIndex} type="page"
@@ -277,8 +199,7 @@ export default function App() {
           )}
 
           {screen === "pathcard" && (
-            <PageTransition transitionKey="pathcard" type="rise"
-              onEntered={() => {}}>
+            <PageTransition transitionKey="pathcard" type="rise" onEntered={() => {}}>
               <div>
                 <SectionLabel>Your Plan</SectionLabel>
                 <h2 style={{
@@ -288,7 +209,7 @@ export default function App() {
                   Here's what we're building.
                 </h2>
                 <SetupPrompt status={answers.setup} />
-                <PathCard data={derivePathCard(answers)} onContinue={goToIcebreaker} />
+                <PathCard data={derivePathCard(answers)} onContinue={() => goToSection("icebreaker")} />
                 <p style={{
                   marginTop: 36, fontSize: 13, color: T.color.textLight,
                   lineHeight: 1.65, textAlign: "center",
@@ -303,27 +224,27 @@ export default function App() {
           {screen === "icebreaker" && (
             <IceBreaker
               answers={answers}
-              onComplete={goToFoundation}
+              onComplete={() => goToSection("foundation")}
               onBack={() => setScreen("pathcard")}
-              onProgress={setIcebreakerProgress}
+              onProgress={updateProgress("icebreaker")}
             />
           )}
 
           {screen === "foundation" && (
             <Foundation
               answers={answers}
-              onComplete={goToPowerup}
+              onComplete={() => goToSection("powerup")}
               onBack={() => setScreen("icebreaker")}
-              onProgress={setFoundationProgress}
+              onProgress={updateProgress("foundation")}
             />
           )}
 
           {screen === "powerup" && (
             <PowerUp
               answers={answers}
-              onComplete={goToShip}
+              onComplete={() => goToSection("ship")}
               onBack={() => setScreen("foundation")}
-              onProgress={setPowerupProgress}
+              onProgress={updateProgress("powerup")}
             />
           )}
 
@@ -331,7 +252,7 @@ export default function App() {
             <Ship
               answers={answers}
               onBack={() => setScreen("powerup")}
-              onProgress={setShipProgress}
+              onProgress={updateProgress("ship")}
             />
           )}
         </div>

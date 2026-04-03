@@ -5,20 +5,22 @@ import T from "../tokens.js";
    Shows a prompt the user should copy into Claude in their other tab.
    Includes copy-to-clipboard and outcome feedback.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function PromptCard({ prompt, context, onConfirm }) {
+export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }) {
   const [copied, setCopied] = useState(false);
   const [outcome, setOutcome] = useState(null); // null | "worked" | "snag" | "skip"
   const [copyHovered, setCopyHovered] = useState(false);
+
+  const hasPlaceholders = /\[.+?\]/.test(prompt);
 
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(prompt);
     } catch {
-      // Clipboard API unavailable: no fallback needed, user can select & copy manually
+      // Clipboard API unavailable: user can select & copy manually
     }
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [prompt]);
+    setTimeout(() => setCopied(false), hasPlaceholders ? 4000 : 2000);
+  }, [prompt, hasPlaceholders]);
 
   const handleOutcome = useCallback((result) => {
     setOutcome(result);
@@ -112,7 +114,9 @@ export default function PromptCard({ prompt, context, onConfirm }) {
               transition: `all 0.25s ${T.ease.smooth}`,
             }}
           >
-            {copied ? "✓ Copied" : "Copy to clipboard"}
+            {copied
+            ? (hasPlaceholders ? "✓ Copied — fill in the [brackets] before pasting" : "✓ Copied")
+            : "Copy to clipboard"}
           </button>
         </div>
 
@@ -125,9 +129,9 @@ export default function PromptCard({ prompt, context, onConfirm }) {
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {[
-            { key: "worked", label: "It worked!" },
-            { key: "snag", label: "Hit a snag" },
-            { key: "skip", label: "Skip for now" },
+            { key: "worked", label: outcomeLabels?.worked || "It worked!" },
+            { key: "snag", label: outcomeLabels?.snag || "Hit a snag" },
+            { key: "skip", label: outcomeLabels?.skip || "Skip for now" },
           ].map((opt) => (
             <OutcomeButton key={opt.key} onClick={() => handleOutcome(opt.key)}>
               {opt.label}

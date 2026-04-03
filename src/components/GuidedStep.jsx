@@ -76,6 +76,7 @@ export default function GuidedStep({
       <PromptCard
         prompt={prompt}
         context={promptContext || "Try this in Claude:"}
+        outcomeLabels={{ worked: "Output looks good", snag: "Need to iterate", skip: "Skip for now" }}
         onConfirm={onConfirm}
       />
 

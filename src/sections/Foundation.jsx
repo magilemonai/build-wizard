@@ -1,22 +1,16 @@
-import { useState, useCallback } from "react";
 import T from "../tokens.js";
-import PageTransition from "../components/PageTransition.jsx";
+import SectionShell from "../components/SectionShell.jsx";
 import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
-import BackButton from "../components/BackButton.jsx";
 
-/* ━━━ Build steps: tailored prompts per project type ━━━━━━━━━━━━
-   Each step teaches one skill through the user's actual project.
-   Prompts adapt based on fork (work/personal) and project_idea.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ Build steps: tailored prompts per project type ━━━━━━━━━━━━ */
 function getBuildSteps(answers) {
   const idea = answers.project_idea || "my project";
   const isWork = answers.fork === "work";
 
   return [
-    // ── Step 1: Prompting well ──
     {
       id: "prompting",
       skillLabel: "Skill: Prompting well",
@@ -32,7 +26,6 @@ function getBuildSteps(answers) {
         : `I want to build something around: ${idea}\n\nHere's what I care about:\n- This is a personal interest\n- I want something I'd actually use, not a generic result\n- Surprise me with how specific you can get\n\nGive me a first draft. Then I'll tell you what to change.`,
       hint: "Read what Claude gives you. What's close? What's off? Tell it. That back-and-forth is the actual skill you're building.",
     },
-    // ── Step 2: Structured output ──
     {
       id: "structured",
       skillLabel: "Skill: Structured output",
@@ -48,7 +41,6 @@ function getBuildSteps(answers) {
         : `Take what you just built for "${idea}" and give me:\n\n1. A quick-reference card I could print or save (the essentials in a glanceable format)\n2. A week-by-week plan as a simple table\n3. Three "if you only do one thing" recommendations, ranked\n\nSame content, more useful shape.`,
       hint: "Compare this output to the first one. Same information, but now it's structured in a way you can actually use. That's the difference a good prompt makes.",
     },
-    // ── Step 3: Working with your data ──
     {
       id: "context",
       skillLabel: "Skill: Adding your context",
@@ -68,173 +60,149 @@ function getBuildSteps(answers) {
   ];
 }
 
-/* ━━━ Section Anchor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function SectionAnchor({ onContinue }) {
-  return (
-    <div style={{ textAlign: "center", padding: "40px 0" }}>
-      <h2 style={{
-        fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
-        fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
-        color: T.color.text, margin: "0 0 12px 0",
-      }}>
-        You've got a working first draft.
-      </h2>
-      <p style={{
-        fontSize: 16, color: T.color.textMuted,
-        lineHeight: 1.7, maxWidth: 420, margin: "0 auto 8px",
-      }}>
-        Prompted with context, shaped the output, and made it yours.
-        Those three moves work for any project in any AI tool.
-      </p>
-      <p style={{
-        fontSize: 13, color: T.color.textLight,
-        lineHeight: 1.6, maxWidth: 400, margin: "0 auto",
-      }}>
-        Another good stopping point. You've got a real project draft and the
-        core prompting skills to keep improving it. The next section levels it
-        up with system prompts and multi-step workflows.
-      </p>
-      <ContinueButton onClick={onContinue} label="Level up" />
-    </div>
-  );
-}
-
-/* ━━━ Step sequence ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   build_0 (prompting) → build_1 (structured) → safety → build_2 (context) → anchor
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function buildStepSequence(answers) {
-  const steps = [];
-  steps.push({ type: "build", index: 0 });
-  steps.push({ type: "build", index: 1 });
-  steps.push({ type: "safety", variant: answers.fork === "work" ? "work" : "personal" });
-  steps.push({ type: "build", index: 2 });
-  steps.push({ type: "anchor" });
-  return steps;
+  return [
+    { type: "continuity" },
+    { type: "build", index: 0 },
+    { type: "build", index: 1 },
+    { type: "safety", variant: answers.fork === "work" ? "work" : "personal" },
+    { type: "build", index: 2 },
+    { type: "anchor" },
+  ];
 }
 
 /* ━━━ Foundation Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Foundation({ answers, onComplete, onBack, onProgress }) {
-  const [stepIndex, setStepIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
-
   const buildSteps = getBuildSteps(answers);
-  const stepSequence = buildStepSequence(answers);
-  const currentStep = stepSequence[stepIndex];
-
-  const advance = useCallback(() => {
-    setDirection(1);
-    setStepIndex((i) => {
-      const next = i + 1;
-      onProgress?.(next / stepSequence.length);
-      return next;
-    });
-  }, [stepSequence.length, onProgress]);
-
-  const goBack = useCallback(() => {
-    if (stepIndex <= 0) {
-      onBack?.();
-      return;
-    }
-    setDirection(-1);
-    setStepIndex((i) => {
-      const next = i - 1;
-      onProgress?.(next / stepSequence.length);
-      return next;
-    });
-  }, [stepIndex, onBack, stepSequence.length, onProgress]);
-
-  const renderStep = () => {
-    if (!currentStep) return null;
-
-    if (currentStep.type === "build") {
-      const step = buildSteps[currentStep.index];
-      return (
-        <div>
-          {stepIndex > 0 && <BackButton onClick={goBack} />}
-          {stepIndex === 0 && <SectionLabel>Section 3 · Foundation</SectionLabel>}
-          <GuidedStep
-            skillLabel={step.skillLabel}
-            title={step.title}
-            explanation={step.explanation}
-            tip={step.tip}
-            prompt={step.prompt}
-            hint={step.hint}
-            onConfirm={advance}
-          />
-        </div>
-      );
-    }
-
-    if (currentStep.type === "safety") {
-      if (currentStep.variant === "work") {
-        // Work users get both: hallucination awareness + data handling
-        return (
-          <div>
-            <BackButton onClick={goBack} />
-            <SafetyInterstitial
-              title="Two things about trust and data."
-              onContinue={advance}
-            >
-              <p style={{ margin: "0 0 16px 0" }}>
-                <strong style={{ color: T.color.text }}>AI gets things wrong confidently.</strong>{" "}
-                If something in your output looked right but felt off, that's called a hallucination.
-                These models fill gaps with plausible fiction and never flag it.
-                Your job: <strong>verify anything that matters.</strong> That's not a limitation of the tool.
-                That's the skill of using it well.
-              </p>
-              <p style={{ margin: 0 }}>
-                <strong style={{ color: T.color.text }}>Think before you paste work data.</strong>{" "}
-                Before sharing real work data with Claude, check: does your company have an AI policy?
-                What plan are you on? Is your data covered by any agreements?
-                If you don't know, that's fine. Ask your IT team or manager. Better to ask than to assume.
-              </p>
-            </SafetyInterstitial>
-          </div>
-        );
-      }
-
-      // Personal users: just hallucination awareness
-      return (
-        <div>
-          <BackButton onClick={goBack} />
-          <SafetyInterstitial
-            title="AI gets things wrong confidently."
-            onContinue={advance}
-          >
-            <p style={{ margin: "0 0 12px 0" }}>
-              If something in your output looked right but felt off, pay attention to that instinct.
-              These models fill gaps with plausible fiction and never flag it. A recipe with a made-up
-              cooking technique. A book recommendation that doesn't exist. A workout that sounds good
-              but wouldn't actually work.
-            </p>
-            <p style={{ margin: 0 }}>
-              This is called a hallucination. Your job: <strong>verify anything that matters.</strong>{" "}
-              That's not a limitation of the tool. That's the skill of using it well.
-            </p>
-          </SafetyInterstitial>
-        </div>
-      );
-    }
-
-    if (currentStep.type === "anchor") {
-      return (
-        <div>
-          <BackButton onClick={goBack} />
-          <SectionAnchor onContinue={onComplete} />
-        </div>
-      );
-    }
-
-    return null;
-  };
+  const steps = buildStepSequence(answers);
 
   return (
-    <PageTransition
-      transitionKey={stepIndex}
-      type="page"
-      direction={direction}
-    >
-      {renderStep()}
-    </PageTransition>
+    <SectionShell
+      steps={steps}
+      onBack={onBack}
+      onProgress={onProgress}
+      renderStep={({ step, stepIndex, advance, goBack, BackButton }) => {
+        if (!step) return null;
+
+        if (step.type === "continuity") {
+          return (
+            <div>
+              <SectionLabel>Section 3 · Foundation</SectionLabel>
+              <h2 style={{
+                fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
+                fontWeight: 400, lineHeight: 1.3, margin: "0 0 8px 0",
+                color: T.color.text,
+              }}>
+                One important thing before we start.
+              </h2>
+              <p style={{
+                fontSize: 15, color: T.color.textMuted,
+                margin: "0 0 20px 0", lineHeight: 1.65,
+              }}>
+                From here on, each step builds on the last. Keep the same Claude
+                conversation open in your other tab throughout this section. Each
+                prompt refers to what you built in the previous step.
+              </p>
+              <div style={{
+                padding: "12px 16px",
+                background: T.color.copperSoft,
+                border: `1px solid rgba(191,123,94,0.15)`,
+                borderRadius: 10,
+                fontSize: 13, color: T.color.textMuted, lineHeight: 1.6,
+              }}>
+                <strong style={{ color: T.color.copper }}>Quick tip:</strong> If you
+                need to start a new conversation later, just paste in the best version
+                of what you've built so far to catch Claude up.
+              </div>
+              <ContinueButton onClick={advance} label="Got it, let's build" />
+            </div>
+          );
+        }
+
+        if (step.type === "build") {
+          const s = buildSteps[step.index];
+          return (
+            <div>
+              {BackButton}
+              <GuidedStep
+                skillLabel={s.skillLabel}
+                title={s.title}
+                explanation={s.explanation}
+                tip={s.tip}
+                prompt={s.prompt}
+                hint={s.hint}
+                onConfirm={advance}
+              />
+            </div>
+          );
+        }
+
+        if (step.type === "safety") {
+          if (step.variant === "work") {
+            return (
+              <div>
+                {BackButton}
+                <SafetyInterstitial title="Two things about trust and data." onContinue={advance}>
+                  <p style={{ margin: "0 0 16px 0" }}>
+                    <strong style={{ color: T.color.text }}>AI gets things wrong confidently.</strong>{" "}
+                    If something in your output looked right but felt off, that's called a hallucination.
+                    These models fill gaps with plausible fiction and never flag it.
+                    Your job: <strong>verify anything that matters.</strong>
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong style={{ color: T.color.text }}>Think before you paste work data.</strong>{" "}
+                    Before sharing real work data with Claude, check: does your company have an AI policy?
+                    What plan are you on? Is your data covered by any agreements?
+                    If you don't know, that's fine. Ask your IT team or manager.
+                  </p>
+                </SafetyInterstitial>
+              </div>
+            );
+          }
+          return (
+            <div>
+              {BackButton}
+              <SafetyInterstitial title="AI gets things wrong confidently." onContinue={advance}>
+                <p style={{ margin: "0 0 12px 0" }}>
+                  If something in your output looked right but felt off, pay attention to that instinct.
+                  These models fill gaps with plausible fiction and never flag it.
+                </p>
+                <p style={{ margin: 0 }}>
+                  This is called a hallucination. Your job: <strong>verify anything that matters.</strong>{" "}
+                  That's not a limitation of the tool. That's the skill of using it well.
+                </p>
+              </SafetyInterstitial>
+            </div>
+          );
+        }
+
+        if (step.type === "anchor") {
+          return (
+            <div style={{ textAlign: "center", padding: "40px 0" }}>
+              {BackButton}
+              <h2 style={{
+                fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
+                fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
+                color: T.color.text, margin: "0 0 12px 0",
+              }}>
+                You've got a working first draft.
+              </h2>
+              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 420, margin: "0 auto 8px" }}>
+                Prompted with context, shaped the output, and made it yours.
+                Those three moves work for any project in any AI tool.
+              </p>
+              <p style={{ fontSize: 13, color: T.color.textLight, lineHeight: 1.6, maxWidth: 400, margin: "0 auto" }}>
+                Another good stopping point. You've got a real project draft and the
+                core prompting skills to keep improving it. The next section levels it
+                up with system prompts and multi-step workflows.
+              </p>
+              <ContinueButton onClick={onComplete} label="Level up" />
+            </div>
+          );
+        }
+
+        return null;
+      }}
+    />
   );
 }

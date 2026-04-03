@@ -1,11 +1,9 @@
-import { useState, useCallback } from "react";
 import T from "../tokens.js";
-import PageTransition from "../components/PageTransition.jsx";
+import SectionShell from "../components/SectionShell.jsx";
 import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
-import BackButton from "../components/BackButton.jsx";
 
 /* ━━━ Build steps: system prompts, workflows, tools, agents ━━━━ */
 function getBuildSteps(answers) {
@@ -14,7 +12,6 @@ function getBuildSteps(answers) {
   const isComfortable = answers.code_feeling === "comfortable" || answers.code_feeling === "indifferent";
 
   return [
-    // ── Step 1: System prompts ──
     {
       id: "system_prompts",
       skillLabel: "Skill: System prompts",
@@ -30,7 +27,6 @@ function getBuildSteps(answers) {
         : `I want you to act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nFrom now on, respond as this guide. Start by telling me the one thing I should focus on this week.`,
       hint: "This is the foundation for everything else. A good system prompt means less correcting and more building.",
     },
-    // ── Step 2: Multi-step workflows ──
     {
       id: "workflows",
       skillLabel: "Skill: Multi-step workflows",
@@ -47,7 +43,19 @@ function getBuildSteps(answers) {
         : `Let's level up what we built for "${idea}".\n\nStep 1: Critique your own work. What are the 3 biggest gaps or things that feel generic?\n\nStep 2: For each gap, explain what would make it genuinely useful versus just okay.\n\nStep 3: Rewrite the whole thing with those improvements. Make it something I'd actually come back to.\n\nDo all three steps now.`,
       hint: "Notice the quality jump between the single-pass version and the one that went through draft-critique-revise. That's the workflow pattern.",
     },
-    // ── Step 3: Tools and Claude Code ──
+    // Playful interlude before the tools step
+    {
+      id: "roast",
+      skillLabel: "Bonus round",
+      title: "Let's have some fun before the last one.",
+      explanation:
+        "You've been serious for a while. Before we cover tools and capabilities, " +
+        "let's use the skills you've built for something ridiculous. " +
+        "You know how to set context, iterate, and critique. Time to aim those skills at yourself.",
+      tip: "This is secretly useful. Getting Claude to critique your project idea stress-tests the draft-critique-revise pattern you just learned.",
+      prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for.`,
+      hint: "Notice how Claude's tone changed because you asked for something different. Same tool, different mode. That flexibility is the point.",
+    },
     {
       id: "tools",
       skillLabel: isComfortable ? "Skill: Claude Code" : "Skill: Tools and capabilities",
@@ -76,148 +84,98 @@ function getBuildSteps(answers) {
   ];
 }
 
-/* ━━━ Section Anchor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function SectionAnchor({ onContinue }) {
-  return (
-    <div style={{ textAlign: "center", padding: "40px 0" }}>
-      <h2 style={{
-        fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
-        fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
-        color: T.color.text, margin: "0 0 12px 0",
-      }}>
-        Your project just leveled up.
-      </h2>
-      <p style={{
-        fontSize: 16, color: T.color.textMuted,
-        lineHeight: 1.7, maxWidth: 420, margin: "0 auto 8px",
-      }}>
-        System prompts, multi-step workflows, and a sense of what's possible
-        beyond conversation. Those are the tools that separate casual use from
-        real capability.
-      </p>
-      <p style={{
-        fontSize: 13, color: T.color.textLight,
-        lineHeight: 1.6, maxWidth: 400, margin: "0 auto",
-      }}>
-        One section left. We'll finish the project, reflect on what you
-        learned, and set you up for what comes next.
-      </p>
-      <ContinueButton onClick={onContinue} label="Finish strong" />
-    </div>
-  );
-}
-
-/* ━━━ Step sequence ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   build_0 (system prompts) → build_1 (workflows) → safety → build_2 (tools) → anchor
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function buildStepSequence() {
   return [
     { type: "build", index: 0 },
     { type: "build", index: 1 },
     { type: "safety" },
-    { type: "build", index: 2 },
+    { type: "build", index: 2 }, // roast (playful)
+    { type: "build", index: 3 }, // tools
     { type: "anchor" },
   ];
 }
 
 /* ━━━ PowerUp Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
-  const [stepIndex, setStepIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
-
   const buildSteps = getBuildSteps(answers);
-  const stepSequence = buildStepSequence();
-  const currentStep = stepSequence[stepIndex];
-
-  const advance = useCallback(() => {
-    setDirection(1);
-    setStepIndex((i) => {
-      const next = i + 1;
-      onProgress?.(next / stepSequence.length);
-      return next;
-    });
-  }, [stepSequence.length, onProgress]);
-
-  const goBack = useCallback(() => {
-    if (stepIndex <= 0) {
-      onBack?.();
-      return;
-    }
-    setDirection(-1);
-    setStepIndex((i) => {
-      const next = i - 1;
-      onProgress?.(next / stepSequence.length);
-      return next;
-    });
-  }, [stepIndex, onBack, stepSequence.length, onProgress]);
-
-  const renderStep = () => {
-    if (!currentStep) return null;
-
-    if (currentStep.type === "build") {
-      const step = buildSteps[currentStep.index];
-      return (
-        <div>
-          {stepIndex > 0 && <BackButton onClick={goBack} />}
-          {stepIndex === 0 && <SectionLabel>Section 4 · Power Up</SectionLabel>}
-          <GuidedStep
-            skillLabel={step.skillLabel}
-            title={step.title}
-            explanation={step.explanation}
-            tip={step.tip}
-            prompt={step.prompt}
-            hint={step.hint}
-            onConfirm={advance}
-          />
-        </div>
-      );
-    }
-
-    if (currentStep.type === "safety") {
-      return (
-        <div>
-          <BackButton onClick={goBack} />
-          <SafetyInterstitial
-            title="More power, more surface area."
-            onContinue={advance}
-          >
-            <p style={{ margin: "0 0 16px 0" }}>
-              <strong style={{ color: T.color.text }}>Permission scoping.</strong>{" "}
-              When you give AI access to files, tools, or services, think of it like handing keys to a
-              valet: competent, sure, but you wouldn't leave your wallet on the seat. Give access to
-              what the task needs. Nothing more. Review what it's about to do before it does it.
-            </p>
-            <p style={{ margin: 0 }}>
-              <strong style={{ color: T.color.text }}>Hidden instructions are real.</strong>{" "}
-              When AI agents process external content (a web page, a document, an email), that content
-              can contain hidden instructions that hijack what the AI does next. This is called prompt
-              injection. It's active, it's real, and it's why blanket permissions and unreviewed
-              actions are off the table.
-            </p>
-          </SafetyInterstitial>
-        </div>
-      );
-    }
-
-    if (currentStep.type === "anchor") {
-      return (
-        <div>
-          <BackButton onClick={goBack} />
-          <SectionAnchor onContinue={onComplete} />
-        </div>
-      );
-    }
-
-    return null;
-  };
+  const steps = buildStepSequence();
 
   return (
-    <PageTransition
-      transitionKey={stepIndex}
-      type="page"
-      direction={direction}
-    >
-      {renderStep()}
-    </PageTransition>
+    <SectionShell
+      steps={steps}
+      onBack={onBack}
+      onProgress={onProgress}
+      renderStep={({ step, stepIndex, advance, goBack, BackButton }) => {
+        if (!step) return null;
+
+        if (step.type === "build") {
+          const s = buildSteps[step.index];
+          return (
+            <div>
+              {BackButton}
+              {stepIndex === 0 && <SectionLabel>Section 4 · Power Up</SectionLabel>}
+              <GuidedStep
+                skillLabel={s.skillLabel}
+                title={s.title}
+                explanation={s.explanation}
+                tip={s.tip}
+                prompt={s.prompt}
+                hint={s.hint}
+                onConfirm={advance}
+              />
+            </div>
+          );
+        }
+
+        if (step.type === "safety") {
+          return (
+            <div>
+              {BackButton}
+              <SafetyInterstitial title="More power, more surface area." onContinue={advance}>
+                <p style={{ margin: "0 0 16px 0" }}>
+                  <strong style={{ color: T.color.text }}>Permission scoping.</strong>{" "}
+                  When you give AI access to files, tools, or services, think of it like handing keys to a
+                  valet: competent, sure, but you wouldn't leave your wallet on the seat. Give access to
+                  what the task needs. Nothing more. Review what it's about to do before it does it.
+                </p>
+                <p style={{ margin: 0 }}>
+                  <strong style={{ color: T.color.text }}>Hidden instructions are real.</strong>{" "}
+                  When AI agents process external content (a web page, a document, an email), that content
+                  can contain hidden instructions that hijack what the AI does next. This is called prompt
+                  injection. It's why blanket permissions and unreviewed actions are off the table.
+                </p>
+              </SafetyInterstitial>
+            </div>
+          );
+        }
+
+        if (step.type === "anchor") {
+          return (
+            <div style={{ textAlign: "center", padding: "40px 0" }}>
+              {BackButton}
+              <h2 style={{
+                fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
+                fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
+                color: T.color.text, margin: "0 0 12px 0",
+              }}>
+                Your project just leveled up.
+              </h2>
+              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 420, margin: "0 auto 8px" }}>
+                System prompts, multi-step workflows, and a sense of what's possible
+                beyond conversation. Those are the tools that separate casual use from
+                real capability.
+              </p>
+              <p style={{ fontSize: 13, color: T.color.textLight, lineHeight: 1.6, maxWidth: 400, margin: "0 auto" }}>
+                One section left. We'll finish the project, reflect on what you
+                learned, and set you up for what comes next.
+              </p>
+              <ContinueButton onClick={onComplete} label="Finish strong" />
+            </div>
+          );
+        }
+
+        return null;
+      }}
+    />
   );
 }
