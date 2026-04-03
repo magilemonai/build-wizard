@@ -13,10 +13,13 @@ import ThresholdInterstitial from "./sections/ThresholdInterstitial.jsx";
 import getInterviewSteps from "./data/interviewSteps.js";
 import { derivePathCard } from "./data/projectTemplates.js";
 import IceBreaker from "./sections/IceBreaker.jsx";
+import Foundation from "./sections/Foundation.jsx";
 
 /* ━━━ Main App ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function App() {
-  // welcome | transition | interview | pathcard | icebreaker-transition | icebreaker
+  // welcome | transition | interview | pathcard
+  // | icebreaker-transition | icebreaker
+  // | foundation-transition | foundation
   const [screen, setScreen] = useState("welcome");
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -25,8 +28,10 @@ export default function App() {
   const [staggerReady, setStaggerReady] = useState(true);
   const [showFirstLabel, setShowFirstLabel] = useState(true);
   const [icebreakerProgress, setIcebreakerProgress] = useState(0);
-  // Track whether user has visited icebreaker before (skip transition on re-entry)
+  const [foundationProgress, setFoundationProgress] = useState(0);
+  // Track whether user has visited sections before (skip transition on re-entry)
   const hasVisitedIcebreaker = useRef(false);
+  const hasVisitedFoundation = useRef(false);
 
   // Scroll to top on screen changes
   useEffect(() => {
@@ -87,6 +92,14 @@ export default function App() {
     }
   }, []);
 
+  const goToFoundation = useCallback(() => {
+    if (hasVisitedFoundation.current) {
+      setScreen("foundation");
+    } else {
+      setScreen("foundation-transition");
+    }
+  }, []);
+
   // ── Welcome ──
   if (screen === "welcome") {
     return (
@@ -124,7 +137,24 @@ export default function App() {
     );
   }
 
-  // ── Interview + Path Card + Ice Breaker ──
+  // ── Threshold transition (icebreaker → foundation) ──
+  if (screen === "foundation-transition") {
+    return (
+      <>
+        <GrainOverlay />
+        <ThresholdInterstitial
+          headline="Now let's build your project."
+          subtext="Three skills, one real thing at the end."
+          onComplete={() => {
+            hasVisitedFoundation.current = true;
+            setScreen("foundation");
+          }}
+        />
+      </>
+    );
+  }
+
+  // ── Interview + Path Card + Ice Breaker + Foundation ──
   return (
     <>
       <GrainOverlay />
@@ -139,10 +169,13 @@ export default function App() {
         {screen === "icebreaker" && (
           <JourneyProgress currentSection="icebreaker" questionProgress={icebreakerProgress} />
         )}
+        {screen === "foundation" && (
+          <JourneyProgress currentSection="foundation" questionProgress={foundationProgress} />
+        )}
 
         <div style={{
           maxWidth: 600, margin: "0 auto", padding: "0 20px",
-          paddingTop: (screen === "interview" || screen === "icebreaker") ? 72 : 48,
+          paddingTop: (screen === "interview" || screen === "icebreaker" || screen === "foundation") ? 72 : 48,
           paddingBottom: 80,
         }}>
           {screen === "interview" && currentStep && (
@@ -206,9 +239,18 @@ export default function App() {
           {screen === "icebreaker" && (
             <IceBreaker
               answers={answers}
-              onComplete={() => {/* Section 3 not yet built */}}
+              onComplete={goToFoundation}
               onBack={() => setScreen("pathcard")}
               onProgress={setIcebreakerProgress}
+            />
+          )}
+
+          {screen === "foundation" && (
+            <Foundation
+              answers={answers}
+              onComplete={() => {/* Section 4 not yet built */}}
+              onBack={() => setScreen("icebreaker")}
+              onProgress={setFoundationProgress}
             />
           )}
         </div>
