@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import T from "../tokens.js";
-import GrainOverlay from "../components/GrainOverlay.jsx";
 
 /* ━━━ Threshold Interstitial (self-contained, auto-advances) ━━━━ */
 export default function ThresholdInterstitial({
@@ -18,9 +17,7 @@ export default function ThresholdInterstitial({
   }, [onComplete]);
 
   return (
-    <>
-      <GrainOverlay />
-      <div style={{
+    <div style={{
         minHeight: "100vh", background: T.color.bg, position: "relative",
         display: "flex", alignItems: "center", justifyContent: "center",
         fontFamily: T.font.body,
@@ -49,6 +46,5 @@ export default function ThresholdInterstitial({
           </div>
         </div>
       </div>
-    </>
   );
 }

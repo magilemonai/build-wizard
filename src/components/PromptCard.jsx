@@ -3,31 +3,55 @@ import T from "../tokens.js";
 
 /* ━━━ PromptCard ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Shows a prompt the user should copy into Claude in their other tab.
-   Includes copy-to-clipboard and a "I tried it" confirmation.
+   Includes copy-to-clipboard and outcome feedback.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function PromptCard({ prompt, context, onConfirm }) {
   const [copied, setCopied] = useState(false);
-  const [hovered, setHovered] = useState(false);
+  const [outcome, setOutcome] = useState(null); // null | "worked" | "snag" | "skip"
+  const [copyHovered, setCopyHovered] = useState(false);
 
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(prompt);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback for older browsers
-      const ta = document.createElement("textarea");
-      ta.value = prompt;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      // Clipboard API unavailable: no fallback needed, user can select & copy manually
     }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }, [prompt]);
+
+  const handleOutcome = useCallback((result) => {
+    setOutcome(result);
+    // Brief celebration/acknowledgment before advancing
+    setTimeout(() => onConfirm(result), result === "worked" ? 800 : 400);
+  }, [onConfirm]);
+
+  const outcomeMessages = {
+    worked: "Nice. Let's keep going.",
+    snag: "No worries. The next one might click better.",
+    skip: "Totally fine. Moving on.",
+  };
+
+  // Show celebration/acknowledgment state
+  if (outcome) {
+    return (
+      <div style={{
+        marginTop: 24, marginBottom: 8, padding: "32px 24px",
+        background: outcome === "worked" ? T.color.copperSoft : T.color.bgSubtle,
+        border: `1.5px solid ${outcome === "worked" ? "rgba(191,123,94,0.2)" : T.color.border}`,
+        borderRadius: 14, textAlign: "center",
+        animation: "fadeInNotice 0.3s ease",
+      }}>
+        <div style={{
+          fontSize: 15, fontWeight: 500,
+          color: outcome === "worked" ? T.color.copper : T.color.textMuted,
+          fontFamily: T.font.body,
+        }}>
+          {outcomeMessages[outcome]}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -53,61 +77,87 @@ export default function PromptCard({ prompt, context, onConfirm }) {
       {/* The prompt itself */}
       <div style={{
         padding: "16px 20px",
-        fontFamily: "'DM Sans', monospace",
-        fontSize: 14,
+        fontFamily: "'Courier New', Courier, monospace",
+        fontSize: 13.5,
         lineHeight: 1.7,
         color: T.color.text,
         whiteSpace: "pre-wrap",
         wordBreak: "break-word",
+        background: "rgba(44,41,37,0.02)",
       }}>
         {prompt}
       </div>
 
-      {/* Action bar */}
+      {/* Action bar: copy + outcome choices */}
       <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
         padding: "12px 20px",
         borderTop: `1px solid ${T.color.border}`,
         background: T.color.bgSubtle,
       }}>
-        <button
-          onClick={handleCopy}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 6,
-            padding: "7px 14px",
-            background: copied ? T.color.sageSoft : hovered ? T.color.bgCard : "transparent",
-            border: `1px solid ${copied ? T.color.sageBorder : hovered ? T.color.borderHover : T.color.border}`,
-            borderRadius: 8,
-            fontFamily: T.font.body, fontSize: 13,
-            color: copied ? T.color.sage : T.color.textMuted,
-            cursor: "pointer",
-            transition: `all 0.25s ${T.ease.smooth}`,
-          }}
-        >
-          {copied ? "✓ Copied" : "Copy to clipboard"}
-        </button>
+        {/* Copy button */}
+        <div style={{ marginBottom: 10 }}>
+          <button
+            onClick={handleCopy}
+            onMouseEnter={() => setCopyHovered(true)}
+            onMouseLeave={() => setCopyHovered(false)}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "7px 14px",
+              background: copied ? T.color.sageSoft : copyHovered ? T.color.bgCard : "transparent",
+              border: `1px solid ${copied ? T.color.sageBorder : copyHovered ? T.color.borderHover : T.color.border}`,
+              borderRadius: 8,
+              fontFamily: T.font.body, fontSize: 13,
+              color: copied ? T.color.sage : T.color.textMuted,
+              cursor: "pointer",
+              transition: `all 0.25s ${T.ease.smooth}`,
+            }}
+          >
+            {copied ? "✓ Copied" : "Copy to clipboard"}
+          </button>
+        </div>
 
-        <button
-          onClick={onConfirm}
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 6,
-            padding: "7px 14px",
-            background: T.color.copper,
-            border: "none",
-            borderRadius: 8,
-            fontFamily: T.font.body, fontSize: 13, fontWeight: 500,
-            color: "#fff",
-            cursor: "pointer",
-            transition: `all 0.25s ${T.ease.smooth}`,
-          }}
-        >
-          I tried it →
-        </button>
+        {/* Outcome choices */}
+        <div style={{
+          fontSize: 12, color: T.color.textLight,
+          marginBottom: 8, fontFamily: T.font.body,
+        }}>
+          Paste it into Claude, then tell us how it went:
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {[
+            { key: "worked", label: "It worked!" },
+            { key: "snag", label: "Hit a snag" },
+            { key: "skip", label: "Skip for now" },
+          ].map((opt) => (
+            <OutcomeButton key={opt.key} onClick={() => handleOutcome(opt.key)}>
+              {opt.label}
+            </OutcomeButton>
+          ))}
+        </div>
       </div>
     </div>
+  );
+}
+
+function OutcomeButton({ children, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: "7px 14px",
+        background: hovered ? T.color.bgCard : "transparent",
+        border: `1px solid ${hovered ? T.color.borderHover : T.color.border}`,
+        borderRadius: 8,
+        fontFamily: T.font.body, fontSize: 13,
+        color: T.color.textMuted,
+        cursor: "pointer",
+        transition: `all 0.25s ${T.ease.smooth}`,
+      }}
+    >
+      {children}
+    </button>
   );
 }

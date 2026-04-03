@@ -2,9 +2,11 @@ import T from "../tokens.js";
 import OrganicShape, { sectionShapes } from "../components/OrganicShape.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import { journeySteps } from "../components/JourneyProgress.jsx";
+import { useIsMobile } from "../hooks.js";
 
 /* ━━━ Welcome Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function WelcomeScreen({ onBegin }) {
+  const mobile = useIsMobile();
   return (
     <div style={{
       minHeight: "100vh", background: T.color.bg, fontFamily: T.font.body,
@@ -61,14 +63,28 @@ export default function WelcomeScreen({ onBegin }) {
           One finished project. No experience required.
         </p>
 
-        {/* Desktop recommendation — gentle nudge, not a blocker */}
-        <p style={{
-          fontSize: 13, color: T.color.textLight, maxWidth: 380,
-          margin: "0 auto 40px", lineHeight: 1.6,
-        }}>
-          This works best on a laptop or desktop, where you can keep Claude
-          open in another tab while you build.
-        </p>
+        {/* Device recommendation — actionable on mobile, gentle on desktop */}
+        {mobile ? (
+          <div style={{
+            background: T.color.copperSoft,
+            border: `1px solid rgba(191,123,94,0.18)`,
+            borderRadius: 12, padding: "14px 18px",
+            maxWidth: 380, margin: "0 auto 36px",
+          }}>
+            <p style={{ fontSize: 13, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
+              This experience works best on a laptop or desktop, where you can keep
+              Claude open in another tab. Consider bookmarking this page and coming back
+              on a bigger screen.
+            </p>
+          </div>
+        ) : (
+          <p style={{
+            fontSize: 13, color: T.color.textLight, maxWidth: 380,
+            margin: "0 auto 40px", lineHeight: 1.6,
+          }}>
+            This works best with Claude open in another tab while you build.
+          </p>
+        )}
 
         {/* Button — visible immediately */}
         <ContinueButton onClick={onBegin} label="Let's go" />

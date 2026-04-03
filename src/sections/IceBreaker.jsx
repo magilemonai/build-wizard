@@ -7,9 +7,7 @@ import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import BackButton from "../components/BackButton.jsx";
 
-/* ━━━ Exercise Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   A single exercise: headline, explanation, prompt card.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ Exercise Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function ExerciseScreen({ exercise, onConfirm, showLabel }) {
   return (
     <div>
@@ -44,9 +42,7 @@ function ExerciseScreen({ exercise, onConfirm, showLabel }) {
   );
 }
 
-/* ━━━ Section Anchor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   The closing beat of Section 2.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ Section Anchor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function SectionAnchor({ onContinue }) {
   return (
     <div style={{ textAlign: "center", padding: "40px 0" }}>
@@ -77,52 +73,77 @@ function SectionAnchor({ onContinue }) {
   );
 }
 
-/* ━━━ Exercise definitions ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ Exercise definitions ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Exercises adapt based on experience level:
+   - Newcomers get simpler, sillier prompts (no "run" assumption)
+   - Experienced users get more direct, project-focused prompts
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function getExercises(answers) {
   const exercises = [];
+  const experience = answers.experience || "tried";
+  const isNovice = experience === "never" || experience === "tried";
 
-  // Exercise 1: Band name generator (silly, instant win)
-  exercises.push({
-    id: "band_names",
-    title: "Let's start with something ridiculous.",
-    description: "Copy this prompt into Claude in your other tab. Watch what happens.",
-    context: "Paste this into Claude:",
-    prompt: `Write a Python script that generates 5 random band names by combining a random adjective with a random animal and a random occupation. Make them funny. Then run the script.`,
-    hint: "If Claude asks whether to run it, say yes. That's the whole point.",
-  });
+  // Exercise 1: Silly warm-up
+  if (isNovice) {
+    exercises.push({
+      id: "band_names",
+      title: "Let's start with something ridiculous.",
+      description: "Copy this prompt into Claude in your other tab. Just paste it in and hit enter.",
+      context: "Paste this into Claude:",
+      prompt: `Generate 5 random band names by combining a random adjective, a random animal, and a random occupation. Make them funny. Then generate 5 more that are even weirder.`,
+      hint: "That's it. You just told an AI what to do and it did it. Everything from here is variations on that.",
+    });
+  } else {
+    exercises.push({
+      id: "band_names",
+      title: "Quick warm-up. Something ridiculous.",
+      description: "You know the drill. Copy this into Claude.",
+      context: "Paste this into Claude:",
+      prompt: `Write a Python script that generates 5 random band names by combining a random adjective with a random animal and a random occupation. Make them funny. Then run it.`,
+      hint: "If Claude asks to run the code, say yes.",
+    });
+  }
 
-  // Exercise 2: Magic 8-Ball
-  exercises.push({
-    id: "magic_8ball",
-    title: "Now something a little more interactive.",
-    description: "This one takes a question and gives you a dramatic answer. Same thing: copy it into Claude.",
-    context: "Paste this into Claude:",
-    prompt: `Build a Magic 8-Ball in Python. It should ask me for a yes-or-no question, pause dramatically for 2 seconds (print "The spirits are consulting..." during the wait), then give me a random mystical answer. Make the answers funnier than the standard ones. Run it when you're done.`,
-    hint: "Try asking it a few questions. Notice how Claude can run interactive programs, not just write them.",
-  });
+  // Exercise 2: Slightly more structured
+  if (isNovice) {
+    exercises.push({
+      id: "magic_8ball",
+      title: "Now something a little more interactive.",
+      description: "This time you'll give Claude more specific instructions. Same thing: copy and paste.",
+      context: "Paste this into Claude:",
+      prompt: `I want you to be a Magic 8-Ball. I'll ask you a yes-or-no question, and you respond in character: first say "The spirits are consulting..." then give me a mystical, funny answer. Make the answers more creative than the standard Magic 8-Ball responses.\n\nMy first question: Will I finish everything on my to-do list today?`,
+      hint: "Try asking it a few more questions. Notice how it stays in character across the conversation.",
+    });
+  } else {
+    exercises.push({
+      id: "magic_8ball",
+      title: "Now something interactive.",
+      description: "A bit more structured this time. Copy it in.",
+      context: "Paste this into Claude:",
+      prompt: `Build a Magic 8-Ball in Python. It should ask me for a yes-or-no question, pause dramatically for 2 seconds (print "The spirits are consulting..." during the wait), then give a random mystical answer. Make the answers funnier than the standard ones. Run it.`,
+      hint: "Try asking it a few questions. Notice how Claude handles interactive programs.",
+    });
+  }
 
-  // Exercise 3: Bridge to their project
-  const projectType = answers.fork === "work" ? "work" : "personal";
+  // Exercise 3: Bridge to their project (lighter, less complex)
   const projectIdea = answers.project_idea || "";
 
   if (projectIdea.trim()) {
     exercises.push({
       id: "project_bridge",
-      title: "One more. This one's yours.",
-      description: "We took what you told us about your project and turned it into a warm-up. This is a preview of what we'll build for real in the next section.",
+      title: "One more. This one's about you.",
+      description: "We turned your project idea into a quick warm-up.",
       context: "Paste this into Claude:",
-      prompt: projectType === "work"
-        ? `I'm going to build a tool related to this: "${projectIdea.trim()}"\n\nBut first, as a warm-up: write a short Python script that asks me 3 quick questions about how I currently handle this task, then prints a funny but genuinely useful "efficiency score" with specific suggestions. Run it.`
-        : `I'm interested in: "${projectIdea.trim()}"\n\nAs a warm-up: write a short Python script that asks me 3 fun questions about this interest, then generates a personalized and slightly ridiculous "expertise title" for me (like "Senior Vice President of Sourdough Strategy"). Run it.`,
-      hint: "This is the same loop you'll use for the real build: describe what you want, let Claude write it, run it, see what happens.",
+      prompt: `I'm interested in building something related to: "${projectIdea.trim()}"\n\nGive me a fun, personalized "readiness score" for this project. Ask me 3 quick questions first, then rate me on a scale of 1-10 with a funny title for my score level.`,
+      hint: "Same pattern every time: tell Claude what you want, see what comes back, adjust from there.",
     });
   } else {
     exercises.push({
       id: "project_bridge",
       title: "One more. A little more useful this time.",
-      description: "This one actually does something practical. Same drill: copy, paste, run.",
+      description: "This one does something you might actually use again.",
       context: "Paste this into Claude:",
-      prompt: `Write a Python script that asks me what I'm working on today, then generates a prioritized to-do list with time estimates and one motivational (but not cheesy) quote. Run it.`,
+      prompt: `Ask me what I'm working on today, then give me a prioritized to-do list with rough time estimates and one genuinely good (not cheesy) piece of advice for the day.`,
       hint: "Notice the pattern: you described what you wanted in plain language, and Claude built it. That's the whole game.",
     });
   }
@@ -131,16 +152,18 @@ function getExercises(answers) {
 }
 
 /* ━━━ Step sequence ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Interleaves exercises with safety interstitials:
-   exercise_0 → safety_0 → exercise_1 → safety_1 → exercise_2 → anchor
+   exercise_0 → exercise_1 → safety → exercise_2 → anchor
+
+   Safety lessons grouped after the second exercise so the first
+   two exercises flow uninterrupted. Users build momentum before
+   we pause for reflection.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function buildStepSequence(exercises) {
   const steps = [];
 
   steps.push({ type: "exercise", index: 0 });
-  steps.push({ type: "safety", index: 0 });
   steps.push({ type: "exercise", index: 1 });
-  steps.push({ type: "safety", index: 1 });
+  steps.push({ type: "safety" });
 
   if (exercises.length > 2) {
     steps.push({ type: "exercise", index: 2 });
@@ -152,7 +175,7 @@ function buildStepSequence(exercises) {
 }
 
 /* ━━━ IceBreaker Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function IceBreaker({ answers, onComplete, onBack }) {
+export default function IceBreaker({ answers, onComplete, onBack, onProgress }) {
   const [stepIndex, setStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
 
@@ -162,8 +185,12 @@ export default function IceBreaker({ answers, onComplete, onBack }) {
 
   const advance = useCallback(() => {
     setDirection(1);
-    setStepIndex((i) => i + 1);
-  }, []);
+    setStepIndex((i) => {
+      const next = i + 1;
+      onProgress?.(next / stepSequence.length);
+      return next;
+    });
+  }, [stepSequence.length, onProgress]);
 
   const goBack = useCallback(() => {
     if (stepIndex <= 0) {
@@ -171,8 +198,12 @@ export default function IceBreaker({ answers, onComplete, onBack }) {
       return;
     }
     setDirection(-1);
-    setStepIndex((i) => i - 1);
-  }, [stepIndex, onBack]);
+    setStepIndex((i) => {
+      const next = i - 1;
+      onProgress?.(next / stepSequence.length);
+      return next;
+    });
+  }, [stepIndex, onBack, stepSequence.length, onProgress]);
 
   const renderStep = () => {
     if (!currentStep) return null;
@@ -191,58 +222,28 @@ export default function IceBreaker({ answers, onComplete, onBack }) {
     }
 
     if (currentStep.type === "safety") {
-      if (currentStep.index === 0) {
-        return (
-          <div>
-            <BackButton onClick={goBack} />
-            <SafetyInterstitial
-              title="Where did that just go?"
-              onContinue={advance}
-            >
-              <p style={{ margin: "0 0 12px 0" }}>
-                Everything you just typed went to a server. Claude processed it, ran your code,
-                and sent the results back. That's how all AI tools work: your input leaves your computer.
-              </p>
-              <p style={{ margin: "0 0 12px 0" }}>
-                With Claude Pro, your conversations aren't used for training by default. But that's
-                not true for every tool or every plan. The settings matter, and they're worth checking.
-              </p>
-              <p style={{ margin: 0 }}>
-                Take 30 seconds: in Claude, go to <strong>Settings → Privacy</strong> and look at what's
-                turned on. If you're using a different tool, look for similar settings. They all have them.
-                They're all in different places.
-              </p>
-            </SafetyInterstitial>
-          </div>
-        );
-      }
-
-      if (currentStep.index === 1) {
-        return (
-          <div>
-            <BackButton onClick={goBack} />
-            <SafetyInterstitial
-              title="Read before you run."
-              onContinue={advance}
-            >
-              <p style={{ margin: "0 0 12px 0" }}>
-                That code Claude wrote? It worked great. But as you build more complex things,
-                you'll want a habit: read through what it wrote before you run it.
-              </p>
-              <p style={{ margin: "0 0 12px 0" }}>
-                Not because AI is malicious. Because running anything you haven't looked at is how
-                surprises happen. A script that deletes files, sends data somewhere unexpected, or
-                just does something you didn't ask for. It's rare, but "rare" and "never" aren't the same word.
-              </p>
-              <p style={{ margin: 0 }}>
-                The habit is simple: <strong>scan the code, understand the gist, then run it.</strong> You
-                don't need to understand every line. You need to understand what it's doing and whether
-                that matches what you asked for.
-              </p>
-            </SafetyInterstitial>
-          </div>
-        );
-      }
+      return (
+        <div>
+          <BackButton onClick={goBack} />
+          <SafetyInterstitial
+            title="Two things to know before we keep going."
+            onContinue={advance}
+          >
+            <p style={{ margin: "0 0 16px 0" }}>
+              <strong style={{ color: T.color.text }}>Your input leaves your computer.</strong>{" "}
+              Everything you've typed went to a server. Claude processed it and sent results back.
+              That's how all AI tools work. Check your privacy settings in Claude under{" "}
+              <strong>Settings → Privacy</strong> to see what's shared.
+            </p>
+            <p style={{ margin: 0 }}>
+              <strong style={{ color: T.color.text }}>Read before you run.</strong>{" "}
+              When Claude writes code, scan it before executing. You don't need to understand
+              every line. You need to know what it's doing and whether that matches what you asked for.
+              "Rare" and "never" aren't the same word.
+            </p>
+          </SafetyInterstitial>
+        </div>
+      );
     }
 
     if (currentStep.type === "anchor") {

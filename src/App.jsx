@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import T from "./tokens.js";
 import GrainOverlay from "./components/GrainOverlay.jsx";
 import PageTransition from "./components/PageTransition.jsx";
@@ -16,18 +16,26 @@ import IceBreaker from "./sections/IceBreaker.jsx";
 
 /* ━━━ Main App ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function App() {
-  const [screen, setScreen] = useState("welcome"); // welcome | transition | interview | pathcard | icebreaker-transition | icebreaker
+  // welcome | transition | interview | pathcard | icebreaker-transition | icebreaker
+  const [screen, setScreen] = useState("welcome");
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [currentValue, setCurrentValue] = useState(null);
-  const [direction, setDirection] = useState(1); // 1 = forward, -1 = back
+  const [direction, setDirection] = useState(1);
   const [staggerReady, setStaggerReady] = useState(true);
   const [showFirstLabel, setShowFirstLabel] = useState(true);
+  const [icebreakerProgress, setIcebreakerProgress] = useState(0);
+  // Track whether user has visited icebreaker before (skip transition on re-entry)
+  const hasVisitedIcebreaker = useRef(false);
 
-  const stepsKey = `${answers.fork}|${answers.experience}`;
+  // Scroll to top on screen changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [screen]);
+
   const steps = useMemo(
     () => getInterviewSteps(answers),
-    [stepsKey]
+    [answers.fork, answers.experience]
   );
   const currentStep = steps[stepIndex] || null;
   const totalSteps = steps.length;
@@ -71,6 +79,14 @@ export default function App() {
     }
   }, [stepIndex, currentStep]);
 
+  const goToIcebreaker = useCallback(() => {
+    if (hasVisitedIcebreaker.current) {
+      setScreen("icebreaker");
+    } else {
+      setScreen("icebreaker-transition");
+    }
+  }, []);
+
   // ── Welcome ──
   if (screen === "welcome") {
     return (
@@ -83,21 +99,32 @@ export default function App() {
 
   // ── Threshold transition (welcome → interview) ──
   if (screen === "transition") {
-    return <ThresholdInterstitial onComplete={() => setScreen("interview")} />;
+    return (
+      <>
+        <GrainOverlay />
+        <ThresholdInterstitial onComplete={() => setScreen("interview")} />
+      </>
+    );
   }
 
   // ── Threshold transition (pathcard → icebreaker) ──
   if (screen === "icebreaker-transition") {
     return (
-      <ThresholdInterstitial
-        headline="Time to get your hands dirty."
-        subtext="Three quick exercises. Copy, paste, run."
-        onComplete={() => setScreen("icebreaker")}
-      />
+      <>
+        <GrainOverlay />
+        <ThresholdInterstitial
+          headline="Time to get your hands dirty."
+          subtext="A few quick exercises. Copy, paste, see what happens."
+          onComplete={() => {
+            hasVisitedIcebreaker.current = true;
+            setScreen("icebreaker");
+          }}
+        />
+      </>
     );
   }
 
-  // ── Interview + Path Card ──
+  // ── Interview + Path Card + Ice Breaker ──
   return (
     <>
       <GrainOverlay />
@@ -110,21 +137,20 @@ export default function App() {
           <JourneyProgress currentSection="interview" questionProgress={stepIndex / totalSteps} />
         )}
         {screen === "icebreaker" && (
-          <JourneyProgress currentSection="icebreaker" questionProgress={0} />
+          <JourneyProgress currentSection="icebreaker" questionProgress={icebreakerProgress} />
         )}
 
         <div style={{
           maxWidth: 600, margin: "0 auto", padding: "0 20px",
-          paddingTop: screen === "interview" ? 72 : 48, paddingBottom: 80,
+          paddingTop: (screen === "interview" || screen === "icebreaker") ? 72 : 48,
+          paddingBottom: 80,
         }}>
           {screen === "interview" && currentStep && (
             <PageTransition transitionKey={stepIndex} type="page"
               direction={direction} onEntered={handleTransitionEntered}>
               <div>
-                {/* Back button (all questions after the first) */}
                 {stepIndex > 0 && <BackButton onClick={navigateBack} />}
 
-                {/* Section label only on first question */}
                 {showFirstLabel && stepIndex === 0 && (
                   <SectionLabel>Section 1 · The Interview</SectionLabel>
                 )}
@@ -165,7 +191,7 @@ export default function App() {
                   Here's what we're building.
                 </h2>
                 <SetupPrompt status={answers.setup} />
-                <PathCard data={derivePathCard(answers)} onContinue={() => setScreen("icebreaker-transition")} />
+                <PathCard data={derivePathCard(answers)} onContinue={goToIcebreaker} />
                 <p style={{
                   marginTop: 36, fontSize: 13, color: T.color.textLight,
                   lineHeight: 1.65, textAlign: "center",
@@ -182,6 +208,7 @@ export default function App() {
               answers={answers}
               onComplete={() => {/* Section 3 not yet built */}}
               onBack={() => setScreen("pathcard")}
+              onProgress={setIcebreakerProgress}
             />
           )}
         </div>

@@ -43,7 +43,7 @@ export default function PathCard({ data, onContinue }) {
           {data.projectDescription}
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 16 }}>
-          {[{ label: "Duration", value: data.time }, { label: "Sections", value: "5" }, { label: "Setup", value: data.setup }].map((item) => (
+          {[{ label: "Duration", value: data.time }, { label: "Up next", value: "Ice Breaker" }, { label: "Setup", value: data.setup }].map((item) => (
             <div key={item.label} style={{ padding: "12px 0", borderTop: `1px solid ${T.color.border}` }}>
               <div style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 4, fontFamily: T.font.body }}>{item.label}</div>
               <div style={{ fontSize: 15, fontWeight: 500, fontFamily: T.font.body }}>{item.value}</div>
