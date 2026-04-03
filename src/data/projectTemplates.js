@@ -103,7 +103,7 @@ export function matchProject(input, type) {
 
 export function derivePathCard(answers) {
   const levelMap = { never: "Newcomer", tried: "Newcomer", occasional: "Explorer", regular: "Practitioner" };
-  const timeMap = { "30min": "~30 min", "1hr": "~1 hour", norush: "~75 min" };
+  const timeMap = { "30min": "~45 min", "1hr": "~60 min", norush: "~75 min" };
   const setupMap = { ready: "Ready", have_account: "Open Claude →", need_account: "Sign up free →" };
 
   const type = answers.fork === "work" ? "work" : "personal";

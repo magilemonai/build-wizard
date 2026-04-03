@@ -27,6 +27,17 @@ const SECTION_TRANSITIONS = {
 
 const SECTIONS_WITH_PROGRESS = ["interview", "icebreaker", "foundation", "powerup", "ship"];
 
+const SECTION_TITLES = {
+  welcome: "Build Something Real with AI",
+  transition: "Build Something Real with AI",
+  interview: "Interview — Build Wizard",
+  pathcard: "Your Plan — Build Wizard",
+  icebreaker: "Ice Breaker — Build Wizard",
+  foundation: "Foundation — Build Wizard",
+  powerup: "Power Up — Build Wizard",
+  ship: "Ship — Build Wizard",
+};
+
 /* ━━━ Main App ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function App() {
   const [screen, setScreen] = useState("welcome");
@@ -41,8 +52,25 @@ export default function App() {
   });
   const visited = useRef(new Set());
 
-  // Scroll to top on screen changes
-  useEffect(() => { window.scrollTo(0, 0); }, [screen]);
+  // Scroll to top and update page title on screen changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const baseScreen = screen.replace(/-transition$/, "");
+    document.title = SECTION_TITLES[baseScreen] || SECTION_TITLES[screen] || "Build Wizard";
+  }, [screen]);
+
+  // Restart: reset all state to initial values
+  const restart = useCallback(() => {
+    setScreen("welcome");
+    setStepIndex(0);
+    setAnswers({});
+    setCurrentValue(null);
+    setDirection(1);
+    setStaggerReady(true);
+    setShowFirstLabel(true);
+    setSectionProgress({ icebreaker: 0, foundation: 0, powerup: 0, ship: 0 });
+    visited.current.clear();
+  }, []);
 
   const steps = useMemo(
     () => getInterviewSteps(answers),
@@ -104,6 +132,22 @@ export default function App() {
   const transitionMatch = screen.match(/^(.+)-transition$/);
   const transitionSection = transitionMatch?.[1];
   const transitionConfig = transitionSection && SECTION_TRANSITIONS[transitionSection];
+
+  // Expose restart for testing (console: __restart())
+  useEffect(() => {
+    window.__restart = restart;
+    const handleKey = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "R") {
+        e.preventDefault();
+        restart();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => {
+      delete window.__restart;
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [restart]);
 
   // ── Welcome ──
   if (screen === "welcome") {
