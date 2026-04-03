@@ -39,7 +39,7 @@ export default function SectionShell({ steps, renderStep, onBack, onProgress }) 
     stepIndex,
     advance,
     goBack,
-    BackButton: stepIndex > 0 ? <BackButton onClick={goBack} /> : null,
+    BackButton: <BackButton onClick={goBack} />,
   });
 
   return (

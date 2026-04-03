@@ -81,7 +81,7 @@ function ReflectionScreen({ answers, outcomes, onContinue, BackButton }) {
         fontSize: 15, color: T.color.textMuted,
         margin: "0 0 24px 0", lineHeight: 1.65,
       }}>
-        This wasn't a Claude tutorial. Every skill you practiced works in any AI tool.
+        This wasn't just a Claude tutorial. Every skill you practiced works in any AI tool.
         If you switch to GPT, Gemini, or whatever comes next, everything here still applies.
       </p>
 

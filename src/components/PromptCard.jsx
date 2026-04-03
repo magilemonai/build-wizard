@@ -25,7 +25,8 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
   const handleOutcome = useCallback((result) => {
     setOutcome(result);
     // Brief celebration/acknowledgment before advancing
-    setTimeout(() => onConfirm(result), result === "worked" ? 800 : 400);
+    const delay = result === "worked" ? 800 : result === "snag" ? 2500 : 400;
+    setTimeout(() => onConfirm(result), delay);
   }, [onConfirm]);
 
   const outcomeMessages = {
@@ -38,19 +39,28 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
   if (outcome) {
     return (
       <div style={{
-        marginTop: 24, marginBottom: 8, padding: "32px 24px",
+        marginTop: 24, marginBottom: 8, padding: outcome === "snag" ? "24px" : "32px 24px",
         background: outcome === "worked" ? T.color.copperSoft : T.color.bgSubtle,
         border: `1.5px solid ${outcome === "worked" ? "rgba(191,123,94,0.2)" : T.color.border}`,
-        borderRadius: 14, textAlign: "center",
+        borderRadius: 14,
+        textAlign: outcome === "snag" ? "left" : "center",
         animation: "fadeInNotice 0.3s ease",
       }}>
         <div style={{
           fontSize: 15, fontWeight: 500,
           color: outcome === "worked" ? T.color.copper : T.color.textMuted,
           fontFamily: T.font.body,
+          marginBottom: outcome === "snag" ? 10 : 0,
         }}>
           {outcomeMessages[outcome]}
         </div>
+        {outcome === "snag" && (
+          <div style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6 }}>
+            <strong style={{ color: T.color.text }}>Quick tip:</strong> Try telling Claude
+            what went wrong. "That didn't work because..." or "I wanted X but got Y" teaches
+            it what you need. Iteration is the skill.
+          </div>
+        )}
       </div>
     );
   }
@@ -80,7 +90,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
       <div style={{
         padding: "16px 20px",
         fontFamily: "'Courier New', Courier, monospace",
-        fontSize: 13.5,
+        fontSize: 14.5,
         lineHeight: 1.7,
         color: T.color.text,
         whiteSpace: "pre-wrap",

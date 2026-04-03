@@ -8,10 +8,10 @@ export default function InterviewQuestion({ question, subtext, type, options, va
   return (
     <div>
       <h2 style={{
-        fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
+        fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
         fontWeight: 400, lineHeight: 1.3, margin: "0 0 8px 0", color: T.color.text,
       }}>{question}</h2>
-      {subtext && <p style={{ fontSize: 15, color: T.color.textMuted, margin: "0 0 28px 0", lineHeight: 1.65 }}>{subtext}</p>}
+      {subtext && <p style={{ fontSize: 16, color: T.color.textMuted, margin: "0 0 28px 0", lineHeight: 1.65 }}>{subtext}</p>}
       {!subtext && <div style={{ height: 28 }} />}
 
       {type === "choice" && options.map((opt, i) => (
@@ -30,10 +30,10 @@ export default function InterviewQuestion({ question, subtext, type, options, va
           borderRadius: 12,
           animation: "fadeInNotice 0.4s ease",
         }}>
-          <div style={{ fontSize: 13, fontWeight: 500, color: T.color.sage, marginBottom: 4 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: T.color.sage, marginBottom: 4 }}>
             {notice.title}
           </div>
-          <div style={{ fontSize: 13, color: T.color.textMuted, lineHeight: 1.6 }}>
+          <div style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6 }}>
             {notice.body}
           </div>
         </div>

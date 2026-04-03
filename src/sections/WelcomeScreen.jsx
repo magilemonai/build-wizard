@@ -37,7 +37,7 @@ export default function WelcomeScreen({ onBegin }) {
           </div>
           <div style={{
             position: "absolute",
-            left: "calc(50% - 8px)", top: "calc(50% + 22px)",
+            left: "calc(50% - 12px)", top: "calc(50% + 28px)",
             opacity: 0,
             animation: "fallBounceStraight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.5s both",
           }}>
@@ -78,12 +78,16 @@ export default function WelcomeScreen({ onBegin }) {
             </p>
           </div>
         ) : (
-          <p style={{
-            fontSize: 13, color: T.color.textLight, maxWidth: 380,
-            margin: "0 auto 40px", lineHeight: 1.6,
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "8px 16px", borderRadius: 20,
+            border: `1px solid ${T.color.border}`,
+            background: T.color.bgSubtle,
+            margin: "0 auto 36px",
+            fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
           }}>
-            This works best with Claude open in another tab while you build.
-          </p>
+            Open <strong style={{ color: T.color.copper }}>claude.ai</strong> in another tab before you start
+          </div>
         )}
 
         {/* Button — visible immediately */}

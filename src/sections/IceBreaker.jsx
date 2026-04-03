@@ -33,8 +33,9 @@ function ExerciseScreen({ exercise, onConfirm, showLabel }) {
       />
       {exercise.hint && (
         <p style={{
-          fontSize: 13, color: T.color.textLight,
-          marginTop: 12, lineHeight: 1.6,
+          fontSize: 14, color: T.color.textMuted,
+          marginTop: 14, lineHeight: 1.6,
+          fontStyle: "italic",
         }}>
           {exercise.hint}
         </p>
@@ -44,7 +45,7 @@ function ExerciseScreen({ exercise, onConfirm, showLabel }) {
 }
 
 /* ━━━ Section Anchor ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function SectionAnchor({ onContinue }) {
+function SectionAnchor({ onContinue, isNovice }) {
   return (
     <div style={{ textAlign: "center", padding: "40px 0" }}>
       <h2 style={{
@@ -52,22 +53,22 @@ function SectionAnchor({ onContinue }) {
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
         color: T.color.text, margin: "0 0 12px 0",
       }}>
-        You just wrote code.
+        {isNovice ? "You just built something with AI." : "You just wrote code."}
       </h2>
       <p style={{
         fontSize: 16, color: T.color.textMuted,
         lineHeight: 1.7, maxWidth: 420, margin: "0 auto 8px",
       }}>
-        It was easy. Hold onto that feeling.
-        Now let's build something that matters.
+        {isNovice
+          ? "You gave instructions, got results, and shaped the output. That's the whole loop. Now let's use it for something that matters to you."
+          : "It was easy. Hold onto that feeling. Now let's build something that matters."}
       </p>
       <p style={{
         fontSize: 13, color: T.color.textLight,
         lineHeight: 1.6, maxWidth: 400, margin: "0 auto",
       }}>
-        Good stopping point, by the way. You ran code, and you've got the two
-        most important safety habits down. Come back when you're ready, or
-        keep going now.
+        Good stopping point, by the way. You've got the key safety habits down.
+        Come back when you're ready, or keep going now.
       </p>
       <ContinueButton onClick={onContinue} label="Keep building" />
     </div>
@@ -180,6 +181,8 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
   const [stepIndex, setStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
 
+  const experience = answers.experience || "tried";
+  const isNovice = experience === "never" || experience === "tried";
   const exercises = getExercises(answers);
   const stepSequence = buildStepSequence(exercises);
   const currentStep = stepSequence[stepIndex];
@@ -212,7 +215,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
     if (currentStep.type === "exercise") {
       return (
         <div>
-          {stepIndex > 0 && <BackButton onClick={goBack} />}
+          <BackButton onClick={goBack} />
           <ExerciseScreen
             exercise={exercises[currentStep.index]}
             onConfirm={advance}
@@ -237,10 +240,10 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
               <strong>Settings → Privacy</strong> to see what's shared.
             </p>
             <p style={{ margin: 0 }}>
-              <strong style={{ color: T.color.text }}>Read before you run.</strong>{" "}
-              When Claude writes code, scan it before executing. You don't need to understand
-              every line. You need to know what it's doing and whether that matches what you asked for.
-              "Rare" and "never" aren't the same word.
+              <strong style={{ color: T.color.text }}>Check before you trust.</strong>{" "}
+              AI output sounds confident whether it's right or wrong. Before you act on anything
+              that matters (a fact, a recommendation, a piece of advice), verify it.
+              That habit is the difference between using AI well and using it carelessly.
             </p>
           </SafetyInterstitial>
         </div>
@@ -251,7 +254,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
       return (
         <div>
           <BackButton onClick={goBack} />
-          <SectionAnchor onContinue={onComplete} />
+          <SectionAnchor onContinue={onComplete} isNovice={isNovice} />
         </div>
       );
     }

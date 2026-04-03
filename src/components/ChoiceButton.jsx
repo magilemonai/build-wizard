@@ -18,10 +18,10 @@ export default function ChoiceButton({ children, selected, onClick, delay = 0, r
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        display: "block", width: "100%", padding: "15px 20px", marginBottom: 10,
+        display: "block", width: "100%", padding: "16px 22px", marginBottom: 10,
         background: selected ? T.color.sageSoft : hovered ? T.color.bgSubtle : T.color.bgCard,
         border: `1.5px solid ${selected ? T.color.sageBorder : hovered ? T.color.borderHover : T.color.border}`,
-        borderRadius: 12, fontFamily: T.font.body, fontSize: 15,
+        borderRadius: 12, fontFamily: T.font.body, fontSize: 16,
         fontWeight: selected ? 500 : 400,
         color: selected ? T.color.sage : T.color.text,
         cursor: "pointer", textAlign: "left",

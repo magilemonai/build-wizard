@@ -205,7 +205,7 @@ export default function App() {
         )}
 
         <div style={{
-          maxWidth: 600, margin: "0 auto", padding: "0 20px",
+          maxWidth: 680, margin: "0 auto", padding: "0 20px",
           paddingTop: showProgress ? 72 : 48, paddingBottom: 80,
         }}>
           {screen === "interview" && currentStep && (
