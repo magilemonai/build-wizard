@@ -1,4 +1,5 @@
 import T from "../tokens.js";
+import { useState, useCallback } from "react";
 import SectionShell from "../components/SectionShell.jsx";
 import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
@@ -74,6 +75,51 @@ function buildStepSequence(answers) {
   ];
 }
 
+/* ━━━ Catch-up prompt with copy button ━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function CatchUpPrompt({ idea }) {
+  const [copied, setCopied] = useState(false);
+  const text = `I'm building a project about ${idea}. We've been working on it together. Here's the best version so far: [paste your latest output]`;
+
+  const handleCopy = useCallback(async () => {
+    try { await navigator.clipboard.writeText(text); } catch {}
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [text]);
+
+  return (
+    <div style={{
+      padding: "12px 14px",
+      background: "rgba(44,41,37,0.05)",
+      borderRadius: 8,
+      position: "relative",
+    }}>
+      <div style={{
+        fontFamily: "'Courier New', Courier, monospace",
+        fontSize: 13, lineHeight: 1.6, color: T.color.text,
+        paddingRight: 70,
+      }}>
+        {text}
+      </div>
+      <button
+        onClick={handleCopy}
+        style={{
+          position: "absolute", top: 10, right: 10,
+          padding: "5px 12px",
+          background: copied ? T.color.sageSoft : T.color.bgCard,
+          border: `1px solid ${copied ? T.color.sageBorder : T.color.border}`,
+          borderRadius: 6,
+          fontFamily: T.font.body, fontSize: 12,
+          color: copied ? T.color.sage : T.color.textMuted,
+          cursor: "pointer",
+          transition: `all 0.2s ${T.ease.smooth}`,
+        }}
+      >
+        {copied ? "✓ Copied" : "Copy"}
+      </button>
+    </div>
+  );
+}
+
 /* ━━━ Foundation Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Foundation({ answers, onComplete, onBack, onProgress }) {
   const buildSteps = getBuildSteps(answers);
@@ -121,16 +167,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 <p style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6, margin: "0 0 10px 0" }}>
                   Start a new one and paste something like this to catch Claude up:
                 </p>
-                <div style={{
-                  padding: "10px 14px",
-                  background: "rgba(44,41,37,0.05)",
-                  borderRadius: 8,
-                  fontFamily: "'Courier New', Courier, monospace",
-                  fontSize: 13, lineHeight: 1.6, color: T.color.text,
-                }}>
-                  I'm building a project about {idea}. We've been working on it
-                  together. Here's the best version so far: [paste your latest output]
-                </div>
+                <CatchUpPrompt idea={idea} />
               </div>
               <ContinueButton onClick={advance} label="Got it, let's build" />
             </div>
