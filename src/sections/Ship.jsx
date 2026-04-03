@@ -15,14 +15,14 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
       {BackButton}
       <SectionLabel>Section 5 · Ship</SectionLabel>
       <h2 style={{
-        fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
-        fontWeight: 400, lineHeight: 1.3, margin: "0 0 8px 0",
+        fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
+        fontWeight: 400, lineHeight: 1.3, margin: "0 0 10px 0",
         color: T.color.text,
       }}>
         Let's walk through what you built.
       </h2>
       <p style={{
-        fontSize: 15, color: T.color.textMuted,
+        fontSize: 16, color: T.color.textMuted,
         margin: "0 0 4px 0", lineHeight: 1.65,
       }}>
         Before you take this with you, one more habit to build: reviewing your work.
@@ -36,8 +36,9 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
         onConfirm={onConfirm}
       />
       <p style={{
-        fontSize: 13, color: T.color.textLight,
-        marginTop: 12, lineHeight: 1.6,
+        fontSize: 14, color: T.color.textMuted,
+        marginTop: 14, lineHeight: 1.6,
+        fontStyle: "italic",
       }}>
         This review habit takes 30 seconds and catches the things you'd miss. Every time. Not paranoia. Just practice.
       </p>
@@ -45,22 +46,95 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
   );
 }
 
+/* ━━━ Save & Share Step ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function SaveShareStep({ answers, onContinue, BackButton }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
+
+  return (
+    <div style={{
+      opacity: visible ? 1 : 0,
+      transform: visible ? "translateY(0)" : "translateY(12px)",
+      transition: `all 0.5s ${T.ease.smooth}`,
+    }}>
+      {BackButton}
+      <h2 style={{
+        fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
+        fontWeight: 400, lineHeight: 1.3, margin: "0 0 10px 0",
+        color: T.color.text,
+      }}>
+        Save your work. Share it if you want.
+      </h2>
+      <p style={{
+        fontSize: 16, color: T.color.textMuted,
+        margin: "0 0 24px 0", lineHeight: 1.65,
+      }}>
+        Conversations can expire or get lost. Before you close that tab, take
+        a moment to save what you built somewhere durable.
+      </p>
+
+      <div style={{
+        background: T.color.bgCard,
+        border: `1.5px solid ${T.color.border}`,
+        borderRadius: 14,
+        padding: "20px 24px",
+        marginBottom: 16,
+      }}>
+        <div style={{ fontSize: 15, fontWeight: 500, color: T.color.text, marginBottom: 12 }}>
+          How to save your project
+        </div>
+        {[
+          "In your Claude conversation, find the best version of what you built",
+          "Click the copy button on Claude's response (or select all and copy)",
+          "Paste it into a doc, note, or file you'll find again",
+        ].map((step, i) => (
+          <div key={i} style={{
+            display: "flex", gap: 10, padding: "6px 0",
+            fontSize: 14, color: T.color.textMuted, lineHeight: 1.55,
+          }}>
+            <span style={{ color: T.color.copper, fontWeight: 500, flexShrink: 0 }}>{i + 1}.</span>
+            {step}
+          </div>
+        ))}
+      </div>
+
+      <div style={{
+        background: T.color.copperSoft,
+        border: `1px solid rgba(191,123,94,0.15)`,
+        borderRadius: 12,
+        padding: "16px 20px",
+        marginBottom: 24,
+      }}>
+        <div style={{ fontSize: 14, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
+          Want to share what you built?
+        </div>
+        <p style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
+          If Claude created an artifact for you, you can publish it and share the link.
+          Click the share button on any artifact in Claude to get a public URL.
+          You built something worth showing off.
+        </p>
+      </div>
+
+      <ContinueButton onClick={onContinue} label="Continue to reflection" />
+    </div>
+  );
+}
+
 /* ━━━ Reflection Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function ReflectionScreen({ answers, outcomes, onContinue, BackButton }) {
+function ReflectionScreen({ answers, onContinue, BackButton }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
 
   const level = answers.experience || "tried";
   const isWork = answers.fork === "work";
 
-  // Dynamic checklist: all skills are listed but marked as done/skipped
-  const allSkills = [
-    { text: "Prompted with context and iterated on the result", section: "foundation" },
-    { text: "Requested structured output (tables, checklists, templates)", section: "foundation" },
-    { text: "Taught Claude about your specific situation", section: "foundation" },
-    { text: "Used system prompts to set persistent context", section: "powerup" },
-    { text: "Applied the draft-critique-revise workflow", section: "powerup" },
-    { text: "Reviewed AI output before using it", section: "ship" },
+  const skills = [
+    "Prompted with context and iterated on the result",
+    "Requested structured output (tables, checklists, templates)",
+    "Taught Claude about your specific situation",
+    "Used system prompts to set persistent context",
+    "Applied the draft-critique-revise workflow",
+    "Reviewed AI output before using it",
   ];
 
   return (
@@ -71,14 +145,14 @@ function ReflectionScreen({ answers, outcomes, onContinue, BackButton }) {
     }}>
       {BackButton}
       <h2 style={{
-        fontFamily: T.font.display, fontSize: "clamp(26px,5vw,32px)",
+        fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
         color: T.color.text, margin: "0 0 16px 0",
       }}>
         Look at what you just did.
       </h2>
       <p style={{
-        fontSize: 15, color: T.color.textMuted,
+        fontSize: 16, color: T.color.textMuted,
         margin: "0 0 24px 0", lineHeight: 1.65,
       }}>
         This wasn't just a Claude tutorial. Every skill you practiced works in any AI tool.
@@ -92,31 +166,23 @@ function ReflectionScreen({ answers, outcomes, onContinue, BackButton }) {
         padding: "20px 24px",
         marginBottom: 24,
       }}>
-        {allSkills.map((skill, i) => {
-          const skipped = outcomes?.[skill.section] === "skip";
-          return (
-            <div key={i} style={{
-              display: "flex", alignItems: "flex-start", gap: 10,
-              padding: "8px 0",
-              borderBottom: i < allSkills.length - 1 ? `1px solid ${T.color.border}` : "none",
-              opacity: skipped ? 0.5 : 1,
-            }}>
-              <span style={{
-                color: skipped ? T.color.textLight : T.color.sage,
-                fontSize: 14, lineHeight: "22px", flexShrink: 0,
-              }}>{skipped ? "–" : "✓"}</span>
-              <span style={{
-                fontSize: 14,
-                color: skipped ? T.color.textLight : T.color.text,
-                lineHeight: 1.55,
-                textDecoration: skipped ? "line-through" : "none",
-              }}>{skill.text}</span>
-            </div>
-          );
-        })}
+        {skills.map((skill, i) => (
+          <div key={skill} style={{
+            display: "flex", alignItems: "flex-start", gap: 10,
+            padding: "8px 0",
+            borderBottom: i < skills.length - 1 ? `1px solid ${T.color.border}` : "none",
+          }}>
+            <span style={{
+              color: T.color.sage, fontSize: 14, lineHeight: "22px", flexShrink: 0,
+            }}>✓</span>
+            <span style={{ fontSize: 14, color: T.color.text, lineHeight: 1.55 }}>
+              {skill}
+            </span>
+          </div>
+        ))}
       </div>
 
-      <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.65, margin: 0 }}>
+      <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.65, margin: 0 }}>
         {level === "never" || level === "tried"
           ? "A few hours ago, you hadn't really used AI. Now you have a project, a process, and the safety habits to do this responsibly. That's a big shift."
           : isWork
@@ -182,21 +248,21 @@ function NextStepsScreen({ answers, BackButton }) {
     }}>
       {BackButton}
       <h2 style={{
-        fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
+        fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
         color: T.color.text, margin: "0 0 8px 0",
       }}>
         Where to go from here.
       </h2>
       <p style={{
-        fontSize: 15, color: T.color.textMuted,
+        fontSize: 16, color: T.color.textMuted,
         margin: "0 0 24px 0", lineHeight: 1.65,
       }}>
         You don't need a roadmap. You have the loop: try, evaluate, refine, expand.
         But here are a few specific things worth doing next.
       </p>
 
-      {nextSteps.map((step, i) => (
+      {nextSteps.map((step) => (
         <div key={step.title} style={{
           background: T.color.bgCard,
           border: `1.5px solid ${T.color.border}`,
@@ -204,10 +270,10 @@ function NextStepsScreen({ answers, BackButton }) {
           padding: "18px 20px",
           marginBottom: 12,
         }}>
-          <div style={{ fontSize: 14, fontWeight: 500, color: T.color.text, marginBottom: 4, fontFamily: T.font.body }}>
+          <div style={{ fontSize: 15, fontWeight: 500, color: T.color.text, marginBottom: 4, fontFamily: T.font.body }}>
             {step.title}
           </div>
-          <div style={{ fontSize: 13, color: T.color.textMuted, lineHeight: 1.6 }}>
+          <div style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6 }}>
             {step.body}
           </div>
         </div>
@@ -223,7 +289,7 @@ function NextStepsScreen({ answers, BackButton }) {
           marginBottom: 20,
         }}>
           {sectionShapes.map((shapeIdx, i) => (
-            <div key={i} style={{
+            <div key={shapeIdx} style={{
               opacity: 0,
               animation: `softFadeUp 0.4s ${T.ease.smooth} ${0.2 + i * 0.12}s both`,
             }}>
@@ -236,20 +302,19 @@ function NextStepsScreen({ answers, BackButton }) {
           ))}
         </div>
         <h2 style={{
-          fontFamily: T.font.display, fontSize: 26,
+          fontFamily: T.font.display, fontSize: 28,
           fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
           color: T.color.text, margin: "0 0 10px 0",
         }}>
           You built something real.
         </h2>
         <p style={{
-          fontSize: 14, color: T.color.textMuted,
-          lineHeight: 1.65, maxWidth: 380, margin: "0 auto 28px",
+          fontSize: 15, color: T.color.textMuted,
+          lineHeight: 1.65, maxWidth: 400, margin: "0 auto 28px",
         }}>
           That was the whole promise. Everything from here is refinement and ambition.
         </p>
 
-        {/* Closing action */}
         <a
           href="https://claude.ai"
           target="_blank"
@@ -276,6 +341,7 @@ function buildStepSequence() {
   return [
     { type: "review" },
     { type: "safety" },
+    { type: "saveshare" },
     { type: "reflection" },
     { type: "nextsteps" },
   ];
@@ -284,15 +350,13 @@ function buildStepSequence() {
 /* ━━━ Ship Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Ship({ answers, onBack, onProgress }) {
   const steps = buildStepSequence();
-  // Track exercise outcomes for dynamic checklist
-  const [outcomes] = useState({});
 
   return (
     <SectionShell
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
-      renderStep={({ step, stepIndex, advance, goBack, BackButton }) => {
+      renderStep={({ step, advance, BackButton }) => {
         if (!step) return null;
 
         if (step.type === "review") {
@@ -321,8 +385,12 @@ export default function Ship({ answers, onBack, onProgress }) {
           );
         }
 
+        if (step.type === "saveshare") {
+          return <SaveShareStep answers={answers} onContinue={advance} BackButton={BackButton} />;
+        }
+
         if (step.type === "reflection") {
-          return <ReflectionScreen answers={answers} outcomes={outcomes} onContinue={advance} BackButton={BackButton} />;
+          return <ReflectionScreen answers={answers} onContinue={advance} BackButton={BackButton} />;
         }
 
         if (step.type === "nextsteps") {

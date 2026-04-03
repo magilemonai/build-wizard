@@ -42,6 +42,7 @@ function getBuildSteps(answers) {
         ? `Let's improve what we built for "${idea}" using a multi-step workflow.\n\nStep 1: Look at the output you've created so far and identify the 3 biggest weaknesses. Be honest and specific.\n\nStep 2: For each weakness, explain what a better version would look like.\n\nStep 3: Now rewrite the whole thing, incorporating all three improvements.\n\nGo through all three steps now.`
         : `Let's level up what we built for "${idea}".\n\nStep 1: Critique your own work. What are the 3 biggest gaps or things that feel generic?\n\nStep 2: For each gap, explain what would make it genuinely useful versus just okay.\n\nStep 3: Rewrite the whole thing with those improvements. Make it something I'd actually come back to.\n\nDo all three steps now.`,
       hint: "Notice the quality jump between the single-pass version and the one that went through draft-critique-revise. That's the workflow pattern.",
+      showThinkingNote: true,
     },
     // Playful interlude before the tools step
     {
@@ -63,12 +64,12 @@ function getBuildSteps(answers) {
         ? "Same thing you've been doing, but on your computer."
         : "Claude can do more than write text.",
       explanation: isComfortable
-        ? "Claude Code is Claude running in your terminal. It can see your files, " +
-          "write code, run commands, and build things directly on your machine. " +
-          "It's the same prompting you've been practicing, just with more leverage. " +
+        ? "That roast probably surfaced some real weaknesses. Now imagine a tool that could act on them: " +
+          "edit files, run commands, build things directly on your machine. " +
+          "Claude Code is Claude in your terminal. Same prompting you've been practicing, more leverage. " +
           "Think of it as going from giving instructions on paper to having someone at the keyboard."
-        : "You've been working with Claude in a conversation. " +
-          "But AI tools can also read files, search the web, run code, and connect to other services. " +
+        : "That roast probably surfaced some real weaknesses. Here's the good news: AI tools can do more " +
+          "than point them out. They can read files, search the web, run code, and connect to other services. " +
           "When AI can take actions, not just produce text, that's the jump from assistant to agent. " +
           "You don't need to use all of this today. But knowing it exists changes what you think is possible.",
       tip: isComfortable
@@ -151,21 +152,21 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
 
         if (step.type === "anchor") {
           return (
-            <div style={{ textAlign: "center", padding: "40px 0" }}>
+            <div style={{ padding: "40px 0" }}>
               {BackButton}
               <h2 style={{
-                fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
+                fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
                 color: T.color.text, margin: "0 0 12px 0",
               }}>
                 Your project just leveled up.
               </h2>
-              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 420, margin: "0 auto 8px" }}>
+              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 480, margin: "0 0 8px" }}>
                 System prompts, multi-step workflows, and a sense of what's possible
                 beyond conversation. Those are the tools that separate casual use from
                 real capability.
               </p>
-              <p style={{ fontSize: 13, color: T.color.textLight, lineHeight: 1.6, maxWidth: 400, margin: "0 auto" }}>
+              <p style={{ fontSize: 14, color: T.color.textLight, lineHeight: 1.6, maxWidth: 460 }}>
                 One section left. We'll finish the project, reflect on what you
                 learned, and set you up for what comes next.
               </p>

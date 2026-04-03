@@ -124,9 +124,13 @@ export default function App() {
     }
   }, []);
 
-  const updateProgress = useCallback((section) => (value) => {
-    setSectionProgress((prev) => ({ ...prev, [section]: value }));
-  }, []);
+  // Stable progress updaters (one per section, memoized)
+  const progressUpdaters = useMemo(() => ({
+    icebreaker: (value) => setSectionProgress((prev) => ({ ...prev, icebreaker: value })),
+    foundation: (value) => setSectionProgress((prev) => ({ ...prev, foundation: value })),
+    powerup: (value) => setSectionProgress((prev) => ({ ...prev, powerup: value })),
+    ship: (value) => setSectionProgress((prev) => ({ ...prev, ship: value })),
+  }), []);
 
   // Determine if current screen is a section transition
   const transitionMatch = screen.match(/^(.+)-transition$/);
@@ -270,7 +274,7 @@ export default function App() {
               answers={answers}
               onComplete={() => goToSection("foundation")}
               onBack={() => setScreen("pathcard")}
-              onProgress={updateProgress("icebreaker")}
+              onProgress={progressUpdaters.icebreaker}
             />
           )}
 
@@ -279,7 +283,7 @@ export default function App() {
               answers={answers}
               onComplete={() => goToSection("powerup")}
               onBack={() => setScreen("icebreaker")}
-              onProgress={updateProgress("foundation")}
+              onProgress={progressUpdaters.foundation}
             />
           )}
 
@@ -288,7 +292,7 @@ export default function App() {
               answers={answers}
               onComplete={() => goToSection("ship")}
               onBack={() => setScreen("foundation")}
-              onProgress={updateProgress("powerup")}
+              onProgress={progressUpdaters.powerup}
             />
           )}
 
@@ -296,7 +300,7 @@ export default function App() {
             <Ship
               answers={answers}
               onBack={() => setScreen("powerup")}
-              onProgress={updateProgress("ship")}
+              onProgress={progressUpdaters.ship}
             />
           )}
         </div>

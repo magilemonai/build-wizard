@@ -19,6 +19,7 @@ export default function GuidedStep({
   prompt,
   promptContext,
   hint,
+  showThinkingNote,
   onConfirm,
 }) {
   const [visible, setVisible] = useState(false);
@@ -82,12 +83,14 @@ export default function GuidedStep({
       />
 
       {/* Hint */}
-      <p style={{
-        fontSize: 13, color: T.color.textLight,
-        marginTop: 14, lineHeight: 1.6,
-      }}>
-        Claude may take a moment on this one. That's normal for longer responses.
-      </p>
+      {showThinkingNote && (
+        <p style={{
+          fontSize: 13, color: T.color.textLight,
+          marginTop: 14, lineHeight: 1.6,
+        }}>
+          Claude may take a moment on this one. That's normal for longer responses.
+        </p>
+      )}
 
       {hint && (
         <p style={{

@@ -25,6 +25,7 @@ function getBuildSteps(answers) {
         ? `I need help with: ${idea}\n\nHere's the context:\n- This is for my work\n- I do this task regularly\n- A good result would save me real time\n\nGive me a first draft of a tool or template for this. Then I'll tell you what to change.`
         : `I want to build something around: ${idea}\n\nHere's what I care about:\n- This is a personal interest\n- I want something I'd actually use, not a generic result\n- Surprise me with how specific you can get\n\nGive me a first draft. Then I'll tell you what to change.`,
       hint: "Read what Claude gives you. What's close? What's off? Tell it. That back-and-forth is the actual skill you're building.",
+      showThinkingNote: true,
     },
     {
       id: "structured",
@@ -56,6 +57,7 @@ function getBuildSteps(answers) {
         ? `Let me give you more context about "${idea}":\n\n- Here's how I currently handle this: [describe your current process briefly]\n- The part that takes the most time is: [the bottleneck]\n- I've tried improving it by: [what you've tried]\n- The constraints I'm working with are: [time, tools, team size, etc.]\n\nNow revise what you built to fit my actual situation. Be specific to what I just told you.`
         : `Let me give you more context about "${idea}":\n\n- My experience level with this is: [beginner/intermediate/etc.]\n- What I've already tried: [anything relevant]\n- What I'm specifically trying to achieve: [your goal]\n- Constraints that matter: [time, budget, space, equipment, etc.]\n\nNow revise what you built with all of this in mind. Make it genuinely mine, not generic.`,
       hint: "Notice how the output changed when you added real context. That's the difference between a template and a tool built for you.",
+      showThinkingNote: true,
     },
   ];
 }
@@ -75,6 +77,7 @@ function buildStepSequence(answers) {
 export default function Foundation({ answers, onComplete, onBack, onProgress }) {
   const buildSteps = getBuildSteps(answers);
   const steps = buildStepSequence(answers);
+  const idea = answers.project_idea || "my project";
 
   return (
     <SectionShell
@@ -87,16 +90,17 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
         if (step.type === "continuity") {
           return (
             <div>
+              {BackButton}
               <SectionLabel>Section 3 · Foundation</SectionLabel>
               <h2 style={{
-                fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
-                fontWeight: 400, lineHeight: 1.3, margin: "0 0 8px 0",
+                fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
+                fontWeight: 400, lineHeight: 1.3, margin: "0 0 10px 0",
                 color: T.color.text,
               }}>
                 One important thing before we start.
               </h2>
               <p style={{
-                fontSize: 15, color: T.color.textMuted,
+                fontSize: 16, color: T.color.textMuted,
                 margin: "0 0 20px 0", lineHeight: 1.65,
               }}>
                 From here on, each step builds on the last. Keep the same Claude
@@ -104,15 +108,17 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 prompt refers to what you built in the previous step.
               </p>
               <div style={{
-                padding: "12px 16px",
+                padding: "14px 18px",
                 background: T.color.copperSoft,
                 border: `1px solid rgba(191,123,94,0.15)`,
                 borderRadius: 10,
-                fontSize: 13, color: T.color.textMuted, lineHeight: 1.6,
+                fontSize: 14, color: T.color.textMuted, lineHeight: 1.6,
+                marginBottom: 16,
               }}>
-                <strong style={{ color: T.color.copper }}>Quick tip:</strong> If you
-                need to start a new conversation later, just paste in the best version
-                of what you've built so far to catch Claude up.
+                <strong style={{ color: T.color.copper }}>Lost your conversation?</strong> Start
+                a new one and paste this to catch Claude up: "I'm building a project
+                about {idea}. We've been working on it together. Here's the best version so far:"
+                then paste your latest output.
               </div>
               <ContinueButton onClick={advance} label="Got it, let's build" />
             </div>
@@ -131,6 +137,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 tip={s.tip}
                 prompt={s.prompt}
                 hint={s.hint}
+                showThinkingNote={s.showThinkingNote}
                 onConfirm={advance}
               />
             </div>
@@ -178,20 +185,20 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
 
         if (step.type === "anchor") {
           return (
-            <div style={{ textAlign: "center", padding: "40px 0" }}>
+            <div style={{ padding: "40px 0" }}>
               {BackButton}
               <h2 style={{
-                fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
+                fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
                 color: T.color.text, margin: "0 0 12px 0",
               }}>
                 You've got a working first draft.
               </h2>
-              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 420, margin: "0 auto 8px" }}>
+              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 480, margin: "0 0 8px" }}>
                 Prompted with context, shaped the output, and made it yours.
                 Those three moves work for any project in any AI tool.
               </p>
-              <p style={{ fontSize: 13, color: T.color.textLight, lineHeight: 1.6, maxWidth: 400, margin: "0 auto" }}>
+              <p style={{ fontSize: 14, color: T.color.textLight, lineHeight: 1.6, maxWidth: 460 }}>
                 Another good stopping point. You've got a real project draft and the
                 core prompting skills to keep improving it. The next section levels it
                 up with system prompts and multi-step workflows.

@@ -77,21 +77,24 @@ export default function WelcomeScreen({ onBegin }) {
               on a bigger screen.
             </p>
           </div>
-        ) : (
+        ) : null}
+
+        {/* Button — visible immediately */}
+        <ContinueButton onClick={onBegin} label="Let's go" />
+
+        {/* Desktop: Claude tab reminder below the button */}
+        {!mobile && (
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "8px 16px", borderRadius: 20,
             border: `1px solid ${T.color.border}`,
             background: T.color.bgSubtle,
-            margin: "0 auto 36px",
+            marginTop: 20,
             fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
           }}>
             Open <strong style={{ color: T.color.copper }}>claude.ai</strong> in another tab before you start
           </div>
         )}
-
-        {/* Button — visible immediately */}
-        <ContinueButton onClick={onBegin} label="Let's go" />
 
         {/* Journey pills — fade in after shapes have landed */}
         <div style={{ marginTop: 56, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 8 }}>
