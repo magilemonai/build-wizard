@@ -200,7 +200,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 Prompted with context, shaped the output, and made it yours.
                 Those three moves work for any project in any AI tool.
               </p>
-              <p style={{ fontSize: 14, color: T.color.textLight, lineHeight: 1.6, maxWidth: 460 }}>
+              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 480 }}>
                 Another good stopping point. You've got a real project draft and the
                 core prompting skills to keep improving it. The next section levels it
                 up with system prompts and multi-step workflows.

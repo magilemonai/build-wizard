@@ -175,7 +175,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
                 beyond conversation. Those are the tools that separate casual use from
                 real capability.
               </p>
-              <p style={{ fontSize: 14, color: T.color.textLight, lineHeight: 1.6, maxWidth: 460 }}>
+              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 480 }}>
                 One section left. We'll finish the project, reflect on what you
                 learned, and set you up for what comes next.
               </p>

@@ -249,7 +249,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                   : "It was easy. Hold onto that feeling. Now let's build something that matters."}
               </p>
               <p style={{
-                fontSize: 14, color: T.color.textLight,
+                fontSize: 15, color: T.color.textMuted,
                 lineHeight: 1.6, maxWidth: 400, margin: "0 auto",
               }}>
                 Good stopping point, by the way. You've got the key safety habits down.

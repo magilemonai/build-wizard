@@ -259,7 +259,7 @@ export default function App() {
                 <SetupPrompt status={answers.setup} />
                 <PathCard data={derivePathCard(answers)} onContinue={() => goToSection("icebreaker")} />
                 <p style={{
-                  marginTop: 36, fontSize: 13, color: T.color.textLight,
+                  marginTop: 36, fontSize: 15, color: T.color.textMuted,
                   lineHeight: 1.65, textAlign: "center",
                 }}>
                   Even if you stop here, you've got a project brief and a clear first step.<br />

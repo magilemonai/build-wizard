@@ -51,7 +51,7 @@ export default function PathCard({ data, onContinue }) {
 
       {/* Skills footer */}
       <div style={{ background: T.color.bgSubtle, padding: "20px 28px 24px", borderTop: `1px solid ${T.color.border}` }}>
-        <div style={{ fontSize: 13, fontWeight: 500, letterSpacing: "0.04em", color: T.color.textMuted, marginBottom: 6 }}>
+        <div style={{ fontSize: 14, fontWeight: 500, letterSpacing: "0.04em", color: T.color.textMuted, marginBottom: 6 }}>
           What you'll pick up along the way
         </div>
         <div style={{ fontSize: 15, color: T.color.text, lineHeight: 1.65 }}>{data.learns}</div>

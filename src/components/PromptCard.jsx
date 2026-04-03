@@ -154,7 +154,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
 
         {/* Outcome choices */}
         <div style={{
-          fontSize: 13, color: T.color.textLight,
+          fontSize: 14, color: T.color.textLight,
           marginBottom: 8, fontFamily: T.font.body,
         }}>
           {hasPlaceholders
