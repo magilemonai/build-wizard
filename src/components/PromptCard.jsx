@@ -67,19 +67,34 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
               but got Y" teaches it what you need. Go back to your Claude tab, iterate on the
               result, then come back here when you're ready.
             </div>
-            <button
-              onClick={() => onConfirm("snag")}
-              style={{
-                padding: "10px 20px",
-                background: T.color.copper,
-                color: "#fff",
-                border: "none", borderRadius: 8,
-                fontFamily: T.font.body, fontSize: 14, fontWeight: 500,
-                cursor: "pointer",
-              }}
-            >
-              Ready to continue
-            </button>
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <button
+                onClick={() => onConfirm("snag")}
+                style={{
+                  padding: "10px 20px",
+                  background: T.color.copper,
+                  color: "#fff",
+                  border: "none", borderRadius: 8,
+                  fontFamily: T.font.body, fontSize: 14, fontWeight: 500,
+                  cursor: "pointer",
+                }}
+              >
+                Ready to continue
+              </button>
+              <button
+                onClick={() => setOutcome(null)}
+                style={{
+                  padding: "10px 20px",
+                  background: "transparent",
+                  color: T.color.textMuted,
+                  border: `1px solid ${T.color.border}`, borderRadius: 8,
+                  fontFamily: T.font.body, fontSize: 14,
+                  cursor: "pointer",
+                }}
+              >
+                Take me back
+              </button>
+            </div>
           </>
         )}
       </div>
