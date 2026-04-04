@@ -110,7 +110,7 @@ export default function WelcomeScreen({ onBegin }) {
           {journeySteps.map((s, i) => (
             <span key={s.key} style={{
               display: "inline-flex", alignItems: "center", gap: 6,
-              fontSize: 12, fontWeight: 400, color: T.color.textLight,
+              fontSize: 13, fontWeight: 400, color: T.color.textLight,
               padding: "5px 12px", borderRadius: 20, border: `1px solid ${T.color.border}`,
               opacity: 0,
               animation: `softFadeUp 0.5s ${T.ease.smooth} ${2.6 + i * 0.08}s both`,

@@ -33,7 +33,7 @@ export default function GuidedStep({
       {/* Skill label */}
       {skillLabel && (
         <div style={{
-          fontSize: 11, fontWeight: 500, letterSpacing: "0.08em",
+          fontSize: 13, fontWeight: 500, letterSpacing: "0.08em",
           textTransform: "uppercase", color: T.color.copper,
           marginBottom: 10, fontFamily: T.font.body,
         }}>
@@ -57,20 +57,6 @@ export default function GuidedStep({
       }}>
         {explanation}
       </p>
-
-      {/* Tip callout */}
-      {tip && (
-        <div style={{
-          padding: "12px 16px",
-          background: T.color.copperSoft,
-          border: `1px solid rgba(191,123,94,0.15)`,
-          borderRadius: 10,
-          fontSize: 14, color: T.color.textMuted, lineHeight: 1.6,
-          marginBottom: 4,
-        }}>
-          <strong style={{ color: T.color.copper }}>The move:</strong> {tip}
-        </div>
-      )}
 
       {/* Prompt card */}
       <PromptCard

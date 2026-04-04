@@ -39,6 +39,17 @@ function ExerciseScreen({ exercise, onConfirm, showLabel }) {
           {exercise.hint}
         </p>
       )}
+      <div style={{
+        marginTop: 14, padding: "10px 14px",
+        background: T.color.bgSubtle,
+        border: `1px solid ${T.color.border}`,
+        borderRadius: 8,
+        display: "flex", alignItems: "center", gap: 8,
+        fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
+      }}>
+        <span style={{ fontSize: 16 }}>⏳</span>
+        Claude may take a moment, especially if it's building an artifact. That's normal.
+      </div>
     </div>
   );
 }

@@ -55,7 +55,7 @@ function getBuildSteps(answers) {
         "let's use the skills you've built for something ridiculous. " +
         "You know how to set context, iterate, and critique. Time to aim those skills at yourself.",
       tip: "This is secretly useful. Getting Claude to critique your project idea stress-tests the draft-critique-revise pattern you just learned.",
-      prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for.`,
+      prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for. Don't tell me to stop building and just use it. I know. Give me something more specific.`,
       hint: "Notice how Claude's tone changed because you asked for something different. Same tool, different mode. That flexibility is the point.",
     },
     {
@@ -133,20 +133,14 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
           return (
             <div>
               {BackButton}
-              <SafetyInterstitial title="More power, more surface area." onContinue={advance}>
-                <p style={{ margin: "0 0 16px 0" }}>
-                  <strong style={{ color: T.color.text }}>Permission scoping.</strong>{" "}
-                  When you give AI access to files, tools, or services, think of it like handing keys to a
-                  valet: competent, sure, but you wouldn't leave your wallet on the seat. Give access to
-                  what the task needs. Nothing more. Review what it's about to do before it does it.
-                </p>
-                <p style={{ margin: 0 }}>
-                  <strong style={{ color: T.color.text }}>Hidden instructions are real.</strong>{" "}
-                  When AI agents process external content (a web page, a document, an email), that content
-                  can contain hidden instructions that hijack what the AI does next. This is called prompt
-                  injection. It's why blanket permissions and unreviewed actions are off the table.
-                </p>
-              </SafetyInterstitial>
+              <SafetyInterstitial
+                title="More power, more surface area."
+                onContinue={advance}
+                points={[
+                  { title: "Permission scoping.", body: "When you give AI access to files, tools, or services, think of it like handing keys to a valet: competent, sure, but you wouldn't leave your wallet on the seat. Give access to what the task needs. Nothing more. Review what it's about to do before it does it." },
+                  { title: "Hidden instructions are real.", body: "When AI agents process external content (a web page, a document, an email), that content can contain hidden instructions that hijack what the AI does next. This is called prompt injection. It's why blanket permissions and unreviewed actions are off the table." },
+                ]}
+              />
             </div>
           );
         }
@@ -155,6 +149,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
           return (
             <div style={{ padding: "40px 0" }}>
               {BackButton}
+              <div style={{ textAlign: "center" }}>
               {/* Celebration: bigger burst for Section 4 */}
               <div style={{ position: "relative", height: 80, marginBottom: 16 }}>
                 {[
@@ -208,6 +203,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
                 learned, and set you up for what comes next.
               </p>
               <ContinueButton onClick={onComplete} label="Finish strong" />
+              </div>
             </div>
           );
         }

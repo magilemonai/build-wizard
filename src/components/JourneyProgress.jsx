@@ -56,7 +56,7 @@ export default function JourneyProgress({ currentSection, questionProgress }) {
     <div style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
       background: `linear-gradient(to bottom, ${T.color.bg} 70%, ${T.color.bg}00 100%)`,
-      padding: "16px 0 32px", pointerEvents: "none",
+      padding: "14px 0 40px", pointerEvents: "none",
     }}>
       <div style={{
         maxWidth: 460, margin: "0 auto", padding: "0 20px",

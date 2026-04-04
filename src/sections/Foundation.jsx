@@ -42,7 +42,7 @@ function getBuildSteps(answers) {
       prompt: isWork
         ? `Take what you just created for "${idea}" and restructure it as:\n\n1. A one-paragraph summary at the top\n2. A table with columns for each key element\n3. A checklist of action items I can copy into my task manager\n\nKeep the same content, just organize it so I can actually use it at work.`
         : `Take the project you just built for me (about "${idea}") and repackage that exact output into three formats. Don't add new advice or content. Just restructure what you already gave me:\n\n1. A quick-reference card (the essentials from your output in a glanceable format)\n2. The key steps from your output as a simple table with columns\n3. Your top three recommendations from the output, ranked\n\nSame information you already wrote, just in more useful shapes.`,
-      hint: "Compare this output to the first one. Same information, but now it's structured in a way you can actually use. That's the difference a good prompt makes.",
+      hint: "You shaped the output into the format you needed. That's the real skill: telling AI not just what to say, but how to present it.",
     },
     {
       id: "context",
@@ -218,6 +218,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
           return (
             <div style={{ padding: "40px 0" }}>
               {BackButton}
+              <div style={{ textAlign: "center" }}>
               {/* Celebration */}
               <div style={{ position: "relative", height: 70, marginBottom: 16 }}>
                 {[
@@ -273,6 +274,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 up with system prompts and multi-step workflows.
               </p>
               <ContinueButton onClick={onComplete} label="Level up" />
+              </div>
             </div>
           );
         }

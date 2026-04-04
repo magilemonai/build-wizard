@@ -486,20 +486,14 @@ export default function Ship({ answers, onBack, onProgress }) {
           return (
             <div>
               {BackButton}
-              <SafetyInterstitial title="The long game." onContinue={advance}>
-                <p style={{ margin: "0 0 12px 0" }}>
-                  Your AI usage will grow from here. Your data footprint grows with it.
-                  The habits you built today (reviewing output, checking permissions, verifying
-                  facts) aren't just for beginners. They're the ongoing practice of using these
-                  tools well.
-                </p>
-                <p style={{ margin: 0 }}>
-                  <strong style={{ color: T.color.text }}>Monthly audit:</strong>{" "}
-                  Check what tools have access to what. Review your privacy settings.
-                  Make sure your practices match your current risk level, not the one from
-                  six months ago. Five minutes, once a month. That's the habit that scales.
-                </p>
-              </SafetyInterstitial>
+              <SafetyInterstitial
+                title="The long game."
+                onContinue={advance}
+                points={[
+                  { title: "These habits scale with you.", body: "Your AI usage will grow from here. Your data footprint grows with it. The habits you built today (reviewing output, checking permissions, verifying facts) aren't just for beginners. They're the ongoing practice of using these tools well." },
+                  { title: "Monthly audit.", body: "Check what tools have access to what. Review your privacy settings. Make sure your practices match your current risk level, not the one from six months ago. Five minutes, once a month. That's the habit that scales." },
+                ]}
+              />
             </div>
           );
         }

@@ -22,10 +22,10 @@ export default function PathCard({ data, onContinue }) {
       {/* Header */}
       <div style={{ padding: "24px 28px 20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: T.color.copper, fontFamily: T.font.body }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: T.color.copper, fontFamily: T.font.body }}>
             Your Project
           </div>
-          <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.04em", color: T.color.textLight, fontFamily: T.font.body, padding: "4px 12px", borderRadius: 20, background: T.color.bgSubtle }}>
+          <div style={{ fontSize: 13, fontWeight: 500, letterSpacing: "0.04em", color: T.color.textLight, fontFamily: T.font.body, padding: "4px 12px", borderRadius: 20, background: T.color.bgSubtle }}>
             {data.level}
           </div>
         </div>
@@ -42,7 +42,7 @@ export default function PathCard({ data, onContinue }) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 16 }}>
           {[{ label: "Duration", value: data.time }, { label: "Up next", value: "Ice Breaker" }, { label: "Setup", value: data.setup }].map((item) => (
             <div key={item.label} style={{ padding: "12px 0", borderTop: `1px solid ${T.color.border}` }}>
-              <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 4, fontFamily: T.font.body }}>{item.label}</div>
+              <div style={{ fontSize: 13, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 4, fontFamily: T.font.body }}>{item.label}</div>
               <div style={{ fontSize: 15, fontWeight: 500, fontFamily: T.font.body }}>{item.value}</div>
             </div>
           ))}
