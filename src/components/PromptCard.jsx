@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import T from "../tokens.js";
 
 /* ━━━ PromptCard ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -9,27 +9,36 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
   const [copied, setCopied] = useState(false);
   const [outcome, setOutcome] = useState(null); // null | "worked" | "snag" | "skip"
   const [copyHovered, setCopyHovered] = useState(false);
+  const copyTimer = useRef(null);
+  const outcomeTimer = useRef(null);
+
+  useEffect(() => () => {
+    clearTimeout(copyTimer.current);
+    clearTimeout(outcomeTimer.current);
+  }, []);
 
   const hasPlaceholders = /\[.+?\]/.test(prompt);
 
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(prompt);
+      setCopied(true);
+      clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setCopied(false), hasPlaceholders ? 4000 : 2000);
     } catch {
       // Clipboard API unavailable: user can select & copy manually
     }
-    setCopied(true);
-    setTimeout(() => setCopied(false), hasPlaceholders ? 4000 : 2000);
   }, [prompt, hasPlaceholders]);
 
   const handleOutcome = useCallback((result) => {
     setOutcome(result);
     // "snag" stays visible until user clicks Continue (manual advance)
     // "worked" gets a brief celebration, "skip" advances quickly
+    clearTimeout(outcomeTimer.current);
     if (result === "worked") {
-      setTimeout(() => onConfirm(result), 800);
+      outcomeTimer.current = setTimeout(() => onConfirm(result), 800);
     } else if (result === "skip") {
-      setTimeout(() => onConfirm(result), 600);
+      outcomeTimer.current = setTimeout(() => onConfirm(result), 600);
     }
     // "snag" waits for manual Continue click
   }, [onConfirm]);
@@ -48,7 +57,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
         padding: outcome === "snag" ? "24px" : "32px 24px",
         background: outcome === "worked" ? T.color.copperSoft : T.color.bgSubtle,
         border: `1.5px solid ${outcome === "worked" ? "rgba(191,123,94,0.2)" : T.color.border}`,
-        borderRadius: 14,
+        borderRadius: 16,
         textAlign: outcome === "snag" ? "left" : "center",
         animation: "fadeInNotice 0.3s ease",
       }}>
@@ -62,7 +71,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
         </div>
         {outcome === "snag" && (
           <>
-            <div style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6, marginBottom: 16 }}>
+            <div style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, marginBottom: 16 }}>
               Tell Claude what went wrong. "That didn't work because..." or "I wanted X
               but got Y" teaches it what you need. Go back to your Claude tab, iterate on the
               result, then come back here when you're ready.
@@ -75,7 +84,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
                   background: T.color.copper,
                   color: "#fff",
                   border: "none", borderRadius: 8,
-                  fontFamily: T.font.body, fontSize: 14, fontWeight: 500,
+                  fontFamily: T.font.body, fontSize: 15, fontWeight: 500,
                   cursor: "pointer",
                 }}
               >
@@ -88,11 +97,11 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
                   background: "transparent",
                   color: T.color.textMuted,
                   border: `1px solid ${T.color.border}`, borderRadius: 8,
-                  fontFamily: T.font.body, fontSize: 14,
+                  fontFamily: T.font.body, fontSize: 15,
                   cursor: "pointer",
                 }}
               >
-                Take me back
+                Show prompt again
               </button>
             </div>
           </>
@@ -105,28 +114,27 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
     <div style={{
       background: T.color.bgCard,
       border: `1.5px solid ${T.color.border}`,
-      borderRadius: 14,
+      borderRadius: 16,
       overflow: "hidden",
       marginTop: 24,
       marginBottom: 8,
     }}>
-      {/* Context line above the prompt */}
+      {/* Header + prompt */}
       {context && (
         <div style={{
-          padding: "12px 20px 0",
-          fontSize: 14,
-          color: T.color.textMuted,
-          lineHeight: 1.6,
+          padding: "14px 20px",
+          fontSize: 13, fontWeight: 500, letterSpacing: "0.03em",
+          color: T.color.textLight,
+          borderBottom: `1px solid ${T.color.border}`,
+          fontFamily: T.font.body,
         }}>
           {context}
         </div>
       )}
-
-      {/* The prompt itself */}
       <div style={{
         padding: "16px 20px",
         fontFamily: "'Courier New', Courier, monospace",
-        fontSize: 14.5,
+        fontSize: 15,
         lineHeight: 1.7,
         color: T.color.text,
         whiteSpace: "pre-wrap",
@@ -140,7 +148,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
 
       {/* Action bar: copy + outcome choices */}
       <div style={{
-        padding: "14px 20px",
+        padding: "16px 20px",
         background: T.color.bgSubtle,
       }}>
         {/* Copy button */}
@@ -155,7 +163,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
               background: copied ? T.color.sageSoft : copyHovered ? T.color.bgCard : "transparent",
               border: `1px solid ${copied ? T.color.sageBorder : copyHovered ? T.color.borderHover : T.color.border}`,
               borderRadius: 8,
-              fontFamily: T.font.body, fontSize: 14,
+              fontFamily: T.font.body, fontSize: 15,
               color: copied ? T.color.sage : T.color.textMuted,
               cursor: "pointer",
               transition: `all 0.25s ${T.ease.smooth}`,
@@ -169,7 +177,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
 
         {/* Outcome choices */}
         <div style={{
-          fontSize: 14, color: T.color.textLight,
+          fontSize: 15, color: T.color.textLight,
           marginBottom: 8, fontFamily: T.font.body,
         }}>
           {hasPlaceholders
@@ -204,7 +212,7 @@ function OutcomeButton({ children, onClick }) {
         background: hovered ? T.color.bgCard : "transparent",
         border: `1px solid ${hovered ? T.color.borderHover : T.color.border}`,
         borderRadius: 8,
-        fontFamily: T.font.body, fontSize: 14,
+        fontFamily: T.font.body, fontSize: 15,
         color: T.color.textMuted,
         cursor: "pointer",
         transition: `all 0.25s ${T.ease.smooth}`,

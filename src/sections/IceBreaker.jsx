@@ -43,9 +43,9 @@ function ExerciseScreen({ exercise, onConfirm, showLabel }) {
         marginTop: 14, padding: "10px 14px",
         background: T.color.bgSubtle,
         border: `1px solid ${T.color.border}`,
-        borderRadius: 8,
+        borderRadius: 12,
         display: "flex", alignItems: "center", gap: 8,
-        fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
+        fontSize: 15, color: T.color.textMuted, lineHeight: 1.5,
       }}>
         <span style={{ fontSize: 16 }}>⏳</span>
         Claude may take a moment, especially if it's building an artifact. That's normal.
@@ -156,6 +156,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
   const isWork = answers.fork === "work";
   const exercises = getExercises(answers);
   const steps = buildStepSequence(exercises, isWork);
+  const canSkipToFoundation = answers.experience === "regular" && answers.code_feeling === "comfortable";
 
   return (
     <SectionShell
@@ -174,6 +175,26 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                 onConfirm={advance}
                 showLabel={stepIndex === 0}
               />
+              {stepIndex === 0 && canSkipToFoundation && (
+                <button
+                  onClick={() => { onComplete(); }}
+                  style={{
+                    display: "block",
+                    marginTop: 16,
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: 15,
+                    color: T.color.textLight,
+                    textDecoration: "underline",
+                    textUnderlineOffset: 3,
+                    fontFamily: T.font.body,
+                    padding: 0,
+                  }}
+                >
+                  Already comfortable with AI? Skip to Foundation &rarr;
+                </button>
+              )}
             </div>
           );
         }

@@ -10,7 +10,7 @@ import ContinueButton from "./ContinueButton.jsx";
 export default function SafetyInterstitial({ title, points, children, onContinue }) {
   const [visible, setVisible] = useState(false);
   const [acknowledged, setAcknowledged] = useState(0);
-  useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
 
   // If points array provided, use multi-step mode
   const isMultiStep = points && points.length > 0;
@@ -27,7 +27,7 @@ export default function SafetyInterstitial({ title, points, children, onContinue
   return (
     <div style={{
       opacity: visible ? 1 : 0,
-      transform: visible ? "translateY(0)" : "translateY(16px)",
+      transform: visible ? "translateY(0)" : "translateY(12px)",
       transition: `all 0.5s ${T.ease.smooth}`,
     }}>
       <div style={{
@@ -44,7 +44,7 @@ export default function SafetyInterstitial({ title, points, children, onContinue
           While we're at it
         </div>
         <h3 style={{
-          fontFamily: T.font.display, fontSize: 24, fontWeight: 400,
+          fontFamily: T.font.display, fontSize: "clamp(22px,4vw,28px)", fontWeight: 400,
           fontStyle: "italic", lineHeight: 1.3,
           color: T.color.text, margin: "0 0 16px 0",
         }}>
@@ -60,7 +60,7 @@ export default function SafetyInterstitial({ title, points, children, onContinue
                 <div key={i} style={{
                   padding: "14px 0",
                   borderBottom: i < points.length - 1 ? `1px solid ${T.color.sageBorder}` : "none",
-                  opacity: isRevealed ? 1 : 0.3,
+                  opacity: isRevealed ? 1 : 0.45,
                   transition: `all 0.4s ${T.ease.smooth}`,
                 }}>
                   <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>

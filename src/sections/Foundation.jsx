@@ -1,5 +1,5 @@
 import T from "../tokens.js";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import SectionShell from "../components/SectionShell.jsx";
 import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
@@ -22,7 +22,6 @@ function getBuildSteps(answers) {
         "The skill is treating that first attempt as a starting point. " +
         "Give context, be specific about what you want, and then iterate. " +
         "Try it, read the output, refine, try again. That loop is the whole game.",
-      tip: "Tell Claude who it's helping, what you need, and what good output looks like. The more specific you are, the less you'll need to fix.",
       prompt: isWork
         ? `I need help with: ${idea}\n\nHere's the context:\n- This is for my work\n- I do this task regularly\n- A good result would save me real time\n\nGive me a first draft of a tool or template for this. Then I'll tell you what to change.`
         : `I want to build something around: ${idea}\n\nHere's what I care about:\n- This is a personal interest\n- I want something I'd actually use, not a generic result\n- Surprise me with how specific you can get\n\nGive me a first draft. Then I'll tell you what to change.`,
@@ -38,7 +37,6 @@ function getBuildSteps(answers) {
         "checklists, step-by-step plans, even formatted data you can paste into a spreadsheet. " +
         "You're just telling it what container to put the answer in. " +
         "Same skill as prompting. It just looks a little more like code.",
-      tip: "Ask for a specific format: a table, a numbered list, a template with blanks to fill in. Claude will match whatever structure you describe.",
       prompt: isWork
         ? `Take what you just created for "${idea}" and restructure it as:\n\n1. A one-paragraph summary at the top\n2. A table with columns for each key element\n3. A checklist of action items I can copy into my task manager\n\nKeep the same content, just organize it so I can actually use it at work.`
         : `Take the project you just built for me (about "${idea}") and repackage that exact output into three formats. Don't add new advice or content. Just restructure what you already gave me:\n\n1. A quick-reference card (the essentials from your output in a glanceable format)\n2. The key steps from your output as a simple table with columns\n3. Your top three recommendations from the output, ranked\n\nSame information you already wrote, just in more useful shapes.`,
@@ -54,7 +52,6 @@ function getBuildSteps(answers) {
         "your past experience, what worked and what didn't. " +
         "The more of that you share, the more useful the output gets. " +
         "This is where generic advice becomes personal advice.",
-      tip: "Share real details: what you've tried before, what didn't work, constraints that matter. The model can't guess what you don't tell it.",
       prompt: isWork
         ? `Let me give you more context about "${idea}":\n\n- Here's how I currently handle this: [describe your current process briefly]\n- The part that takes the most time is: [the bottleneck]\n- I've tried improving it by: [what you've tried]\n- The constraints I'm working with are: [time, tools, team size, etc.]\n\nNow revise what you built to fit my actual situation. Be specific to what I just told you.`
         : `Let me give you more context about "${idea}":\n\n- My experience level with this is: [beginner/intermediate/etc.]\n- What I've already tried: [anything relevant]\n- What I'm specifically trying to achieve: [your goal]\n- Constraints that matter: [time, budget, space, equipment, etc.]\n\nNow revise what you built with all of this in mind. Make it genuinely mine, not generic.`,
@@ -78,19 +75,22 @@ function buildStepSequence(answers) {
 /* ━━━ Catch-up prompt with copy button ━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function CatchUpPrompt({ idea }) {
   const [copied, setCopied] = useState(false);
+  const copyTimer = useRef(null);
+  useEffect(() => () => clearTimeout(copyTimer.current), []);
   const text = `I'm building a project about ${idea}. We've been working on it together. Here's the best version so far: [paste your latest output]`;
 
   const handleCopy = useCallback(async () => {
     try { await navigator.clipboard.writeText(text); } catch {}
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopied(false), 2000);
   }, [text]);
 
   return (
     <div style={{
       padding: "12px 14px",
       background: "rgba(44,41,37,0.05)",
-      borderRadius: 8,
+      borderRadius: 12,
       position: "relative",
     }}>
       <div style={{
@@ -161,10 +161,10 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 borderRadius: 12,
                 marginBottom: 16,
               }}>
-                <div style={{ fontSize: 14, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
+                <div style={{ fontSize: 15, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
                   Lost your conversation?
                 </div>
-                <p style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6, margin: "0 0 10px 0" }}>
+                <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, margin: "0 0 10px 0" }}>
                   Start a new one and paste something like this to catch Claude up:
                 </p>
                 <CatchUpPrompt idea={idea} />
@@ -228,6 +228,8 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                   { x: 90, y: -25, rot: 45, idx: 3, size: 8, color: `${T.color.sage}77` },
                   { x: -100, y: -15, rot: -55, idx: 1, size: 6, color: T.color.copper },
                   { x: 35, y: -60, rot: 10, idx: 4, size: 5, color: T.color.sage },
+                  { x: -60, y: -48, rot: -30, idx: 0, size: 7, color: `${T.color.copper}66` },
+                  { x: 75, y: -38, rot: 35, idx: 3, size: 6, color: `${T.color.sage}66` },
                 ].map((p, i) => (
                   <div key={i} style={{
                     position: "absolute", left: "50%", top: "60%",
@@ -244,10 +246,10 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 }}>
                   {[
                     { idx: 0, size: 22, color: T.color.copper },
-                    { idx: 1, size: 18, color: T.color.sage },
-                    { idx: 2, size: 24, color: T.color.copper },
-                    { idx: 3, size: 18, color: T.color.sage },
-                    { idx: 4, size: 20, color: T.color.copper },
+                    { idx: 1, size: 20, color: T.color.sage },
+                    { idx: 2, size: 28, color: T.color.copper },
+                    { idx: 3, size: 20, color: T.color.sage },
+                    { idx: 4, size: 24, color: T.color.copper },
                   ].map((s, i) => (
                     <div key={i} style={{
                       animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.25 + i * 0.08}s both, celebrateFloat 3s ease-in-out ${1.0 + i * 0.3}s infinite`,
@@ -264,11 +266,11 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
               }}>
                 You've got a working first draft.
               </h2>
-              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 480, margin: "0 0 8px" }}>
+              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 520, margin: "0 auto 8px" }}>
                 Prompted with context, shaped the output, and made it yours.
                 Those three moves work for any project in any AI tool.
               </p>
-              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 480 }}>
+              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>
                 Another good stopping point. You've got a real project draft and the
                 core prompting skills to keep improving it. The next section levels it
                 up with system prompts and multi-step workflows.

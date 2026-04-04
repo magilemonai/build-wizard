@@ -44,10 +44,10 @@ export default function InterviewQuestion({ question, subtext, type, options, va
           animation: noticeAcknowledged ? "none" : "fadeInNotice 0.4s ease",
           transition: `border 0.3s ${T.ease.smooth}`,
         }}>
-          <div style={{ fontSize: 14, fontWeight: 500, color: T.color.sage, marginBottom: 4 }}>
+          <div style={{ fontSize: 15, fontWeight: 500, color: T.color.sage, marginBottom: 4 }}>
             {notice.title}
           </div>
-          <div style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6 }}>
+          <div style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6 }}>
             {notice.body}
           </div>
           {noticeAcknowledged && (

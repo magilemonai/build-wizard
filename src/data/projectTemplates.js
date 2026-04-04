@@ -47,6 +47,10 @@ const projectTemplates = {
       name: "An email drafting assistant in your voice",
       desc: "Handles recurring message formats — status updates, follow-ups, responses — in a tone that sounds like you, not like a robot. Today we get it drafting three real messages you'd actually send.",
       learns: "System prompts for voice and tone, structured templates, iteration, and reviewing AI output before it represents you." },
+    { keywords: ["social", "media", "post", "caption", "linkedin", "instagram", "twitter", "tiktok"],
+      name: "A social media content assistant",
+      desc: "Generates posts, captions, and content ideas matched to your brand voice and platform. Today we build a system that drafts a week of posts you'd actually publish.",
+      learns: "System prompts for brand voice, structured output (content calendars), iteration on tone, and reviewing AI-drafted content before it represents you." },
     { keywords: ["report", "data", "spreadsheet", "excel", "csv", "analys", "number", "metric", "dashboard"],
       name: "A data summarizer for stakeholder updates",
       desc: "Pulls insights from your spreadsheets and formats them into clear narratives for the people who need them. Today we build one that turns raw data into a summary your team would value.",
@@ -95,28 +99,45 @@ export default projectTemplates;
 export function matchProject(input, type) {
   const lower = (input || "").toLowerCase();
   const templates = projectTemplates[type] || [];
+  // Score each template by number of keyword hits (not just first match)
+  let bestMatch = null;
+  let bestScore = 0;
   for (const t of templates) {
-    if (t.keywords.some((kw) => lower.includes(kw))) return t;
+    const score = t.keywords.filter((kw) => lower.includes(kw)).length;
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = t;
+    }
   }
+  if (bestMatch) return bestMatch;
   return projectTemplates.fallback[type] || projectTemplates.fallback.personal;
 }
 
 export function derivePathCard(answers) {
   const levelMap = { never: "Newcomer", tried: "Newcomer", occasional: "Explorer", regular: "Practitioner" };
-  const timeMap = { "30min": "~45 min", "1hr": "~60 min", norush: "~75 min" };
+  const timeMap = { "30min": "~25 min", "1hr": "~45 min", norush: "~60 min" };
   const setupMap = { ready: "Ready", have_account: "Open Claude →", need_account: "Sign up free →" };
 
   const type = answers.fork === "work" ? "work" : "personal";
   const matched = matchProject(answers.project_idea, type);
+  const isFallback = matched === projectTemplates.fallback[type] || matched === projectTemplates.fallback.personal;
+  const idea = (answers.project_idea || "").trim();
 
   const hasBuiltLong = answers.long_output === "yes";
   const learns = hasBuiltLong
     ? matched.learns.replace("Prompting with precision, running code for the first time, ", "Structured output, system prompts, multi-step workflows, ")
     : matched.learns;
 
+  // Personalize fallback description with user's actual input
+  const projectDescription = isFallback && idea
+    ? `We'll build a tool around "${idea}" — scoped to something you can finish today and keep improving tomorrow. The prompts in each section will use your exact project idea.`
+    : matched.desc;
+
   return {
-    projectName: matched.name,
-    projectDescription: matched.desc,
+    projectName: isFallback && idea
+      ? `Your ${type === "work" ? "work" : "personal"} project: ${idea.length > 40 ? idea.slice(0, idea.lastIndexOf(" ", 40)) + "..." : idea}`
+      : matched.name,
+    projectDescription,
     level: levelMap[answers.experience] || "Explorer",
     time: timeMap[answers.time] || "~1 hour",
     setup: setupMap[answers.setup] || "Ready",

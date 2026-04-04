@@ -53,20 +53,10 @@ export default function PageTransition({ children, transitionKey, type = "page",
       entering: { opacity: 0, transform: `translateX(${50 * dir}px) scale(0.97)`, transition: "none" },
       visible:  { opacity: 1, transform: "translateX(0) scale(1)", transition: `all 0.45s ${T.ease.smooth}` },
     },
-    morph: {
-      exiting:  { opacity: 0, transform: "translateY(-24px) scaleY(0.95)", transition: `all 0.28s ${T.ease.page}` },
-      entering: { opacity: 0, transform: "translateY(24px) scaleY(0.95)", transition: "none" },
-      visible:  { opacity: 1, transform: "translateY(0) scaleY(1)", transition: `all 0.45s ${T.ease.smooth}` },
-    },
     rise: {
       exiting:  { opacity: 0, transform: "scale(0.94)", transition: `all 0.28s ${T.ease.page}` },
       entering: { opacity: 0, transform: "translateY(36px) scale(0.96)", transition: "none" },
       visible:  { opacity: 1, transform: "translateY(0) scale(1)", transition: `all 0.55s ${T.ease.spring}` },
-    },
-    threshold: {
-      exiting:  { opacity: 0, transform: "scale(1.06)", transition: `all 0.5s ${T.ease.page}`, filter: "blur(4px)" },
-      entering: { opacity: 0, transform: "translateY(40px) scale(0.94)", transition: "none", filter: "blur(2px)" },
-      visible:  { opacity: 1, transform: "translateY(0) scale(1)", transition: `all 0.6s ${T.ease.smooth}`, filter: "blur(0px)" },
     },
   };
 
