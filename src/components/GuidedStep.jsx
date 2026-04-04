@@ -21,7 +21,7 @@ export default function GuidedStep({
   onConfirm,
 }) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => { setTimeout(() => setVisible(true), 60); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 60); return () => clearTimeout(t); }, []);
 
   return (
     <div style={{

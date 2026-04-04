@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import T from "../tokens.js";
 
 /* ━━━ PromptCard ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -9,6 +9,13 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
   const [copied, setCopied] = useState(false);
   const [outcome, setOutcome] = useState(null); // null | "worked" | "snag" | "skip"
   const [copyHovered, setCopyHovered] = useState(false);
+  const copyTimer = useRef(null);
+  const outcomeTimer = useRef(null);
+
+  useEffect(() => () => {
+    clearTimeout(copyTimer.current);
+    clearTimeout(outcomeTimer.current);
+  }, []);
 
   const hasPlaceholders = /\[.+?\]/.test(prompt);
 
@@ -19,17 +26,19 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
       // Clipboard API unavailable: user can select & copy manually
     }
     setCopied(true);
-    setTimeout(() => setCopied(false), hasPlaceholders ? 4000 : 2000);
+    clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopied(false), hasPlaceholders ? 4000 : 2000);
   }, [prompt, hasPlaceholders]);
 
   const handleOutcome = useCallback((result) => {
     setOutcome(result);
     // "snag" stays visible until user clicks Continue (manual advance)
     // "worked" gets a brief celebration, "skip" advances quickly
+    clearTimeout(outcomeTimer.current);
     if (result === "worked") {
-      setTimeout(() => onConfirm(result), 800);
+      outcomeTimer.current = setTimeout(() => onConfirm(result), 800);
     } else if (result === "skip") {
-      setTimeout(() => onConfirm(result), 600);
+      outcomeTimer.current = setTimeout(() => onConfirm(result), 600);
     }
     // "snag" waits for manual Continue click
   }, [onConfirm]);

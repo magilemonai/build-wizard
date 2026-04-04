@@ -49,7 +49,7 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
 /* ━━━ Save & Share Step ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function SaveShareStep({ answers, onContinue, BackButton }) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 100); return () => clearTimeout(t); }, []);
 
   return (
     <div style={{
@@ -123,7 +123,7 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
 /* ━━━ Reflection Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function ReflectionScreen({ answers, onContinue, BackButton }) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 100); return () => clearTimeout(t); }, []);
 
   const level = answers.experience || "tried";
   const isWork = answers.fork === "work";
@@ -199,7 +199,7 @@ function ReflectionScreen({ answers, onContinue, BackButton }) {
 /* ━━━ Next Steps + Closing Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function NextStepsScreen({ answers, BackButton }) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 100); return () => clearTimeout(t); }, []);
 
   const isWork = answers.fork === "work";
   const isComfortable = answers.code_feeling === "comfortable" || answers.code_feeling === "indifferent";

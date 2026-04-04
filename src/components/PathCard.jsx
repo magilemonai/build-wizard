@@ -5,7 +5,7 @@ import ContinueButton from "./ContinueButton.jsx";
 /* ━━━ Path Card (project plan) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function PathCard({ data, onContinue }) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => { setTimeout(() => setVisible(true), 200); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 200); return () => clearTimeout(t); }, []);
 
   return (
     <div style={{

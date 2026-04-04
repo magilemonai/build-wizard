@@ -1,5 +1,5 @@
 import T from "../tokens.js";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import SectionShell from "../components/SectionShell.jsx";
 import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
@@ -75,12 +75,15 @@ function buildStepSequence(answers) {
 /* ━━━ Catch-up prompt with copy button ━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function CatchUpPrompt({ idea }) {
   const [copied, setCopied] = useState(false);
+  const copyTimer = useRef(null);
+  useEffect(() => () => clearTimeout(copyTimer.current), []);
   const text = `I'm building a project about ${idea}. We've been working on it together. Here's the best version so far: [paste your latest output]`;
 
   const handleCopy = useCallback(async () => {
     try { await navigator.clipboard.writeText(text); } catch {}
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopied(false), 2000);
   }, [text]);
 
   return (

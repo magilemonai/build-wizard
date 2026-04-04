@@ -74,7 +74,7 @@ export default function App() {
 
   const steps = useMemo(
     () => getInterviewSteps(answers),
-    [answers.fork, answers.experience]
+    [answers]
   );
   const currentStep = steps[stepIndex] || null;
   const totalSteps = steps.length;

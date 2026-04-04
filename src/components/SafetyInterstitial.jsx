@@ -10,7 +10,7 @@ import ContinueButton from "./ContinueButton.jsx";
 export default function SafetyInterstitial({ title, points, children, onContinue }) {
   const [visible, setVisible] = useState(false);
   const [acknowledged, setAcknowledged] = useState(0);
-  useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 100); return () => clearTimeout(t); }, []);
 
   // If points array provided, use multi-step mode
   const isMultiStep = points && points.length > 0;
