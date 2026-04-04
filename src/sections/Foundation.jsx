@@ -264,11 +264,11 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
               }}>
                 You've got a working first draft.
               </h2>
-              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 480, margin: "0 0 8px" }}>
+              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 480, margin: "0 auto 8px" }}>
                 Prompted with context, shaped the output, and made it yours.
                 Those three moves work for any project in any AI tool.
               </p>
-              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 480 }}>
+              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 480, margin: "0 auto" }}>
                 Another good stopping point. You've got a real project draft and the
                 core prompting skills to keep improving it. The next section levels it
                 up with system prompts and multi-step workflows.

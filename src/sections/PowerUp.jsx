@@ -24,9 +24,9 @@ function getBuildSteps(answers) {
         "Write it once, and every response gets better without you repeating yourself.",
       tip: "Describe Claude's role, what it knows about your project, and any rules it should follow. Be specific about tone and format preferences.",
       prompt: isWork
-        ? `I want you to act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nFrom now on, respond as this assistant. Let's start: give me a quick summary of how you'd approach this role.`
-        : `I want you to act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nFrom now on, respond as this guide. Start by telling me the one thing I should focus on this week.`,
-      hint: "This is the foundation for everything else. A good system prompt means less correcting and more building.",
+        ? `I want you to act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nNow let's test it. Here's a real scenario: I just finished a meeting about ${idea} and I need to send a follow-up email summarizing what was discussed and the next steps. Draft that email for me based on what you know about my project so far.`
+        : `I want you to act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nNow let's test it. I have 30 free minutes right now and want to make progress on ${idea}. What should I do with that time? Be specific to what we've built so far, not generic advice.`,
+      hint: "Notice how the system prompt changed Claude's tone and approach. That context carries forward into every response in this conversation.",
     },
     {
       id: "workflows",
@@ -193,12 +193,12 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
               }}>
                 Your project just leveled up.
               </h2>
-              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 480, margin: "0 0 8px" }}>
+              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 480, margin: "0 auto 8px" }}>
                 System prompts, multi-step workflows, and a sense of what's possible
                 beyond conversation. Those are the tools that separate casual use from
                 real capability.
               </p>
-              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 480 }}>
+              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 480, margin: "0 auto" }}>
                 One section left. We'll finish the project, reflect on what you
                 learned, and set you up for what comes next.
               </p>
