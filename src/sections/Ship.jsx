@@ -292,17 +292,27 @@ function NextStepsScreen({ answers, BackButton }) {
   );
 }
 
-/* ━━━ Finale: scroll-triggered shapes + closing ━━━━━━━━━━━━━━━━ */
+/* ━━━ Finale: the big celebration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function FinaleScreen() {
   const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const [stage, setStage] = useState(0);
+  // 0 = waiting for scroll, 1 = scatter, 2 = shapes land, 3 = text appears, 4 = full
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold: 0.3 }
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          observer.disconnect();
+          // Staggered reveal: each stage triggers after the previous settles
+          setStage(1); // scatter particles fly
+          setTimeout(() => setStage(2), 600);  // shapes start bouncing in
+          setTimeout(() => setStage(3), 2200); // text fades in after shapes settle
+          setTimeout(() => setStage(4), 3200); // buttons appear
+        }
+      },
+      { threshold: 0.6 } // Wait until well within view
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -310,79 +320,87 @@ function FinaleScreen() {
 
   return (
     <div ref={ref} style={{
-      textAlign: "center", marginTop: 48, paddingTop: 36,
+      textAlign: "center", marginTop: 56, paddingTop: 48,
       borderTop: `1px solid ${T.color.border}`,
+      minHeight: 400,
     }}>
-      {/* The big finale: scatter + bounce + float */}
-      <div style={{ position: "relative", height: 100, marginBottom: 24 }}>
-        {/* Scatter particles */}
-        {visible && [
-          { x: -130, y: -50, rot: -55, idx: 0, size: 12, color: T.color.copper },
-          { x: 110, y: -60, rot: 40, idx: 1, size: 10, color: T.color.sage },
-          { x: -70, y: -75, rot: -20, idx: 4, size: 8, color: `${T.color.copper}88` },
-          { x: 140, y: -35, rot: 60, idx: 2, size: 11, color: T.color.sage },
-          { x: -150, y: -25, rot: -70, idx: 3, size: 12, color: `${T.color.sage}88` },
-          { x: 60, y: -80, rot: 15, idx: 0, size: 7, color: T.color.copper },
-          { x: -40, y: -70, rot: -35, idx: 4, size: 9, color: `${T.color.sage}66` },
-          { x: 120, y: -50, rot: 50, idx: 1, size: 8, color: `${T.color.copper}66` },
-          { x: -100, y: -60, rot: -45, idx: 2, size: 6, color: T.color.copper },
-          { x: 30, y: -72, rot: 8, idx: 3, size: 7, color: T.color.sage },
-          { x: -20, y: -82, rot: -10, idx: 0, size: 5, color: `${T.color.copper}55` },
-          { x: 90, y: -68, rot: 35, idx: 4, size: 6, color: `${T.color.sage}55` },
+      {/* Scatter particles: fly outward slowly */}
+      <div style={{ position: "relative", height: 140, marginBottom: 32 }}>
+        {stage >= 1 && [
+          { x: -160, y: -70, rot: -60, idx: 0, size: 14, color: T.color.copper },
+          { x: 140, y: -85, rot: 45, idx: 1, size: 12, color: T.color.sage },
+          { x: -90, y: -100, rot: -25, idx: 4, size: 10, color: `${T.color.copper}88` },
+          { x: 170, y: -45, rot: 65, idx: 2, size: 13, color: T.color.sage },
+          { x: -180, y: -35, rot: -75, idx: 3, size: 14, color: `${T.color.sage}88` },
+          { x: 75, y: -110, rot: 18, idx: 0, size: 9, color: T.color.copper },
+          { x: -50, y: -95, rot: -38, idx: 4, size: 11, color: `${T.color.sage}66` },
+          { x: 130, y: -70, rot: 55, idx: 1, size: 10, color: `${T.color.copper}66` },
+          { x: -130, y: -80, rot: -50, idx: 2, size: 8, color: T.color.copper },
+          { x: 40, y: -100, rot: 10, idx: 3, size: 9, color: T.color.sage },
+          { x: -25, y: -115, rot: -12, idx: 0, size: 7, color: `${T.color.copper}55` },
+          { x: 100, y: -90, rot: 38, idx: 4, size: 8, color: `${T.color.sage}55` },
+          { x: -200, y: -55, rot: -80, idx: 1, size: 10, color: `${T.color.copper}44` },
+          { x: 190, y: -60, rot: 70, idx: 3, size: 9, color: `${T.color.sage}44` },
+          { x: -60, y: -120, rot: -15, idx: 2, size: 6, color: T.color.copper },
+          { x: 55, y: -105, rot: 22, idx: 0, size: 7, color: T.color.sage },
         ].map((p, i) => (
           <div key={`s-${i}`} style={{
-            position: "absolute", left: "50%", top: "65%",
+            position: "absolute", left: "50%", top: "70%",
             "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
             "--scatter-rot": `${p.rot}deg`,
-            animation: `celebrateScatter 1s ${T.ease.smooth} ${i * 0.03}s both`,
+            animation: `celebrateScatter 1.4s ${T.ease.smooth} ${i * 0.05}s both`,
           }}>
             <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
           </div>
         ))}
-        {/* Main shapes: bounce in and float */}
+
+        {/* Main shapes: big, slow, weighty bounce */}
         <div style={{
           position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-          display: "flex", gap: 16, alignItems: "flex-end",
+          display: "flex", gap: 20, alignItems: "flex-end",
         }}>
           {sectionShapes.map((shapeIdx, i) => (
             <div key={shapeIdx} style={{
-              opacity: visible ? 1 : 0,
-              animation: visible
-                ? `celebrateBounce 0.8s ${T.ease.spring} ${0.3 + i * 0.1}s both, celebrateFloat 3s ease-in-out ${1.5 + i * 0.25}s infinite`
+              opacity: stage >= 2 ? 1 : 0,
+              animation: stage >= 2
+                ? `celebrateBounce 1.1s ${T.ease.spring} ${i * 0.15}s both, celebrateFloat 4s ease-in-out ${2.5 + i * 0.4}s infinite`
                 : "none",
             }}>
               <OrganicShape
                 shapeIndex={shapeIdx}
-                size={i === 2 ? 36 : i === 4 ? 32 : 26}
+                size={i === 2 ? 48 : i === 0 || i === 4 ? 40 : 36}
                 color={i % 2 === 0 ? T.color.copper : T.color.sage}
               />
             </div>
           ))}
         </div>
       </div>
+
+      {/* Text: fades in after shapes have landed */}
       <h2 style={{
-        fontFamily: T.font.display, fontSize: 30,
-        fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
-        color: T.color.text, margin: "0 0 12px 0",
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(16px)",
-        transition: `all 0.6s ${T.ease.smooth} 0.7s`,
+        fontFamily: T.font.display, fontSize: "clamp(30px,6vw,40px)",
+        fontWeight: 400, fontStyle: "italic", lineHeight: 1.2,
+        color: T.color.text, margin: "0 0 14px 0",
+        opacity: stage >= 3 ? 1 : 0,
+        transform: stage >= 3 ? "translateY(0) scale(1)" : "translateY(20px) scale(0.97)",
+        transition: `all 0.8s ${T.ease.smooth}`,
       }}>
         You built something real.
       </h2>
       <p style={{
-        fontSize: 16, color: T.color.textMuted,
-        lineHeight: 1.65, maxWidth: 400, margin: "0 auto 32px",
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(12px)",
-        transition: `all 0.5s ${T.ease.smooth} 0.9s`,
+        fontSize: 17, color: T.color.textMuted,
+        lineHeight: 1.65, maxWidth: 420, margin: "0 auto 36px",
+        opacity: stage >= 3 ? 1 : 0,
+        transform: stage >= 3 ? "translateY(0)" : "translateY(14px)",
+        transition: `all 0.7s ${T.ease.smooth} 0.3s`,
       }}>
         That was the whole promise. Everything from here is refinement and ambition.
       </p>
 
       <div style={{
-        opacity: visible ? 1 : 0,
-        transition: `opacity 0.5s ${T.ease.smooth} 1.1s`,
+        opacity: stage >= 4 ? 1 : 0,
+        transform: stage >= 4 ? "translateY(0)" : "translateY(10px)",
+        transition: `all 0.6s ${T.ease.smooth}`,
       }}>
         <a
           href="https://claude.ai"
