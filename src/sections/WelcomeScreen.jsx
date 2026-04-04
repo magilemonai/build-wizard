@@ -47,7 +47,7 @@ export default function WelcomeScreen({ onBegin }) {
           {/* Bottom row: hexagon, circle — centered under the top 3 */}
           <div style={{
             position: "absolute",
-            left: "calc(50% - 46px)", top: "calc(50% + 22px)",
+            left: "calc(50% - 30px)", top: "calc(50% + 22px)",
             opacity: 0,
             animation: "fallBounce 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.5s both",
           }}>
@@ -55,7 +55,7 @@ export default function WelcomeScreen({ onBegin }) {
           </div>
           <div style={{
             position: "absolute",
-            left: "calc(50% + 10px)", top: "calc(50% + 24px)",
+            left: "calc(50% + 12px)", top: "calc(50% + 24px)",
             opacity: 0,
             animation: "fallBounceRight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.9s both",
           }}>
