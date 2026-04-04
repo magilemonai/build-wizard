@@ -90,7 +90,7 @@ function CatchUpPrompt({ idea }) {
     <div style={{
       padding: "12px 14px",
       background: "rgba(44,41,37,0.05)",
-      borderRadius: 8,
+      borderRadius: 12,
       position: "relative",
     }}>
       <div style={{
@@ -161,10 +161,10 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 borderRadius: 12,
                 marginBottom: 16,
               }}>
-                <div style={{ fontSize: 14, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
+                <div style={{ fontSize: 15, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
                   Lost your conversation?
                 </div>
-                <p style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6, margin: "0 0 10px 0" }}>
+                <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, margin: "0 0 10px 0" }}>
                   Start a new one and paste something like this to catch Claude up:
                 </p>
                 <CatchUpPrompt idea={idea} />

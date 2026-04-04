@@ -21,7 +21,7 @@ export default function GuidedStep({
   onConfirm,
 }) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setVisible(true), 60); return () => clearTimeout(t); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
 
   return (
     <div style={{
@@ -72,9 +72,9 @@ export default function GuidedStep({
           marginTop: 14, padding: "10px 14px",
           background: T.color.bgSubtle,
           border: `1px solid ${T.color.border}`,
-          borderRadius: 8,
+          borderRadius: 12,
           display: "flex", alignItems: "center", gap: 8,
-          fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
+          fontSize: 15, color: T.color.textMuted, lineHeight: 1.5,
         }}>
           <span style={{ fontSize: 16 }}>⏳</span>
           Claude may take a moment on this one. That's normal for longer responses.
@@ -83,7 +83,7 @@ export default function GuidedStep({
 
       {hint && (
         <p style={{
-          fontSize: 14, color: T.color.textMuted,
+          fontSize: 15, color: T.color.textMuted,
           marginTop: 8, lineHeight: 1.6,
           fontStyle: "italic",
         }}>

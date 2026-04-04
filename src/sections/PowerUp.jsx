@@ -111,9 +111,9 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
               {BackButton}
               {stepIndex === 0 && <SectionLabel>Section 4 · Power Up</SectionLabel>}
               {stepIndex === 0 && (
-                <details style={{ marginBottom: 16, fontSize: 14, color: T.color.textMuted }}>
+                <details style={{ marginBottom: 16, fontSize: 15, color: T.color.textMuted }}>
                   <summary style={{ cursor: "pointer", color: T.color.textLight }}>Lost your Claude conversation?</summary>
-                  <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 8, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
+                  <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
                     I'm building a project about {answers.project_idea || "my project"}. We've been working on it together through several sections. Here's the best version so far: [paste your latest output]
                   </div>
                 </details>
@@ -165,6 +165,8 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
                   { x: 95, y: -40, rot: 45, idx: 1, size: 8, color: `${T.color.copper}66` },
                   { x: -75, y: -50, rot: -40, idx: 2, size: 5, color: T.color.copper },
                   { x: 25, y: -62, rot: 12, idx: 3, size: 6, color: T.color.sage },
+                  { x: -40, y: -72, rot: -18, idx: 1, size: 7, color: `${T.color.copper}77` },
+                  { x: 115, y: -52, rot: 42, idx: 4, size: 6, color: `${T.color.sage}77` },
                 ].map((p, i) => (
                   <div key={i} style={{
                     position: "absolute", left: "50%", top: "60%",

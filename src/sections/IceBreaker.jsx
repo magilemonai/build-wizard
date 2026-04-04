@@ -43,9 +43,9 @@ function ExerciseScreen({ exercise, onConfirm, showLabel }) {
         marginTop: 14, padding: "10px 14px",
         background: T.color.bgSubtle,
         border: `1px solid ${T.color.border}`,
-        borderRadius: 8,
+        borderRadius: 12,
         display: "flex", alignItems: "center", gap: 8,
-        fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
+        fontSize: 15, color: T.color.textMuted, lineHeight: 1.5,
       }}>
         <span style={{ fontSize: 16 }}>⏳</span>
         Claude may take a moment, especially if it's building an artifact. That's normal.
@@ -184,7 +184,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    fontSize: 14,
+                    fontSize: 15,
                     color: T.color.textLight,
                     textDecoration: "underline",
                     textUnderlineOffset: 3,

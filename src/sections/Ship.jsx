@@ -13,9 +13,9 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
   return (
     <div>
       {BackButton}
-      <details style={{ marginBottom: 16, fontSize: 14, color: T.color.textMuted }}>
+      <details style={{ marginBottom: 16, fontSize: 15, color: T.color.textMuted }}>
         <summary style={{ cursor: "pointer", color: T.color.textLight }}>Lost your Claude conversation?</summary>
-        <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 8, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
+        <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
           I'm building a project about {idea}. We've been working on it together through several sections. Here's the best version so far: [paste your latest output]
         </div>
       </details>
@@ -42,7 +42,7 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
         onConfirm={onConfirm}
       />
       <p style={{
-        fontSize: 14, color: T.color.textMuted,
+        fontSize: 15, color: T.color.textMuted,
         marginTop: 14, lineHeight: 1.6,
         fontStyle: "italic",
       }}>
@@ -55,7 +55,7 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
 /* ━━━ Save & Share Step ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function SaveShareStep({ answers, onContinue, BackButton }) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setVisible(true), 100); return () => clearTimeout(t); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
 
   return (
     <div style={{
@@ -82,7 +82,7 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
       <div style={{
         background: T.color.bgCard,
         border: `1.5px solid ${T.color.border}`,
-        borderRadius: 14,
+        borderRadius: 16,
         padding: "20px 24px",
         marginBottom: 16,
       }}>
@@ -96,7 +96,7 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
         ].map((step, i) => (
           <div key={i} style={{
             display: "flex", gap: 10, padding: "6px 0",
-            fontSize: 14, color: T.color.textMuted, lineHeight: 1.55,
+            fontSize: 15, color: T.color.textMuted, lineHeight: 1.55,
           }}>
             <span style={{ color: T.color.copper, fontWeight: 500, flexShrink: 0 }}>{i + 1}.</span>
             {step}
@@ -111,10 +111,10 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
         padding: "16px 20px",
         marginBottom: 24,
       }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
+        <div style={{ fontSize: 15, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
           Want to share what you built?
         </div>
-        <p style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
+        <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
           If Claude created an artifact, click the copy icon on it, then select
           "Publish" from the dropdown. That gives you a public URL you can send
           to anyone. You built something worth showing off.
@@ -129,7 +129,7 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
 /* ━━━ Reflection Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function ReflectionScreen({ answers, onContinue, BackButton }) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setVisible(true), 100); return () => clearTimeout(t); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
 
   const level = answers.experience || "tried";
   const isWork = answers.fork === "work";
@@ -168,7 +168,7 @@ function ReflectionScreen({ answers, onContinue, BackButton }) {
       <div style={{
         background: T.color.bgCard,
         border: `1.5px solid ${T.color.border}`,
-        borderRadius: 14,
+        borderRadius: 16,
         padding: "20px 24px",
         marginBottom: 24,
       }}>
@@ -179,9 +179,9 @@ function ReflectionScreen({ answers, onContinue, BackButton }) {
             borderBottom: i < skills.length - 1 ? `1px solid ${T.color.border}` : "none",
           }}>
             <span style={{
-              color: T.color.sage, fontSize: 14, lineHeight: "22px", flexShrink: 0,
+              color: T.color.sage, fontSize: 15, lineHeight: "22px", flexShrink: 0,
             }}>✓</span>
-            <span style={{ fontSize: 14, color: T.color.text, lineHeight: 1.55 }}>
+            <span style={{ fontSize: 15, color: T.color.text, lineHeight: 1.55 }}>
               {skill}
             </span>
           </div>
@@ -205,7 +205,7 @@ function ReflectionScreen({ answers, onContinue, BackButton }) {
 /* ━━━ Next Steps + Closing Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function NextStepsScreen({ answers, BackButton }) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setVisible(true), 100); return () => clearTimeout(t); }, []);
+  useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
 
   const isWork = answers.fork === "work";
   const isComfortable = answers.code_feeling === "comfortable" || answers.code_feeling === "indifferent";
@@ -286,20 +286,20 @@ function NextStepsScreen({ answers, BackButton }) {
           <div style={{ fontSize: 15, fontWeight: 500, color: T.color.text, marginBottom: 4, fontFamily: T.font.body }}>
             {step.title}
           </div>
-          <div style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.6 }}>
+          <div style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6 }}>
             {step.body}
           </div>
         </div>
       ))}
 
       {/* ── Visual climax ── */}
-      <FinaleScreen />
+      <FinaleScreen answers={answers} />
     </div>
   );
 }
 
 /* ━━━ Finale: the big celebration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function FinaleScreen() {
+function FinaleScreen({ answers }) {
   const ref = useRef(null);
   const timers = useRef([]);
   const [stage, setStage] = useState(0);
@@ -415,10 +415,34 @@ function FinaleScreen() {
         That was the whole promise. Everything from here is refinement and ambition.
       </p>
 
+      {/* Summary card */}
+      {stage >= 4 && answers?.project_idea && (
+        <div style={{
+          background: T.color.bgCard,
+          border: `1.5px solid ${T.color.border}`,
+          borderRadius: 16,
+          padding: "20px 24px",
+          margin: "0 auto 28px",
+          maxWidth: 440,
+          textAlign: "left",
+          animation: "fadeInNotice 0.5s ease",
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.copper, marginBottom: 8 }}>
+            Your project
+          </div>
+          <div style={{ fontSize: 16, color: T.color.text, lineHeight: 1.5, marginBottom: 12 }}>
+            {answers.project_idea}
+          </div>
+          <div style={{ fontSize: 13, color: T.color.textLight }}>
+            Your project lives in your Claude conversation. Come back here anytime to refresh your skills.
+          </div>
+        </div>
+      )}
+
       <div style={{
         opacity: stage >= 4 ? 1 : 0,
         transform: stage >= 4 ? "translateY(0)" : "translateY(10px)",
-        transition: `all 0.6s ${T.ease.smooth}`,
+        transition: `all 0.6s ${T.ease.smooth} 0.2s`,
       }}>
         <a
           href="https://claude.ai"
