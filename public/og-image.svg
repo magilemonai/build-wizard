@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <clipPath id="triangle">
+      <polygon points="50,4 96,88 6,84" transform="scale(1)"/>
+    </clipPath>
+    <clipPath id="square">
+      <polygon points="8,6 94,8 92,94 6,92" transform="scale(1)"/>
+    </clipPath>
+    <clipPath id="pentagon">
+      <polygon points="50,3 97,38 80,95 20,95 3,38" transform="scale(1)"/>
+    </clipPath>
+    <clipPath id="hexagon">
+      <polygon points="50,2 95,26 95,74 50,98 5,74 5,26" transform="scale(1)"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#F7F5F0"/>
+
+  <!-- Subtle grain texture overlay -->
+  <filter id="grain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+    <feBlend in="SourceGraphic" mode="multiply"/>
+  </filter>
+  <rect width="1200" height="630" filter="url(#grain)" opacity="0.03"/>
+
+  <!-- Shapes cluster - top area, dynamic arrangement -->
+
+  <!-- Triangle (copper) - large, tilted -->
+  <g transform="translate(420, 120) rotate(-8)">
+    <polygon points="0,-52 45,38 -45,38" fill="#BF7B5E" transform="translate(0,0)"/>
+  </g>
+
+  <!-- Square (sage) - medium -->
+  <g transform="translate(530, 105) rotate(6)">
+    <rect x="-32" y="-32" width="64" height="64" rx="4" fill="#7A8B6A"/>
+  </g>
+
+  <!-- Pentagon (copper, lighter) - small -->
+  <g transform="translate(640, 135) rotate(-3)">
+    <polygon points="0,-30 28.5,-9.3 17.6,24.3 -17.6,24.3 -28.5,-9.3" fill="#BF7B5E" opacity="0.7"/>
+  </g>
+
+  <!-- Hexagon (sage, lighter) - medium -->
+  <g transform="translate(720, 100) rotate(4)">
+    <polygon points="0,-28 24.2,-14 24.2,14 0,28 -24.2,14 -24.2,-14" fill="#7A8B6A" opacity="0.6"/>
+  </g>
+
+  <!-- Circle (copper, faded) - small accent -->
+  <g transform="translate(480, 175)">
+    <circle cx="0" cy="0" r="18" fill="#BF7B5E" opacity="0.4"/>
+  </g>
+
+  <!-- Extra scatter shapes for visual richness -->
+  <g transform="translate(360, 170) rotate(15)">
+    <polygon points="0,-12 10.4,6 -10.4,6" fill="#7A8B6A" opacity="0.3"/>
+  </g>
+  <g transform="translate(760, 160) rotate(-10)">
+    <circle cx="0" cy="0" r="10" fill="#BF7B5E" opacity="0.25"/>
+  </g>
+  <g transform="translate(680, 80) rotate(8)">
+    <rect x="-8" y="-8" width="16" height="16" rx="2" fill="#7A8B6A" opacity="0.25"/>
+  </g>
+
+  <!-- Title text -->
+  <text x="600" y="310" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="72" font-weight="400" font-style="italic" fill="#2C2925">
+    Build something
+  </text>
+  <text x="600" y="395" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="72" font-weight="400" font-style="italic">
+    <tspan fill="#BF7B5E">real</tspan>
+    <tspan fill="#2C2925"> with AI</tspan>
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="460" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="22" fill="#6B665F">
+    A guided experience. One finished project. No experience required.
+  </text>
+
+  <!-- Bottom accent line -->
+  <line x1="480" y1="520" x2="720" y2="520" stroke="url(#gradient)" stroke-width="3" stroke-linecap="round"/>
+  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" style="stop-color:#BF7B5E"/>
+    <stop offset="100%" style="stop-color:#7A8B6A"/>
+  </linearGradient>
+
+  <!-- Domain -->
+  <text x="600" y="560" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" font-weight="500" letter-spacing="0.05em" fill="#9E9890">
+    build.codywymore.com
+  </text>
+</svg>
