@@ -79,22 +79,30 @@ export default function WelcomeScreen({ onBegin }) {
           </div>
         ) : null}
 
-        {/* Button — visible immediately */}
-        <ContinueButton onClick={onBegin} label="Let's go" />
-
-        {/* Desktop: Claude tab reminder below the button */}
+        {/* Desktop: Open Claude link, then start button below it */}
         {!mobile && (
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            padding: "8px 16px", borderRadius: 20,
-            border: `1px solid ${T.color.border}`,
-            background: T.color.bgSubtle,
-            marginTop: 28,
-            fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
-          }}>
-            Open <strong style={{ color: T.color.copper }}>claude.ai</strong> in another tab before you start
-          </div>
+          <a
+            href="https://claude.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              padding: "10px 20px", borderRadius: 20,
+              border: `1px solid ${T.color.border}`,
+              background: T.color.bgSubtle,
+              marginBottom: 24,
+              fontSize: 15, color: T.color.textMuted, lineHeight: 1.5,
+              textDecoration: "none",
+            }}
+          >
+            Open <strong style={{ color: T.color.copper }}>claude.ai</strong> in another tab before you start ↗
+          </a>
         )}
+
+        {/* Button — below the Claude link */}
+        <div>
+          <ContinueButton onClick={onBegin} label="Let's go" />
+        </div>
 
         {/* Journey pills — fade in after shapes have landed */}
         <div style={{ marginTop: 56, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 8 }}>
