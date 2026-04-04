@@ -4,6 +4,7 @@ import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
+import OrganicShape from "../components/OrganicShape.jsx";
 
 /* ━━━ Build steps: system prompts, workflows, tools, agents ━━━━ */
 function getBuildSteps(answers) {
@@ -42,18 +43,19 @@ function getBuildSteps(answers) {
         ? `Let's improve what we built for "${idea}" using a multi-step workflow.\n\nStep 1: Look at the output you've created so far and identify the 3 biggest weaknesses. Be honest and specific.\n\nStep 2: For each weakness, explain what a better version would look like.\n\nStep 3: Now rewrite the whole thing, incorporating all three improvements.\n\nGo through all three steps now.`
         : `Let's level up what we built for "${idea}".\n\nStep 1: Critique your own work. What are the 3 biggest gaps or things that feel generic?\n\nStep 2: For each gap, explain what would make it genuinely useful versus just okay.\n\nStep 3: Rewrite the whole thing with those improvements. Make it something I'd actually come back to.\n\nDo all three steps now.`,
       hint: "Notice the quality jump between the single-pass version and the one that went through draft-critique-revise. That's the workflow pattern.",
+      showThinkingNote: true,
     },
     // Playful interlude before the tools step
     {
       id: "roast",
-      skillLabel: "Bonus round",
+      skillLabel: "Quick break",
       title: "Let's have some fun before the last one.",
       explanation:
         "You've been serious for a while. Before we cover tools and capabilities, " +
         "let's use the skills you've built for something ridiculous. " +
         "You know how to set context, iterate, and critique. Time to aim those skills at yourself.",
       tip: "This is secretly useful. Getting Claude to critique your project idea stress-tests the draft-critique-revise pattern you just learned.",
-      prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for.`,
+      prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for. Don't tell me to stop building and just use it. I know. Give me something more specific.`,
       hint: "Notice how Claude's tone changed because you asked for something different. Same tool, different mode. That flexibility is the point.",
     },
     {
@@ -63,12 +65,12 @@ function getBuildSteps(answers) {
         ? "Same thing you've been doing, but on your computer."
         : "Claude can do more than write text.",
       explanation: isComfortable
-        ? "Claude Code is Claude running in your terminal. It can see your files, " +
-          "write code, run commands, and build things directly on your machine. " +
-          "It's the same prompting you've been practicing, just with more leverage. " +
+        ? "That roast probably surfaced some real weaknesses. Now imagine a tool that could act on them: " +
+          "edit files, run commands, build things directly on your machine. " +
+          "Claude Code is Claude in your terminal. Same prompting you've been practicing, more leverage. " +
           "Think of it as going from giving instructions on paper to having someone at the keyboard."
-        : "You've been working with Claude in a conversation. " +
-          "But AI tools can also read files, search the web, run code, and connect to other services. " +
+        : "That roast probably surfaced some real weaknesses. Here's the good news: AI tools can do more " +
+          "than point them out. They can read files, search the web, run code, and connect to other services. " +
           "When AI can take actions, not just produce text, that's the jump from assistant to agent. " +
           "You don't need to use all of this today. But knowing it exists changes what you think is possible.",
       tip: isComfortable
@@ -131,45 +133,77 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
           return (
             <div>
               {BackButton}
-              <SafetyInterstitial title="More power, more surface area." onContinue={advance}>
-                <p style={{ margin: "0 0 16px 0" }}>
-                  <strong style={{ color: T.color.text }}>Permission scoping.</strong>{" "}
-                  When you give AI access to files, tools, or services, think of it like handing keys to a
-                  valet: competent, sure, but you wouldn't leave your wallet on the seat. Give access to
-                  what the task needs. Nothing more. Review what it's about to do before it does it.
-                </p>
-                <p style={{ margin: 0 }}>
-                  <strong style={{ color: T.color.text }}>Hidden instructions are real.</strong>{" "}
-                  When AI agents process external content (a web page, a document, an email), that content
-                  can contain hidden instructions that hijack what the AI does next. This is called prompt
-                  injection. It's why blanket permissions and unreviewed actions are off the table.
-                </p>
-              </SafetyInterstitial>
+              <SafetyInterstitial
+                title="More power, more surface area."
+                onContinue={advance}
+                points={[
+                  { title: "Permission scoping.", body: "When you give AI access to files, tools, or services, think of it like handing keys to a valet: competent, sure, but you wouldn't leave your wallet on the seat. Give access to what the task needs. Nothing more. Review what it's about to do before it does it." },
+                  { title: "Hidden instructions are real.", body: "When AI agents process external content (a web page, a document, an email), that content can contain hidden instructions that hijack what the AI does next. This is called prompt injection. It's why blanket permissions and unreviewed actions are off the table." },
+                ]}
+              />
             </div>
           );
         }
 
         if (step.type === "anchor") {
           return (
-            <div style={{ textAlign: "center", padding: "40px 0" }}>
+            <div style={{ padding: "40px 0" }}>
               {BackButton}
+              <div style={{ textAlign: "center" }}>
+              {/* Celebration: bigger burst for Section 4 */}
+              <div style={{ position: "relative", height: 80, marginBottom: 16 }}>
+                {[
+                  { x: -100, y: -45, rot: -50, idx: 0, size: 10, color: T.color.copper },
+                  { x: 85, y: -55, rot: 35, idx: 1, size: 9, color: T.color.sage },
+                  { x: -60, y: -65, rot: -25, idx: 4, size: 7, color: `${T.color.copper}88` },
+                  { x: 110, y: -30, rot: 55, idx: 2, size: 8, color: T.color.sage },
+                  { x: -120, y: -20, rot: -65, idx: 3, size: 10, color: `${T.color.sage}88` },
+                  { x: 50, y: -70, rot: 20, idx: 0, size: 6, color: T.color.copper },
+                  { x: -35, y: -60, rot: -30, idx: 4, size: 7, color: `${T.color.sage}66` },
+                  { x: 95, y: -40, rot: 45, idx: 1, size: 8, color: `${T.color.copper}66` },
+                  { x: -75, y: -50, rot: -40, idx: 2, size: 5, color: T.color.copper },
+                  { x: 25, y: -62, rot: 12, idx: 3, size: 6, color: T.color.sage },
+                ].map((p, i) => (
+                  <div key={i} style={{
+                    position: "absolute", left: "50%", top: "60%",
+                    "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
+                    "--scatter-rot": `${p.rot}deg`,
+                    animation: `celebrateScatter 0.9s ${T.ease.smooth} ${i * 0.03}s both`,
+                  }}>
+                    <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
+                  </div>
+                ))}
+                <div style={{
+                  position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+                  display: "flex", gap: 14, alignItems: "flex-end",
+                }}>
+                  {[0, 1, 2, 3, 4].map((idx, i) => (
+                    <div key={idx} style={{
+                      animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.07}s both, celebrateFloat 3s ease-in-out ${1.2 + i * 0.25}s infinite`,
+                    }}>
+                      <OrganicShape shapeIndex={idx} size={idx === 4 ? 28 : 22} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
+                    </div>
+                  ))}
+                </div>
+              </div>
               <h2 style={{
-                fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
+                fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
                 color: T.color.text, margin: "0 0 12px 0",
               }}>
                 Your project just leveled up.
               </h2>
-              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 420, margin: "0 auto 8px" }}>
+              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 480, margin: "0 0 8px" }}>
                 System prompts, multi-step workflows, and a sense of what's possible
                 beyond conversation. Those are the tools that separate casual use from
                 real capability.
               </p>
-              <p style={{ fontSize: 13, color: T.color.textLight, lineHeight: 1.6, maxWidth: 400, margin: "0 auto" }}>
+              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 480 }}>
                 One section left. We'll finish the project, reflect on what you
                 learned, and set you up for what comes next.
               </p>
               <ContinueButton onClick={onComplete} label="Finish strong" />
+              </div>
             </div>
           );
         }

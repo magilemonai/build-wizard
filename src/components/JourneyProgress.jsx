@@ -32,7 +32,7 @@ export default function JourneyProgress({ currentSection, questionProgress }) {
     return (
       <div style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: `linear-gradient(to bottom, ${T.color.bg}ee, ${T.color.bg}00)`,
+        background: `linear-gradient(to bottom, ${T.color.bg} 60%, ${T.color.bg}00 100%)`,
         padding: "14px 20px 20px", pointerEvents: "none",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -55,8 +55,8 @@ export default function JourneyProgress({ currentSection, questionProgress }) {
   return (
     <div style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      background: `linear-gradient(to bottom, ${T.color.bg}ee, ${T.color.bg}00)`,
-      padding: "16px 0 28px", pointerEvents: "none",
+      background: `linear-gradient(to bottom, ${T.color.bg} 70%, ${T.color.bg}00 100%)`,
+      padding: "14px 0 40px", pointerEvents: "none",
     }}>
       <div style={{
         maxWidth: 460, margin: "0 auto", padding: "0 20px",

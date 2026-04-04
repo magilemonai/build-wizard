@@ -17,8 +17,8 @@ export default function GuidedStep({
   explanation,
   tip,
   prompt,
-  promptContext,
   hint,
+  showThinkingNote,
   onConfirm,
 }) {
   const [visible, setVisible] = useState(false);
@@ -33,7 +33,7 @@ export default function GuidedStep({
       {/* Skill label */}
       {skillLabel && (
         <div style={{
-          fontSize: 11, fontWeight: 500, letterSpacing: "0.08em",
+          fontSize: 13, fontWeight: 500, letterSpacing: "0.08em",
           textTransform: "uppercase", color: T.color.copper,
           marginBottom: 10, fontFamily: T.font.body,
         }}>
@@ -58,36 +58,29 @@ export default function GuidedStep({
         {explanation}
       </p>
 
-      {/* Tip callout */}
-      {tip && (
-        <div style={{
-          padding: "12px 16px",
-          background: T.color.copperSoft,
-          border: `1px solid rgba(191,123,94,0.15)`,
-          borderRadius: 10,
-          fontSize: 14, color: T.color.textMuted, lineHeight: 1.6,
-          marginBottom: 4,
-        }}>
-          <strong style={{ color: T.color.copper }}>The move:</strong> {tip}
-        </div>
-      )}
-
       {/* Prompt card */}
       <PromptCard
         key={prompt}
         prompt={prompt}
-        context={promptContext || "Try this in Claude:"}
+        context="Try this in Claude:"
         outcomeLabels={{ worked: "Output looks good", snag: "Need to iterate", skip: "Skip for now" }}
         onConfirm={onConfirm}
       />
 
       {/* Hint */}
-      <p style={{
-        fontSize: 13, color: T.color.textLight,
-        marginTop: 14, lineHeight: 1.6,
-      }}>
-        Claude may take a moment on this one. That's normal for longer responses.
-      </p>
+      {showThinkingNote && (
+        <div style={{
+          marginTop: 14, padding: "10px 14px",
+          background: T.color.bgSubtle,
+          border: `1px solid ${T.color.border}`,
+          borderRadius: 8,
+          display: "flex", alignItems: "center", gap: 8,
+          fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
+        }}>
+          <span style={{ fontSize: 16 }}>⏳</span>
+          Claude may take a moment on this one. That's normal for longer responses.
+        </div>
+      )}
 
       {hint && (
         <p style={{

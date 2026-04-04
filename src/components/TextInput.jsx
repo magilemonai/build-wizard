@@ -29,7 +29,7 @@ export default function TextInput({ value, onChange, onSubmit, placeholder, mult
         }}
       />
       {multiline && !mobile && (
-        <div style={{ marginTop: 6, fontSize: 12, color: T.color.textLight, textAlign: "right" }}>
+        <div style={{ marginTop: 6, fontSize: 13, color: T.color.textLight, textAlign: "right" }}>
           {getModKey()} + Enter to continue
         </div>
       )}

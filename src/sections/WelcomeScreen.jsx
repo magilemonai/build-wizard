@@ -77,28 +77,40 @@ export default function WelcomeScreen({ onBegin }) {
               on a bigger screen.
             </p>
           </div>
-        ) : (
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            padding: "8px 16px", borderRadius: 20,
-            border: `1px solid ${T.color.border}`,
-            background: T.color.bgSubtle,
-            margin: "0 auto 36px",
-            fontSize: 14, color: T.color.textMuted, lineHeight: 1.5,
-          }}>
-            Open <strong style={{ color: T.color.copper }}>claude.ai</strong> in another tab before you start
-          </div>
+        ) : null}
+
+        {/* Desktop: Open Claude link, then start button below it */}
+        {!mobile && (
+          <a
+            href="https://claude.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              padding: "10px 20px", borderRadius: 20,
+              border: `1px solid ${T.color.border}`,
+              background: T.color.bgSubtle,
+              marginBottom: 24,
+              fontSize: 15, color: T.color.textMuted, lineHeight: 1.5,
+              textDecoration: "none", cursor: "pointer",
+              transition: `all 0.2s ${T.ease.smooth}`,
+            }}
+          >
+            Open <strong style={{ color: T.color.copper }}>claude.ai</strong> in another tab before you start ↗
+          </a>
         )}
 
-        {/* Button — visible immediately */}
-        <ContinueButton onClick={onBegin} label="Let's go" />
+        {/* Button — below the Claude link */}
+        <div>
+          <ContinueButton onClick={onBegin} label="Let's go" />
+        </div>
 
         {/* Journey pills — fade in after shapes have landed */}
         <div style={{ marginTop: 56, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 8 }}>
           {journeySteps.map((s, i) => (
             <span key={s.key} style={{
               display: "inline-flex", alignItems: "center", gap: 6,
-              fontSize: 12, fontWeight: 400, color: T.color.textLight,
+              fontSize: 13, fontWeight: 400, color: T.color.textLight,
               padding: "5px 12px", borderRadius: 20, border: `1px solid ${T.color.border}`,
               opacity: 0,
               animation: `softFadeUp 0.5s ${T.ease.smooth} ${2.6 + i * 0.08}s both`,

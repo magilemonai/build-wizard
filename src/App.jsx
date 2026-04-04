@@ -124,9 +124,13 @@ export default function App() {
     }
   }, []);
 
-  const updateProgress = useCallback((section) => (value) => {
-    setSectionProgress((prev) => ({ ...prev, [section]: value }));
-  }, []);
+  // Stable progress updaters (one per section, memoized)
+  const progressUpdaters = useMemo(() => ({
+    icebreaker: (value) => setSectionProgress((prev) => ({ ...prev, icebreaker: value })),
+    foundation: (value) => setSectionProgress((prev) => ({ ...prev, foundation: value })),
+    powerup: (value) => setSectionProgress((prev) => ({ ...prev, powerup: value })),
+    ship: (value) => setSectionProgress((prev) => ({ ...prev, ship: value })),
+  }), []);
 
   // Determine if current screen is a section transition
   const transitionMatch = screen.match(/^(.+)-transition$/);
@@ -206,7 +210,7 @@ export default function App() {
 
         <div style={{
           maxWidth: 680, margin: "0 auto", padding: "0 20px",
-          paddingTop: showProgress ? 72 : 48, paddingBottom: 80,
+          paddingTop: showProgress ? 88 : 48, paddingBottom: 80,
         }}>
           {screen === "interview" && currentStep && (
             <PageTransition transitionKey={stepIndex} type="page"
@@ -255,7 +259,7 @@ export default function App() {
                 <SetupPrompt status={answers.setup} />
                 <PathCard data={derivePathCard(answers)} onContinue={() => goToSection("icebreaker")} />
                 <p style={{
-                  marginTop: 36, fontSize: 13, color: T.color.textLight,
+                  marginTop: 36, fontSize: 15, color: T.color.textMuted,
                   lineHeight: 1.65, textAlign: "center",
                 }}>
                   Even if you stop here, you've got a project brief and a clear first step.<br />
@@ -270,7 +274,7 @@ export default function App() {
               answers={answers}
               onComplete={() => goToSection("foundation")}
               onBack={() => setScreen("pathcard")}
-              onProgress={updateProgress("icebreaker")}
+              onProgress={progressUpdaters.icebreaker}
             />
           )}
 
@@ -279,7 +283,7 @@ export default function App() {
               answers={answers}
               onComplete={() => goToSection("powerup")}
               onBack={() => setScreen("icebreaker")}
-              onProgress={updateProgress("foundation")}
+              onProgress={progressUpdaters.foundation}
             />
           )}
 
@@ -288,7 +292,7 @@ export default function App() {
               answers={answers}
               onComplete={() => goToSection("ship")}
               onBack={() => setScreen("foundation")}
-              onProgress={updateProgress("powerup")}
+              onProgress={progressUpdaters.powerup}
             />
           )}
 
@@ -296,7 +300,7 @@ export default function App() {
             <Ship
               answers={answers}
               onBack={() => setScreen("powerup")}
-              onProgress={updateProgress("ship")}
+              onProgress={progressUpdaters.ship}
             />
           )}
         </div>
