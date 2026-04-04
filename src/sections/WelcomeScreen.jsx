@@ -17,20 +17,20 @@ export default function WelcomeScreen({ onBegin }) {
         {/* Shapes fall into place above the headline — top 3, bottom 2 */}
         <div style={{
           position: "relative", width: 220, height: 120,
-          margin: "0 auto 40px",
+          margin: "0 auto 40px", left: 8,
         }}>
-          {/* Top row: triangle, square, pentagon */}
+          {/* Triangle (copper) */}
           <div style={{
             position: "absolute",
             left: "calc(50% - 72px)", top: "calc(50% - 22px)",
             opacity: 0,
             animation: "fallBounce 1.4s cubic-bezier(0.12, 0, 0.25, 1) 0.3s both",
           }}>
-            <OrganicShape shapeIndex={0} size={38} color={T.color.copper} />
+            <OrganicShape shapeIndex={0} size={42} color={T.color.copper} />
           </div>
           <div style={{
             position: "absolute",
-            left: "calc(50% - 17px)", top: "calc(50% - 26px)",
+            left: "calc(50% - 16px)", top: "calc(50% - 26px)",
             opacity: 0,
             animation: "fallBounceRight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 0.7s both",
           }}>
@@ -47,7 +47,7 @@ export default function WelcomeScreen({ onBegin }) {
           {/* Bottom row: hexagon, circle — centered under the top 3 */}
           <div style={{
             position: "absolute",
-            left: "calc(50% - 46px)", top: "calc(50% + 22px)",
+            left: "calc(50% - 34px)", top: "calc(50% + 22px)",
             opacity: 0,
             animation: "fallBounce 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.5s both",
           }}>
