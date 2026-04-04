@@ -16,31 +16,32 @@ import IceBreaker from "./sections/IceBreaker.jsx";
 import Foundation from "./sections/Foundation.jsx";
 import PowerUp from "./sections/PowerUp.jsx";
 import Ship from "./sections/Ship.jsx";
+import { SCREENS } from "./screens.js";
 
 /* ━━━ Section transition config ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const SECTION_TRANSITIONS = {
-  icebreaker:  { headline: "Time to get your hands dirty.", subtext: "A few quick exercises. Copy, paste, see what happens." },
-  foundation:  { headline: "Now let's build your project.", subtext: "Three skills, one real thing at the end." },
-  powerup:     { headline: "Time to level up.", subtext: "System prompts, workflows, and what's possible beyond conversation." },
-  ship:        { headline: "Let's finish this.", subtext: "Review, reflect, and set up what comes next." },
+  [SCREENS.ICEBREAKER]:  { headline: "Time to get your hands dirty.", subtext: "A few quick exercises. Copy, paste, see what happens." },
+  [SCREENS.FOUNDATION]:  { headline: "Now let's build your project.", subtext: "Three skills, one real thing at the end." },
+  [SCREENS.POWERUP]:     { headline: "Time to level up.", subtext: "System prompts, workflows, and what's possible beyond conversation." },
+  [SCREENS.SHIP]:        { headline: "Let's finish this.", subtext: "Review, reflect, and set up what comes next." },
 };
 
-const SECTIONS_WITH_PROGRESS = ["interview", "icebreaker", "foundation", "powerup", "ship"];
+const SECTIONS_WITH_PROGRESS = [SCREENS.INTERVIEW, SCREENS.ICEBREAKER, SCREENS.FOUNDATION, SCREENS.POWERUP, SCREENS.SHIP];
 
 const SECTION_TITLES = {
-  welcome: "Build Something Real with AI",
-  transition: "Build Something Real with AI",
-  interview: "Interview — Build Wizard",
-  pathcard: "Your Plan — Build Wizard",
-  icebreaker: "Ice Breaker — Build Wizard",
-  foundation: "Foundation — Build Wizard",
-  powerup: "Power Up — Build Wizard",
-  ship: "Ship — Build Wizard",
+  [SCREENS.WELCOME]: "Build Something Real with AI",
+  [SCREENS.TRANSITION]: "Build Something Real with AI",
+  [SCREENS.INTERVIEW]: "Interview — Build Wizard",
+  [SCREENS.PATHCARD]: "Your Plan — Build Wizard",
+  [SCREENS.ICEBREAKER]: "Ice Breaker — Build Wizard",
+  [SCREENS.FOUNDATION]: "Foundation — Build Wizard",
+  [SCREENS.POWERUP]: "Power Up — Build Wizard",
+  [SCREENS.SHIP]: "Ship — Build Wizard",
 };
 
 /* ━━━ Main App ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function App() {
-  const [screen, setScreen] = useState("welcome");
+  const [screen, setScreen] = useState(SCREENS.WELCOME);
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [currentValue, setCurrentValue] = useState(null);
@@ -48,7 +49,7 @@ export default function App() {
   const [staggerReady, setStaggerReady] = useState(true);
   const [showFirstLabel, setShowFirstLabel] = useState(true);
   const [sectionProgress, setSectionProgress] = useState({
-    icebreaker: 0, foundation: 0, powerup: 0, ship: 0,
+    [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0,
   });
   const visited = useRef(new Set());
 
@@ -61,14 +62,14 @@ export default function App() {
 
   // Restart: reset all state to initial values
   const restart = useCallback(() => {
-    setScreen("welcome");
+    setScreen(SCREENS.WELCOME);
     setStepIndex(0);
     setAnswers({});
     setCurrentValue(null);
     setDirection(1);
     setStaggerReady(true);
     setShowFirstLabel(true);
-    setSectionProgress({ icebreaker: 0, foundation: 0, powerup: 0, ship: 0 });
+    setSectionProgress({ [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0 });
     visited.current.clear();
   }, []);
 
@@ -91,7 +92,7 @@ export default function App() {
     setStaggerReady(false);
     setDirection(1);
     if (currentStep.id === "setup") {
-      setScreen("pathcard");
+      setScreen(SCREENS.PATHCARD);
     } else {
       setStepIndex((i) => i + 1);
     }
@@ -126,10 +127,10 @@ export default function App() {
 
   // Stable progress updaters (one per section, memoized)
   const progressUpdaters = useMemo(() => ({
-    icebreaker: (value) => setSectionProgress((prev) => ({ ...prev, icebreaker: value })),
-    foundation: (value) => setSectionProgress((prev) => ({ ...prev, foundation: value })),
-    powerup: (value) => setSectionProgress((prev) => ({ ...prev, powerup: value })),
-    ship: (value) => setSectionProgress((prev) => ({ ...prev, ship: value })),
+    [SCREENS.ICEBREAKER]: (value) => setSectionProgress((prev) => ({ ...prev, [SCREENS.ICEBREAKER]: value })),
+    [SCREENS.FOUNDATION]: (value) => setSectionProgress((prev) => ({ ...prev, [SCREENS.FOUNDATION]: value })),
+    [SCREENS.POWERUP]: (value) => setSectionProgress((prev) => ({ ...prev, [SCREENS.POWERUP]: value })),
+    [SCREENS.SHIP]: (value) => setSectionProgress((prev) => ({ ...prev, [SCREENS.SHIP]: value })),
   }), []);
 
   // Determine if current screen is a section transition
@@ -154,21 +155,21 @@ export default function App() {
   }, [restart]);
 
   // ── Welcome ──
-  if (screen === "welcome") {
+  if (screen === SCREENS.WELCOME) {
     return (
       <>
         <GrainOverlay />
-        <WelcomeScreen onBegin={() => setScreen("transition")} />
+        <WelcomeScreen onBegin={() => setScreen(SCREENS.TRANSITION)} />
       </>
     );
   }
 
   // ── Welcome → Interview transition ──
-  if (screen === "transition") {
+  if (screen === SCREENS.TRANSITION) {
     return (
       <>
         <GrainOverlay />
-        <ThresholdInterstitial onComplete={() => setScreen("interview")} />
+        <ThresholdInterstitial onComplete={() => setScreen(SCREENS.INTERVIEW)} />
       </>
     );
   }
@@ -192,7 +193,7 @@ export default function App() {
 
   // ── Active sections ──
   const showProgress = SECTIONS_WITH_PROGRESS.includes(screen);
-  const progressValue = screen === "interview"
+  const progressValue = screen === SCREENS.INTERVIEW
     ? stepIndex / totalSteps
     : sectionProgress[screen] || 0;
 
@@ -212,7 +213,7 @@ export default function App() {
           maxWidth: 680, margin: "0 auto", padding: "0 20px",
           paddingTop: showProgress ? 88 : 48, paddingBottom: 80,
         }}>
-          {screen === "interview" && currentStep && (
+          {screen === SCREENS.INTERVIEW && currentStep && (
             <PageTransition transitionKey={stepIndex} type="page"
               direction={direction} onEntered={handleTransitionEntered}>
               <div>
@@ -246,8 +247,8 @@ export default function App() {
             </PageTransition>
           )}
 
-          {screen === "pathcard" && (
-            <PageTransition transitionKey="pathcard" type="rise" onEntered={() => {}}>
+          {screen === SCREENS.PATHCARD && (
+            <PageTransition transitionKey={SCREENS.PATHCARD} type="rise" onEntered={() => {}}>
               <div>
                 <SectionLabel>Your Plan</SectionLabel>
                 <h2 style={{
@@ -257,7 +258,7 @@ export default function App() {
                   Here's what we're building.
                 </h2>
                 <SetupPrompt status={answers.setup} />
-                <PathCard data={derivePathCard(answers)} onContinue={() => goToSection("icebreaker")} />
+                <PathCard data={derivePathCard(answers)} onContinue={() => goToSection(SCREENS.ICEBREAKER)} />
                 <p style={{
                   marginTop: 36, fontSize: 15, color: T.color.textMuted,
                   lineHeight: 1.65, textAlign: "center",
@@ -269,38 +270,38 @@ export default function App() {
             </PageTransition>
           )}
 
-          {screen === "icebreaker" && (
+          {screen === SCREENS.ICEBREAKER && (
             <IceBreaker
               answers={answers}
-              onComplete={() => goToSection("foundation")}
-              onBack={() => setScreen("pathcard")}
-              onProgress={progressUpdaters.icebreaker}
+              onComplete={() => goToSection(SCREENS.FOUNDATION)}
+              onBack={() => setScreen(SCREENS.PATHCARD)}
+              onProgress={progressUpdaters[SCREENS.ICEBREAKER]}
             />
           )}
 
-          {screen === "foundation" && (
+          {screen === SCREENS.FOUNDATION && (
             <Foundation
               answers={answers}
-              onComplete={() => goToSection("powerup")}
-              onBack={() => setScreen("icebreaker")}
-              onProgress={progressUpdaters.foundation}
+              onComplete={() => goToSection(SCREENS.POWERUP)}
+              onBack={() => setScreen(SCREENS.ICEBREAKER)}
+              onProgress={progressUpdaters[SCREENS.FOUNDATION]}
             />
           )}
 
-          {screen === "powerup" && (
+          {screen === SCREENS.POWERUP && (
             <PowerUp
               answers={answers}
-              onComplete={() => goToSection("ship")}
-              onBack={() => setScreen("foundation")}
-              onProgress={progressUpdaters.powerup}
+              onComplete={() => goToSection(SCREENS.SHIP)}
+              onBack={() => setScreen(SCREENS.FOUNDATION)}
+              onProgress={progressUpdaters[SCREENS.POWERUP]}
             />
           )}
 
-          {screen === "ship" && (
+          {screen === SCREENS.SHIP && (
             <Ship
               answers={answers}
-              onBack={() => setScreen("powerup")}
-              onProgress={progressUpdaters.ship}
+              onBack={() => setScreen(SCREENS.POWERUP)}
+              onProgress={progressUpdaters[SCREENS.SHIP]}
             />
           )}
         </div>

@@ -110,6 +110,14 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
             <div>
               {BackButton}
               {stepIndex === 0 && <SectionLabel>Section 4 · Power Up</SectionLabel>}
+              {stepIndex === 0 && (
+                <details style={{ marginBottom: 16, fontSize: 14, color: T.color.textMuted }}>
+                  <summary style={{ cursor: "pointer", color: T.color.textLight }}>Lost your Claude conversation?</summary>
+                  <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 8, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
+                    I'm building a project about {answers.project_idea || "my project"}. We've been working on it together through several sections. Here's the best version so far: [paste your latest output]
+                  </div>
+                </details>
+              )}
               <GuidedStep
                 skillLabel={s.skillLabel}
                 title={s.title}

@@ -13,6 +13,12 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
   return (
     <div>
       {BackButton}
+      <details style={{ marginBottom: 16, fontSize: 14, color: T.color.textMuted }}>
+        <summary style={{ cursor: "pointer", color: T.color.textLight }}>Lost your Claude conversation?</summary>
+        <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 8, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
+          I'm building a project about {idea}. We've been working on it together through several sections. Here's the best version so far: [paste your latest output]
+        </div>
+      </details>
       <SectionLabel>Section 5 · Ship</SectionLabel>
       <h2 style={{
         fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",

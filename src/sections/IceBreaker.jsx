@@ -156,6 +156,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
   const isWork = answers.fork === "work";
   const exercises = getExercises(answers);
   const steps = buildStepSequence(exercises, isWork);
+  const canSkipToFoundation = answers.experience === "regular" && answers.code_feeling === "comfortable";
 
   return (
     <SectionShell
@@ -174,6 +175,26 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                 onConfirm={advance}
                 showLabel={stepIndex === 0}
               />
+              {stepIndex === 0 && canSkipToFoundation && (
+                <button
+                  onClick={onComplete}
+                  style={{
+                    display: "block",
+                    marginTop: 16,
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: 14,
+                    color: T.color.textLight,
+                    textDecoration: "underline",
+                    textUnderlineOffset: 3,
+                    fontFamily: T.font.body,
+                    padding: 0,
+                  }}
+                >
+                  Already comfortable with AI? Skip to Foundation &rarr;
+                </button>
+              )}
             </div>
           );
         }
