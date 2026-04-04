@@ -179,7 +179,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
                   </div>
                 ))}
                 <div style={{
-                  position: "absolute", bottom: 0, left: 0,
+                  position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
                   display: "flex", gap: 14, alignItems: "flex-end",
                 }}>
                   {[0, 1, 2, 3, 4].map((idx, i) => (
