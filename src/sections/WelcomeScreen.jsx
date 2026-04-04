@@ -16,32 +16,53 @@ export default function WelcomeScreen({ onBegin }) {
 
         {/* Shapes fall into place above the headline */}
         <div style={{
-          position: "relative", width: 160, height: 100,
+          position: "relative", width: 240, height: 110,
           margin: "0 auto 40px",
         }}>
+          {/* Triangle (copper) */}
           <div style={{
             position: "absolute",
-            left: "calc(50% - 40px)", top: "calc(50% - 4px)",
+            left: "calc(50% - 65px)", top: "calc(50% - 4px)",
             opacity: 0,
             animation: "fallBounce 1.4s cubic-bezier(0.12, 0, 0.25, 1) 0.3s both",
           }}>
-            <OrganicShape shapeIndex={0} size={46} color={T.color.copper} />
+            <OrganicShape shapeIndex={0} size={42} color={T.color.copper} />
           </div>
+          {/* Square (sage) */}
           <div style={{
             position: "absolute",
-            left: "calc(50% + 12px)", top: "calc(50% - 10px)",
+            left: "calc(50% - 20px)", top: "calc(50% - 14px)",
             opacity: 0,
-            animation: "fallBounceRight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 0.9s both",
+            animation: "fallBounceRight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 0.7s both",
           }}>
-            <OrganicShape shapeIndex={1} size={36} color={T.color.sage} />
+            <OrganicShape shapeIndex={1} size={34} color={T.color.sage} />
           </div>
+          {/* Pentagon (copper, lighter) */}
           <div style={{
             position: "absolute",
-            left: "calc(50% - 12px)", top: "calc(50% + 28px)",
+            left: "calc(50% + 22px)", top: "calc(50% + 2px)",
             opacity: 0,
-            animation: "fallBounceStraight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.5s both",
+            animation: "fallBounceStraight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.1s both",
           }}>
-            <OrganicShape shapeIndex={4} size={29} color={`${T.color.text}25`} />
+            <OrganicShape shapeIndex={2} size={30} color={`${T.color.copper}cc`} />
+          </div>
+          {/* Hexagon (sage, lighter) */}
+          <div style={{
+            position: "absolute",
+            left: "calc(50% + 55px)", top: "calc(50% - 8px)",
+            opacity: 0,
+            animation: "fallBounce 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.5s both",
+          }}>
+            <OrganicShape shapeIndex={3} size={26} color={`${T.color.sage}bb`} />
+          </div>
+          {/* Circle (faded) */}
+          <div style={{
+            position: "absolute",
+            left: "calc(50% - 40px)", top: "calc(50% + 30px)",
+            opacity: 0,
+            animation: "fallBounceRight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.9s both",
+          }}>
+            <OrganicShape shapeIndex={4} size={24} color={`${T.color.text}25`} />
           </div>
         </div>
 
