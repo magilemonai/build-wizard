@@ -175,121 +175,91 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                 <SafetyInterstitial
                   title="Three things before we go further."
                   onContinue={advance}
-                >
-                  <p style={{ margin: "0 0 14px 0" }}>
-                    <strong style={{ color: T.color.text }}>Your input leaves your computer.</strong>{" "}
-                    Everything you've typed went to a server. Claude processed it and sent results back.
-                    Check your privacy settings under <strong>Settings → Privacy</strong>.
-                  </p>
-                  <p style={{ margin: "0 0 14px 0" }}>
-                    <strong style={{ color: T.color.text }}>Think before you paste work data.</strong>{" "}
-                    Does your company have an AI policy? What plan are you on?
-                    If you don't know, ask your IT team or manager before sharing real work content.
-                  </p>
-                  <p style={{ margin: 0 }}>
-                    <strong style={{ color: T.color.text }}>Models matter.</strong>{" "}
-                    Claude has different models (Haiku, Sonnet, Opus) ranging from fast and light to
-                    deep and capable. You can also enable "extended thinking" for complex tasks.
-                    You don't need to change anything now, but the dial exists.
-                  </p>
-                </SafetyInterstitial>
+                  points={[
+                    { title: "Your input leaves your computer.", body: "Everything you've typed went to a server. Claude processed it and sent results back. Check your privacy settings under Settings → Privacy." },
+                    { title: "Think before you paste work data.", body: "Does your company have an AI policy? What plan are you on? If you don't know, ask your IT team or manager before sharing real work content." },
+                    { title: "Models matter.", body: "Claude has different models (Haiku, Sonnet, Opus) ranging from fast and light to deep and capable. You can also enable \"extended thinking\" for complex tasks. You don't need to change anything now, but the dial exists." },
+                  ]}
+                />
               </div>
             );
           }
-          // Personal path: data privacy + models (no hallucination overlap with S3)
+          // Personal path: data privacy + models
           return (
             <div>
               {BackButton}
               <SafetyInterstitial
                 title="Two things to know before we keep going."
                 onContinue={advance}
-              >
-                <p style={{ margin: "0 0 14px 0" }}>
-                  <strong style={{ color: T.color.text }}>Your input leaves your computer.</strong>{" "}
-                  Everything you've typed went to a server. Claude processed it and sent results back.
-                  That's how all AI tools work. Check your privacy settings in Claude under{" "}
-                  <strong>Settings → Privacy</strong> to see what's shared.
-                </p>
-                <p style={{ margin: 0 }}>
-                  <strong style={{ color: T.color.text }}>Models matter.</strong>{" "}
-                  Claude has different models (Haiku, Sonnet, Opus) ranging from fast and light to
-                  deep and capable. You can also enable "extended thinking" for complex tasks.
-                  You don't need to change anything now, but the dial exists.
-                </p>
-              </SafetyInterstitial>
+                points={[
+                  { title: "Your input leaves your computer.", body: "Everything you've typed went to a server. Claude processed it and sent results back. Check your privacy settings in Claude under Settings → Privacy to see what's shared." },
+                  { title: "Models matter.", body: "Claude has different models (Haiku, Sonnet, Opus) ranging from fast and light to deep and capable. You can also enable \"extended thinking\" for complex tasks. You don't need to change anything now, but the dial exists." },
+                ]}
+              />
             </div>
           );
         }
 
         if (step.type === "anchor") {
           return (
-            <div style={{ textAlign: "center", padding: "40px 0" }}>
+            <div style={{ padding: "40px 0" }}>
               {BackButton}
-              {/* Celebration: shapes scatter outward then bounce into a row */}
-              <div style={{ position: "relative", height: 80, marginBottom: 16 }}>
-                {/* Scatter particles (fly out and fade) */}
-                {[
-                  { x: -90, y: -40, rot: -45, idx: 0, size: 10, color: T.color.copper },
-                  { x: 70, y: -50, rot: 30, idx: 1, size: 8, color: T.color.sage },
-                  { x: -50, y: -60, rot: -20, idx: 4, size: 6, color: `${T.color.copper}88` },
-                  { x: 100, y: -30, rot: 50, idx: 2, size: 7, color: T.color.sage },
-                  { x: -110, y: -20, rot: -60, idx: 3, size: 9, color: `${T.color.sage}88` },
-                  { x: 40, y: -65, rot: 15, idx: 0, size: 5, color: T.color.copper },
-                  { x: -30, y: -55, rot: -35, idx: 4, size: 8, color: `${T.color.sage}66` },
-                  { x: 80, y: -45, rot: 40, idx: 1, size: 6, color: `${T.color.copper}66` },
-                ].map((p, i) => (
-                  <div key={`scatter-${i}`} style={{
-                    position: "absolute", left: "50%", top: "60%",
-                    "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
-                    "--scatter-rot": `${p.rot}deg`,
-                    animation: `celebrateScatter 0.8s ${T.ease.smooth} ${i * 0.04}s both`,
-                  }}>
-                    <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
-                  </div>
-                ))}
-                {/* Bouncing shapes that stay */}
-                <div style={{
-                  position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-                  display: "flex", gap: 14, alignItems: "flex-end",
-                }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ position: "relative", height: 80, marginBottom: 16 }}>
                   {[
-                    { idx: 0, size: 22, color: T.color.copper },
-                    { idx: 1, size: 18, color: T.color.sage },
-                    { idx: 4, size: 26, color: T.color.copper },
-                    { idx: 2, size: 18, color: T.color.sage },
-                    { idx: 3, size: 20, color: T.color.copper },
-                  ].map((s, i) => (
-                    <div key={`bounce-${i}`} style={{
-                      animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.08}s both, celebrateFloat 3s ease-in-out ${1.2 + i * 0.3}s infinite`,
+                    { x: -90, y: -40, rot: -45, idx: 0, size: 10, color: T.color.copper },
+                    { x: 70, y: -50, rot: 30, idx: 1, size: 8, color: T.color.sage },
+                    { x: -50, y: -60, rot: -20, idx: 4, size: 6, color: `${T.color.copper}88` },
+                    { x: 100, y: -30, rot: 50, idx: 2, size: 7, color: T.color.sage },
+                    { x: -110, y: -20, rot: -60, idx: 3, size: 9, color: `${T.color.sage}88` },
+                    { x: 40, y: -65, rot: 15, idx: 0, size: 5, color: T.color.copper },
+                  ].map((p, i) => (
+                    <div key={`scatter-${i}`} style={{
+                      position: "absolute", left: "50%", top: "60%",
+                      "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
+                      "--scatter-rot": `${p.rot}deg`,
+                      animation: `celebrateScatter 0.8s ${T.ease.smooth} ${i * 0.04}s both`,
                     }}>
-                      <OrganicShape shapeIndex={s.idx} size={s.size} color={s.color} />
+                      <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
                     </div>
                   ))}
+                  <div style={{
+                    position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+                    display: "flex", gap: 14, alignItems: "flex-end",
+                  }}>
+                    {[0, 1, 4, 2, 3].map((idx, i) => (
+                      <div key={idx} style={{
+                        animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.08}s both, celebrateFloat 4s ease-in-out ${1.2 + i * 0.3}s infinite`,
+                      }}>
+                        <OrganicShape shapeIndex={idx} size={idx === 4 ? 26 : 20} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
+                <h2 style={{
+                  fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
+                  fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
+                  color: T.color.text, margin: "0 0 12px 0",
+                }}>
+                  {isNovice ? "You just built something with AI." : "You just wrote code."}
+                </h2>
+                <p style={{
+                  fontSize: 16, color: T.color.textMuted,
+                  lineHeight: 1.7, maxWidth: 460, margin: "0 auto 8px",
+                }}>
+                  {isNovice
+                    ? "You gave instructions, got results, and shaped the output. That's the whole loop. Now let's use it for something that matters to you."
+                    : "It was easy. Hold onto that feeling. Now let's build something that matters."}
+                </p>
+                <p style={{
+                  fontSize: 15, color: T.color.textMuted,
+                  lineHeight: 1.6, maxWidth: 440, margin: "0 auto",
+                }}>
+                  Good stopping point, by the way. You've got the key safety habits down.
+                  Come back when you're ready, or keep going now.
+                </p>
+                <ContinueButton onClick={onComplete} label="Keep building" />
               </div>
-              <h2 style={{
-                fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
-                fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
-                color: T.color.text, margin: "0 0 12px 0",
-              }}>
-                {isNovice ? "You just built something with AI." : "You just wrote code."}
-              </h2>
-              <p style={{
-                fontSize: 16, color: T.color.textMuted,
-                lineHeight: 1.7, maxWidth: 420, margin: "0 auto 8px",
-              }}>
-                {isNovice
-                  ? "You gave instructions, got results, and shaped the output. That's the whole loop. Now let's use it for something that matters to you."
-                  : "It was easy. Hold onto that feeling. Now let's build something that matters."}
-              </p>
-              <p style={{
-                fontSize: 15, color: T.color.textMuted,
-                lineHeight: 1.6, maxWidth: 400, margin: "0 auto",
-              }}>
-                Good stopping point, by the way. You've got the key safety habits down.
-                Come back when you're ready, or keep going now.
-              </p>
-              <ContinueButton onClick={onComplete} label="Keep building" />
             </div>
           );
         }

@@ -4,11 +4,25 @@ import ContinueButton from "./ContinueButton.jsx";
 
 /* ━━━ Safety Interstitial ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    "While we're at it" safety lesson between exercises.
-   Sage-tinted, warm tone, not scolding.
+   Supports multi-step acknowledgment: each click of Continue
+   reveals the next point with a checkmark on the previous one.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function SafetyInterstitial({ icon, title, children, onContinue }) {
+export default function SafetyInterstitial({ title, points, children, onContinue }) {
   const [visible, setVisible] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(0);
   useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
+
+  // If points array provided, use multi-step mode
+  const isMultiStep = points && points.length > 0;
+  const allAcknowledged = isMultiStep ? acknowledged >= points.length : true;
+
+  const handleContinue = () => {
+    if (isMultiStep && acknowledged < points.length) {
+      setAcknowledged((a) => a + 1);
+      return;
+    }
+    onContinue();
+  };
 
   return (
     <div style={{
@@ -20,36 +34,67 @@ export default function SafetyInterstitial({ icon, title, children, onContinue }
         background: T.color.sageSoft,
         border: `1.5px solid ${T.color.sageBorder}`,
         borderRadius: 16,
-        padding: "28px 24px",
+        padding: "28px 28px",
       }}>
-        {icon && (
-          <div style={{
-            fontSize: 24, marginBottom: 12, lineHeight: 1,
-          }}>
-            {icon}
-          </div>
-        )}
         <div style={{
-          fontSize: 11, fontWeight: 500, letterSpacing: "0.1em",
+          fontSize: 13, fontWeight: 500, letterSpacing: "0.08em",
           textTransform: "uppercase", color: T.color.sage,
-          marginBottom: 8, fontFamily: T.font.body,
+          marginBottom: 10, fontFamily: T.font.body,
         }}>
           While we're at it
         </div>
         <h3 style={{
-          fontFamily: T.font.display, fontSize: 22, fontWeight: 400,
+          fontFamily: T.font.display, fontSize: 24, fontWeight: 400,
           fontStyle: "italic", lineHeight: 1.3,
-          color: T.color.text, margin: "0 0 12px 0",
+          color: T.color.text, margin: "0 0 16px 0",
         }}>
           {title}
         </h3>
-        <div style={{
-          fontSize: 14, color: T.color.textMuted, lineHeight: 1.7,
-        }}>
-          {children}
-        </div>
+
+        {isMultiStep ? (
+          <div>
+            {points.map((point, i) => {
+              const isRevealed = i <= acknowledged;
+              const isChecked = i < acknowledged;
+              return (
+                <div key={i} style={{
+                  padding: "14px 0",
+                  borderBottom: i < points.length - 1 ? `1px solid ${T.color.sageBorder}` : "none",
+                  opacity: isRevealed ? 1 : 0.3,
+                  transition: `all 0.4s ${T.ease.smooth}`,
+                }}>
+                  <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                    <span style={{
+                      flexShrink: 0, marginTop: 2,
+                      color: isChecked ? T.color.sage : T.color.textLight,
+                      fontSize: 16, lineHeight: 1,
+                      transition: `color 0.3s ${T.ease.smooth}`,
+                    }}>
+                      {isChecked ? "✓" : "○"}
+                    </span>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 500, color: T.color.text, marginBottom: 4 }}>
+                        {point.title}
+                      </div>
+                      <div style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6 }}>
+                        {point.body}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.7 }}>
+            {children}
+          </div>
+        )}
       </div>
-      <ContinueButton onClick={onContinue} label="Got it" />
+      <ContinueButton
+        onClick={handleContinue}
+        label={isMultiStep && !allAcknowledged ? "Next point" : "Got it"}
+      />
     </div>
   );
 }
