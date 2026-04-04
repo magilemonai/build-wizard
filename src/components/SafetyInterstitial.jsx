@@ -60,7 +60,7 @@ export default function SafetyInterstitial({ title, points, children, onContinue
                 <div key={i} style={{
                   padding: "14px 0",
                   borderBottom: i < points.length - 1 ? `1px solid ${T.color.sageBorder}` : "none",
-                  opacity: isRevealed ? 1 : 0.3,
+                  opacity: isRevealed ? 1 : 0.45,
                   transition: `all 0.4s ${T.ease.smooth}`,
                 }}>
                   <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>

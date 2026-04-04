@@ -15,7 +15,6 @@ export default function GuidedStep({
   skillLabel,
   title,
   explanation,
-  tip,
   prompt,
   hint,
   showThinkingNote,

@@ -92,7 +92,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
                   cursor: "pointer",
                 }}
               >
-                Take me back
+                Show prompt again
               </button>
             </div>
           </>
@@ -110,19 +110,18 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
       marginTop: 24,
       marginBottom: 8,
     }}>
-      {/* Context line above the prompt */}
+      {/* Header + prompt */}
       {context && (
         <div style={{
-          padding: "12px 20px 0",
-          fontSize: 14,
-          color: T.color.textMuted,
-          lineHeight: 1.6,
+          padding: "10px 20px",
+          fontSize: 13, fontWeight: 500, letterSpacing: "0.03em",
+          color: T.color.textLight,
+          borderBottom: `1px solid ${T.color.border}`,
+          fontFamily: T.font.body,
         }}>
           {context}
         </div>
       )}
-
-      {/* The prompt itself */}
       <div style={{
         padding: "16px 20px",
         fontFamily: "'Courier New', Courier, monospace",

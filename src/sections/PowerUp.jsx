@@ -22,9 +22,8 @@ function getBuildSteps(answers) {
         "A system prompt is the context Claude starts every conversation with. " +
         "Think of it as a job description: who Claude is, what it knows, how it should behave. " +
         "Write it once, and every response gets better without you repeating yourself.",
-      tip: "Describe Claude's role, what it knows about your project, and any rules it should follow. Be specific about tone and format preferences.",
       prompt: isWork
-        ? `I want you to act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nNow let's test it. Here's a real scenario: I just finished a meeting about ${idea} and I need to send a follow-up email summarizing what was discussed and the next steps. Draft that email for me based on what you know about my project so far.`
+        ? `I want you to act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nNow let's test it. Take what we've built for ${idea} and produce a ready-to-share version I could send to a colleague this week. Format it so they'd understand the value without needing context from our conversation.`
         : `I want you to act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nNow let's test it. I have 30 free minutes right now and want to make progress on ${idea}. What should I do with that time? Be specific to what we've built so far, not generic advice.`,
       hint: "Notice how the system prompt changed Claude's tone and approach. That context carries forward into every response in this conversation.",
     },
@@ -38,7 +37,6 @@ function getBuildSteps(answers) {
         "You can tell Claude to write something, then immediately ask it to find the weaknesses, " +
         "then have it fix them. Each step builds on the last. " +
         "The result is dramatically better than a single pass.",
-      tip: "After Claude gives you something, ask it: \"What's wrong with this? What did you miss? Now fix those things.\" Three steps beats one every time.",
       prompt: isWork
         ? `Let's improve what we built for "${idea}" using a multi-step workflow.\n\nStep 1: Look at the output you've created so far and identify the 3 biggest weaknesses. Be honest and specific.\n\nStep 2: For each weakness, explain what a better version would look like.\n\nStep 3: Now rewrite the whole thing, incorporating all three improvements.\n\nGo through all three steps now.`
         : `Let's level up what we built for "${idea}".\n\nStep 1: Critique your own work. What are the 3 biggest gaps or things that feel generic?\n\nStep 2: For each gap, explain what would make it genuinely useful versus just okay.\n\nStep 3: Rewrite the whole thing with those improvements. Make it something I'd actually come back to.\n\nDo all three steps now.`,
@@ -54,7 +52,6 @@ function getBuildSteps(answers) {
         "You've been serious for a while. Before we cover tools and capabilities, " +
         "let's use the skills you've built for something ridiculous. " +
         "You know how to set context, iterate, and critique. Time to aim those skills at yourself.",
-      tip: "This is secretly useful. Getting Claude to critique your project idea stress-tests the draft-critique-revise pattern you just learned.",
       prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for. Don't tell me to stop building and just use it. I know. Give me something more specific.`,
       hint: "Notice how Claude's tone changed because you asked for something different. Same tool, different mode. That flexibility is the point.",
     },
@@ -73,9 +70,6 @@ function getBuildSteps(answers) {
           "than point them out. They can read files, search the web, run code, and connect to other services. " +
           "When AI can take actions, not just produce text, that's the jump from assistant to agent. " +
           "You don't need to use all of this today. But knowing it exists changes what you think is possible.",
-      tip: isComfortable
-        ? "Try giving Claude Code a small, well-scoped task first. It works best when you describe what you want, not how to do it."
-        : "Start by asking Claude what tools and capabilities it has available right now. You might be surprised.",
       prompt: isComfortable
         ? `Here's an idea to try with Claude Code (in your terminal):\n\nI've been building "${idea}" in our conversation. Now I want to turn it into something that lives on my computer.\n\nCan you help me think about what this would look like as a simple file or script I could save and reuse? What would the structure be? Don't build it yet, just sketch the plan.`
         : `I've been building "${idea}" with you. I'm curious about what else is possible.\n\nTell me:\n1. What tools and capabilities do you have access to right now in this conversation?\n2. If I wanted to take what we've built and make it more permanent or powerful, what would my options be?\n3. What's one thing most people don't realize Claude can do?\n\nKeep it practical. I want to know what I could actually use, not a feature list.`,
@@ -193,12 +187,12 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
               }}>
                 Your project just leveled up.
               </h2>
-              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 480, margin: "0 auto 8px" }}>
+              <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 520, margin: "0 auto 8px" }}>
                 System prompts, multi-step workflows, and a sense of what's possible
                 beyond conversation. Those are the tools that separate casual use from
                 real capability.
               </p>
-              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 480, margin: "0 auto" }}>
+              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>
                 One section left. We'll finish the project, reflect on what you
                 learned, and set you up for what comes next.
               </p>

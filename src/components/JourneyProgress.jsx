@@ -42,7 +42,7 @@ export default function JourneyProgress({ currentSection, questionProgress }) {
             ))}
           </div>
           <span style={{
-            fontFamily: T.font.body, fontSize: 11, fontWeight: 500,
+            fontFamily: T.font.body, fontSize: 12, fontWeight: 500,
             letterSpacing: "0.04em", color: T.color.copper,
           }}>
             {journeySteps[idx]?.label}
@@ -74,7 +74,7 @@ export default function JourneyProgress({ currentSection, questionProgress }) {
                 <div style={{
                   position: "absolute", top: "100%", left: "50%",
                   transform: "translateX(-50%)", marginTop: 8, whiteSpace: "nowrap",
-                  fontFamily: T.font.body, fontSize: 10, fontWeight: active ? 500 : 400,
+                  fontFamily: T.font.body, fontSize: 11, fontWeight: active ? 500 : 400,
                   letterSpacing: "0.03em",
                   color: active ? T.color.copper : past ? T.color.sage : T.color.textLight,
                   opacity: active || past ? 1 : 0.45,
