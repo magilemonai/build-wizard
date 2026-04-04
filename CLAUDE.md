@@ -23,29 +23,29 @@ src/
     ErrorBoundary.jsx    # Crash recovery with "Show details" for testing
     GrainOverlay.jsx     # SVG noise texture
     GuidedStep.jsx       # Teach-then-do pattern for build sections
-    InterviewQuestion.jsx
+    InterviewQuestion.jsx # With governance notice gating
     JourneyProgress.jsx  # Shape-based progress bar (responsive)
     OrganicShape.jsx     # CSS clip-path shape system
     PageTransition.jsx   # Direction-aware animated content swapper
-    PathCard.jsx         # Boarding pass layout
+    PathCard.jsx         # Project plan card
     PromptCard.jsx       # Copy-to-clipboard with outcome feedback
-    SafetyInterstitial.jsx # "While we're at it" safety lessons
+    SafetyInterstitial.jsx # Multi-step "While we're at it" safety lessons
     SectionLabel.jsx
-    SectionShell.jsx     # Shared navigation/transition wrapper for sections
-    SetupPrompt.jsx
+    SectionShell.jsx     # Shared navigation/transition wrapper for all sections
+    SetupPrompt.jsx      # Claude setup with clickable link
     TextInput.jsx
   sections/
-    WelcomeScreen.jsx
+    WelcomeScreen.jsx    # With clickable claude.ai link
     ThresholdInterstitial.jsx  # Auto-advancing section transition
-    IceBreaker.jsx       # Section 2: exercises + safety
+    IceBreaker.jsx       # Section 2: exercises + safety + models intro
     Foundation.jsx       # Section 3: prompting, structured output, context
-    PowerUp.jsx          # Section 4: system prompts, workflows, tools
+    PowerUp.jsx          # Section 4: system prompts, workflows, roast, tools
     Ship.jsx             # Section 5: review, save/share, reflection, next steps
   data/
     interviewSteps.js    # Adaptive question flow
     projectTemplates.js  # 18 templates + matching + path card derivation
   styles/
-    global.css           # Reset, keyframes, prefers-reduced-motion
+    global.css           # Reset, keyframes, celebrations, prefers-reduced-motion
 public/
   favicon.svg            # Copper triangle
 ```
@@ -55,13 +55,13 @@ public/
 ## Design System
 
 ### Typography
-- **Display:** Instrument Serif (italic for headlines). Loaded via `<link>` in index.html (not @import, which caused FOUT).
+- **Display:** Instrument Serif (italic for headlines). Loaded via `<link>` in index.html.
 - **Body:** DM Sans. Clean, legible, good weight range.
 - **Do not substitute.** These were chosen specifically.
-- **Sizing:** Headlines use `clamp(26px,5vw,34px)`. Body text is 16px. Hints and secondary text are 14px. Labels and fine print are 13px. Base body font-size is 16px in global.css.
+- **Sizing:** Headlines use `clamp(26px,5vw,34px)`. Body text is 16px. Hints and secondary text are 15px. Labels are 13px. Base body font-size is 16px. No sub-13px text except progress bar indicators.
 
 ### Color — Split Accent System
-- **Sage (#7A8B6A):** Environmental accent. Selection states, focus rings, past-progress markers, safety interstitials.
+- **Sage (#7A8B6A):** Environmental accent. Selection states, focus rings, past-progress markers, safety interstitials, checkmarks.
 - **Copper (#BF7B5E):** Action accent. Primary buttons, active progress, CTAs, skill labels.
 - **Background:** Warm cream (#F7F5F0) with SVG noise grain overlay (fixed position, rendered once by GrainOverlay).
 - **Text:** Near-black warm (#2C2925), muted (#6B665F), light (#9E9890).
@@ -70,56 +70,60 @@ public/
 ### Layout
 - **Max content width:** 680px, centered.
 - **Side padding:** 20px.
-- **Alignment:** Left-aligned throughout, including section anchor screens. Only the final closing screen (shapes + "You built something real") is centered.
+- **Section anchors:** Back button left-aligned, celebration shapes and text centered.
+- **Final screen:** Fully centered with scroll-triggered staged animation.
 
 ### The Shape System
 Organic CSS shapes using `clip-path` with hand-wobbled polygon coordinates. Progression: triangle(3) → square(4) → pentagon(5) → hexagon(6) → circle(inf). Maps to the five sections.
 
-Shapes appear in: welcome screen falling animation, journey progress bar, welcome journey pills, and the final Ship screen (shapes return as visual climax).
+Shapes appear in: welcome screen falling animation, journey progress bar, welcome journey pills, section anchor celebrations (scatter + bounce + float), and the final Ship screen (biggest celebration as climax).
 
 ---
 
 ## Animation Architecture
 
 ### Reduced Motion
-All animations respect `prefers-reduced-motion: reduce` via a CSS media query in global.css that sets `animation-duration` and `transition-duration` to near-zero. A `usePrefersReducedMotion` hook is available in hooks.js for any JS-side checks needed.
+All animations respect `prefers-reduced-motion: reduce` via a CSS media query in global.css that sets `animation-duration` and `transition-duration` to near-zero.
 
 ### Three Motion Types
 1. **"page"** — Horizontal slide with slight scale. Used within sections.
 2. **"rise"** — Float up with spring easing. Used for reveals (path card).
 3. **"threshold"** — Scale with blur effect. Used for section transitions.
 
+### Celebration Animations
+Section anchors use a three-part celebration sequence:
+1. **Scatter** — Shapes explode outward from center, rotating and fading (`celebrateScatter`)
+2. **Bounce** — Shapes spring up from below with weighty 5-stage overshoot (`celebrateBounce`)
+3. **Float** — Landed shapes gently bob with rotation (`celebrateFloat`, infinite loop)
+
+The finale (Ship) is a staged cinematic version: IntersectionObserver waits for 60% visibility, then plays scatter → bounce → text reveal → buttons over 3.2 seconds. Shapes are 36-48px (vs 20-26px in section anchors).
+
 ### PageTransition Component
-Effect 1 watches `transitionKey` only, owns animation timers. Effect 2 watches `children`, updates display child only when NOT mid-transition. A `transitioning` ref prevents interference. Cleanup runs on unmount only.
+Effect 1 watches `transitionKey` only, owns animation timers. Effect 2 watches `children`, updates display child only when NOT mid-transition. A `transitioning` ref prevents interference.
 
-**Critical:** PromptCard must have a `key` prop (exercise id or prompt text) to prevent React from reusing the component instance across steps and leaking outcome state.
-
-### Stagger Gating
-ChoiceButton animations are gated by `ready` prop. Parent sets `false` during transitions, `true` via `onEntered` callback. Without this, staggers play behind the parent's opacity:0 state.
+**Critical:** PromptCard must have a `key` prop (exercise id or prompt text) to prevent state bleeding.
 
 ---
 
 ## Section Architecture
 
 ### SectionShell Pattern
-Sections 3-5 use a shared `SectionShell` component that handles:
-- Step index state and direction tracking
-- Forward/back navigation with progress reporting
-- PageTransition wrapping
-- BackButton rendering (always present, including step 0 for cross-section back navigation)
+All four build sections (IceBreaker, Foundation, PowerUp, Ship) use a shared `SectionShell` component that handles step navigation, transitions, progress reporting, and BackButton rendering.
 
-Each section provides a step sequence array and a render function. This eliminated ~150 lines of duplicated navigation boilerplate.
+### Safety Interstitials — Multi-Step Acknowledgment
+SafetyInterstitial supports a `points[]` prop for multi-step acknowledgment. Each click of Continue reveals the next point with a checkmark on the previous one. Button label changes from "Next point" to "Got it" on the last point. Applied to:
+- **IceBreaker S2:** 3 points for work (privacy, data, models), 2 for personal (privacy, models)
+- **PowerUp S4:** 2 points (permission scoping, prompt injection)
+- **Ship S5:** 2 points (scaling habits, monthly audit)
 
-**Note:** IceBreaker (Section 2) still manages its own state and hasn't been migrated to SectionShell yet.
-
-### Step Sequence Pattern
-Every section defines steps as an array of `{ type, index? }` objects. Types include: `"exercise"`, `"build"`, `"safety"`, `"anchor"`, `"continuity"`, `"review"`, `"saveshare"`, `"reflection"`, `"nextsteps"`. The section's render function switches on type.
+### Governance Notice Gating
+When "Something for work" is selected in the interview, clicking Continue the first time is blocked. The notice background darkens and "Noted. Click Continue again to proceed" appears. Forces acknowledgment of workplace AI policies. Resets if selection changes.
 
 ### Section Transitions
 Auto-advancing ThresholdInterstitial screens between sections. Config stored in `SECTION_TRANSITIONS` lookup in App.jsx. Transitions are skipped on re-entry (tracked via a `visited` Set ref).
 
 ### Cross-Section Back Navigation
-BackButton appears on every screen, including the first step of each section. Clicking Back on step 0 calls `onBack`, which navigates to the previous section screen in App.jsx.
+BackButton appears on every screen, including the first step of each section. Clicking Back on step 0 calls `onBack`, which navigates to the previous section.
 
 ---
 
@@ -133,77 +137,71 @@ welcome → transition → interview (8 questions) → pathcard
   → ship-transition → ship (5 steps)
 ```
 
-App.jsx manages: `screen` (current screen), `answers` (accumulated interview data), `sectionProgress` (one object for all sections, with stable per-section updater functions via useMemo), `visited` (Set of sections seen).
-
-Document title updates per screen via SECTION_TITLES lookup.
+App.jsx manages: `screen`, `answers`, `sectionProgress` (one object, stable updaters via useMemo), `visited` (Set). Document title updates per screen via SECTION_TITLES lookup.
 
 ---
 
 ## Interview Flow — Deviations from PDD
 
 ### Restructured Question Order
-PDD: assessment → fork → project scoping → calibration.
-We changed to: **fork → project idea → assessment → adaptive follow-up → calibration.**
-Project conversation comes first because the welcome screen promises "We'll figure out what you want to make."
+**fork → project idea → assessment → adaptive follow-up → calibration.** Project conversation comes first because the welcome screen promises "We'll figure out what you want to make."
 
 ### What Each Answer Drives
-- `fork`: Project prompts throughout all sections (work vs personal framing)
+- `fork`: Project prompts throughout (work vs personal); safety interstitial variants; governance notice
 - `project_idea`: Keyword-matched for path card; interpolated into every prompt in Sections 2-5
-- `experience`: Ice Breaker exercise difficulty (novice gets plain-language, experienced gets Python), anchor text adaptation ("You just built something with AI" vs "You just wrote code"), follow-up question variant, path card level label
-- `code_feeling`: Section 4 tools step (comfortable users get Claude Code intro, others get capabilities overview); next steps personalization
-- `long_output`: Adjusts "what you'll learn" text on path card
-- `time`: Path card duration estimate (adjusted to be honest: 30min→~45min, 1hr→~60min)
-- `setup`: Setup prompt on path card screen (includes free vs paid account note)
+- `experience`: Exercise difficulty, anchor text adaptation, follow-up question variant, path card level
+- `code_feeling`: Section 4 tools step (Claude Code vs capabilities overview); next steps
+- `long_output`: Path card "what you'll learn" text
+- `time`: Path card duration estimate (30min→~45min, 1hr→~60min)
+- `setup`: Setup prompt with clickable claude.ai link and free/paid note
 
 ---
 
 ## Section Details
 
 ### Section 2: Ice Breaker
-3 exercises + 1 safety interstitial + anchor. Exercises adapt by experience level:
+3 exercises + safety (multi-step with models intro) + anchor.
+
+Exercises adapt by experience level:
 - **Novice:** Plain-language prompts, no code execution assumed
-- **Experienced:** Python scripts with "run it" framing
+- **Experienced:** Artifact-producing prompts ("present as an artifact I can see")
 
-Safety lesson after exercise 2 covers data privacy + "check before you trust" (not "read before you run" since novice users aren't running code). Exercises 1-2 flow uninterrupted to build momentum.
+Exercise 3 explicitly asks Claude to build an interactive artifact so users end the section with something tangible.
 
-Anchor text adapts: novices see "You just built something with AI," experienced users see "You just wrote code."
+Safety (multi-step checkmarks): data privacy → work data handling (work only) → models intro (Haiku/Sonnet/Opus + extended thinking).
 
-Exercise 3 bridges to the user's project idea from Section 1.
+Anchor adapts: novices see "You just built something with AI," experienced see "You just wrote code."
+
+All exercises show "Claude may take a moment" thinking note.
 
 ### Section 3: Foundation
-Conversation continuity note → 3 guided builds + safety + anchor.
+Conversation continuity note (with copyable catch-up prompt) → 3 guided builds + safety + anchor.
 
-Skills: prompting well, structured output, adding personal context. Each prompt adapts for work/personal and interpolates the user's project idea.
+Skills: prompting well, structured output, adding personal context. Each prompt adapts for work/personal.
 
-Opens with a continuity note explaining to keep the same Claude conversation open. Includes a catch-up prompt for users who lost their conversation: actual copy they can paste to get Claude back up to speed.
+`showThinkingNote` on prompting and context steps.
 
-`showThinkingNote` is set on the prompting and context steps (the ones that produce long responses). The structured output step is fast and doesn't show the note.
-
-Safety: hallucination awareness (all users) + data handling (work users only).
+Safety: hallucination awareness (both paths). Data handling moved to S2 for work users.
 
 ### Section 4: Power Up
-4 guided builds + safety + anchor.
+4 guided builds + safety (multi-step) + anchor.
 
-Skills: system prompts, multi-step workflows (draft-critique-revise), tools/Claude Code.
+Skills: system prompts, multi-step workflows, roast (labeled "Quick break"), tools/Claude Code.
 
-Includes a "roast your project" exercise between workflows and tools as a playful break that secretly reinforces the critique pattern. The tools step references the roast ("That roast probably surfaced some real weaknesses...") to connect the playful exercise to the capability discussion.
+Roast prompt includes "Don't tell me to stop building and just use it" to avoid generic meta-advice. Tools step references the roast to connect the playful exercise to capabilities.
 
-`showThinkingNote` on the workflow step (multi-step responses take time).
+`showThinkingNote` on the workflow step.
 
-Tools step adapts based on `code_feeling`.
-
-Safety: permission scoping (valet keys analogy) + prompt injection awareness.
+Safety (multi-step): permission scoping + prompt injection.
 
 ### Section 5: Ship
-Review → safety (the long game) → save/share → reflection → next steps.
+Review → safety (multi-step: habits + monthly audit) → save/share → reflection → next steps.
 
-Review: one final prompt asking Claude to walk through what was built.
+Save & Share: numbered instructions mentioning "Publish" from artifact dropdown for shareable URLs.
 
-Save & Share: numbered instructions for saving work from the Claude conversation, plus a callout explaining how to publish Claude artifacts and share the URL.
+Reflection: static skills checklist. Personalized message based on experience level and fork.
 
-Reflection: static skills checklist (all six skills covered in the experience). Personalized message based on experience level and fork.
-
-Next steps: personalized recommendations based on interview data. Final screen: organic shapes return with staggered animation + "Open Claude" link.
+Next steps: personalized (Claude Code for coders, model comparison for others, agents/APIs/MCP for practitioners). Final screen: staged celebration (scatter → bounce → float → text → "Open Claude" + "Start over" + "Share with a friend").
 
 ---
 
@@ -211,17 +209,24 @@ Next steps: personalized recommendations based on interview data. Final screen: 
 
 ### PromptCard
 - Copy-to-clipboard with navigator.clipboard API
-- Detects `[placeholder]` brackets in prompt text; shows "fill in the [brackets] before pasting" warning on copy with extended 4s display
-- Outcome choices are contextual via `outcomeLabels` prop: "It worked!" for exercises, "Output looks good" for guided builds, "Review done" for review
-- Brief celebration/acknowledgment beat before advancing (800ms for success, 2500ms for snag with iteration tip, 400ms for skip)
-- "Need to iterate" outcome shows a helpful tip before advancing: "Try telling Claude what went wrong..."
-- **Must have a `key` prop** when rendered in a list or transition context to prevent state bleeding between steps
+- Detects `[placeholder]` brackets; shows warning on copy with 4s display. Instruction text adapts: "Fill in the [brackets], paste into Claude..."
+- Outcome choices contextual via `outcomeLabels` prop
+- "Need to iterate" shows tip with manual "Ready to continue" button + "Take me back" button (returns to prompt card for re-copy)
+- "Skip" has distinct message and timing from success
+- **Must have a `key` prop** to prevent state bleeding
 
 ### GuidedStep
-The teach-then-do component for Sections 3-4. Structure: skill label (copper) → headline → explanation → "The move:" tip callout → PromptCard → optional "Claude may take a moment" note (controlled by `showThinkingNote` prop) → hint (italic, 14px, textMuted).
+Teach-then-do component. Structure: skill label (copper, 13px) → headline → explanation → PromptCard → optional thinking note → hint (italic, 15px).
+
+The "The move:" tip callout was removed to reduce visual clutter. Explanation + prompt card is sufficient.
 
 ### SafetyInterstitial
-Sage-tinted "While we're at it" pattern. Used across all sections with varying content. The label "While we're at it" is consistent; the title and content change.
+Sage-tinted "While we're at it" pattern. Supports two modes:
+- **Children mode:** Single continue button, renders children as content
+- **Points mode:** `points[]` prop enables multi-step click-through with checkmarks. Each point has title + body. Button changes from "Next point" to "Got it" on last point.
+
+### PathCard
+Clean "Your Project" card (dropped the "Boarding Pass" metaphor after alpha testing found it unclear). Shows project name, description, duration, setup status, and skills.
 
 ---
 
@@ -229,7 +234,7 @@ Sage-tinted "While we're at it" pattern. Used across all sections with varying c
 
 18 pre-written templates (10 personal, 8 work). Client-side keyword matching via `input.toLowerCase().includes(keyword)`.
 
-**When Claude API is integrated:** The API's job narrows to "pick the best template and personalize the framing." The lookup table becomes the template library the API selects from.
+**When Claude API is integrated:** The API's job narrows to "pick the best template and personalize the framing."
 
 ---
 
@@ -238,23 +243,24 @@ Sage-tinted "While we're at it" pattern. Used across all sections with varying c
 ### Restart
 - **Keyboard:** Ctrl+Shift+R resets all state to welcome screen
 - **Console:** `window.__restart()` for programmatic reset
-- Useful for testing different interview paths without hard refresh
 
 ### Error Handling
 - ErrorBoundary wraps the entire app
 - "Show details" toggle reveals error message and component stack trace
 - Errors logged to console with `[Build Wizard Error]` prefix
-- Friendly recovery UI with Refresh button
 
 ### Testing Checklist
-Test three paths: newcomer/personal, experienced/work, fallback/obscure project idea. Check:
+Test three paths: newcomer/personal, experienced/work, fallback/obscure. Check:
 - Adaptive content (exercise difficulty, prompt framing, safety variants, anchor text)
 - Navigation (back works everywhere including cross-section, transitions skip on re-entry)
-- Progress bar fills across all sections
+- Safety multi-step checkmarks work on all three interstitials
+- Governance notice blocks first Continue on work path
+- Progress bar fills across all sections (no text collision)
 - Tab title updates per section
 - Copy + placeholder warning behavior
-- Save/share step content
-- Final screen shapes + Open Claude link
+- Celebration animations at each section anchor
+- Final screen shapes + Open Claude + Start over + Share links
+- Models/thinking note visible in Section 2
 
 Log bugs in `testing-notes.md` with format: `- [ ] [Section] Description`
 
@@ -263,19 +269,18 @@ Log bugs in `testing-notes.md` with format: `- [ ] [Section] Description`
 ## Responsive Behavior
 
 - **Breakpoint:** 480px (single breakpoint, `useIsMobile` hook)
-- **Below 480px:** Journey progress collapses to dots + active label. Textarea keyboard hint hidden. Mobile users see copper-tinted callout on welcome screen recommending desktop.
-- **Above 480px:** Full journey progress with labels. "Open claude.ai" pill appears below the CTA button as context (not above, which competed with the button).
+- **Below 480px:** Journey progress collapses to dots + active label. Mobile callout recommends desktop.
+- **Above 480px:** Full journey progress. Clickable "Open claude.ai" link above CTA button on welcome screen.
 
 ---
 
 ## Known Issues & Watch-Fors
 
-- Path card notch circles use `background: T.color.bg` to fake the perforation cutout. Breaks over different backgrounds. Would need CSS mask for robustness.
-- Keyword matching is substring-based (`includes`), not word-boundary. "recipe" matches "prescribe." Low-risk given the domain but fragile.
-- The grain overlay SVG filter may cause performance issues on low-end mobile. Consider a static PNG noise tile as fallback.
-- Section prompts assume conversational continuity in Claude (each builds on the previous). Foundation opens with a continuity note and catch-up prompt, but there's no technical enforcement.
-- Cross-section back navigation lands on step 0 of the previous section, not on the anchor screen the user left from. Would need per-section step persistence to fix.
-- IceBreaker hasn't been migrated to SectionShell (still manages its own step state). Works fine but is the last holdout of the pre-SectionShell pattern.
+- Keyword matching is substring-based (`includes`), not word-boundary. Low-risk given the domain but fragile.
+- The grain overlay SVG filter may cause performance issues on low-end mobile.
+- Section prompts assume conversational continuity in Claude. Foundation has a catch-up prompt but no technical enforcement.
+- Cross-section back navigation lands on step 0 of the previous section, not on the anchor. Would need per-section step persistence to fix.
+- Progress bar uses solid background through 70% then fades. Content can still peek through the bottom 30% fade zone on very long scrolls.
 
 ---
 
@@ -285,7 +290,6 @@ Log bugs in `testing-notes.md` with format: `- [ ] [Section] Description`
 - Progress persistence (localStorage for pause-and-return)
 - Quick Path variant (compressed version for 30-minute users)
 - Clickable journey progress bar for section navigation
-- Celebration animations at section milestones (confetti, etc.)
 
 ---
 
@@ -306,6 +310,10 @@ Prioritize findings as P0 (blocking), P1 (important), P2 (quality), P3 (polish).
 - "Claude may take a moment" showing on fast prompts
 - Dead outcomes state that made the reflection checklist always show everything completed
 - Cross-section back navigation missing entirely
+- Governance notice background that didn't visually change (identical ternary)
+- Safety interstitials too easy to click through without reading
+- Celebration shapes too small and easily missed
+- "Bonus round" label on a required step
 
 ### Alpha Testing Protocol
 Test three paths (newcomer/personal, experienced/work, fallback/obscure). Log findings in `testing-notes.md` with section prefixes. Check console for `[Build Wizard Error]` messages. Use Ctrl+Shift+R to reset between runs.
