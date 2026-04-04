@@ -22,12 +22,12 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(prompt);
+      setCopied(true);
+      clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setCopied(false), hasPlaceholders ? 4000 : 2000);
     } catch {
       // Clipboard API unavailable: user can select & copy manually
     }
-    setCopied(true);
-    clearTimeout(copyTimer.current);
-    copyTimer.current = setTimeout(() => setCopied(false), hasPlaceholders ? 4000 : 2000);
   }, [prompt, hasPlaceholders]);
 
   const handleOutcome = useCallback((result) => {

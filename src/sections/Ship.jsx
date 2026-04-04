@@ -16,7 +16,7 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
       <details style={{ marginBottom: 16, fontSize: 15, color: T.color.textMuted }}>
         <summary style={{ cursor: "pointer", color: T.color.textLight }}>Lost your Claude conversation?</summary>
         <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
-          I'm building a project about {idea}. We've been working on it together through several sections. Here's the best version so far: [paste your latest output]
+          I'm building a project about {idea}. We've gone through the full build: prompting, structured output, system prompts, and multi-step workflows. Here's the final version of what I've built: [paste your latest output]
         </div>
       </details>
       <SectionLabel>Section 5 · Ship</SectionLabel>
@@ -311,10 +311,11 @@ function FinaleScreen({ answers }) {
     // Fallback for browsers without IntersectionObserver
     if (!("IntersectionObserver" in window)) {
       setStage(1);
-      setTimeout(() => setStage(2), 600);
-      setTimeout(() => setStage(3), 2200);
-      setTimeout(() => setStage(4), 3200);
-      return;
+      const t1 = setTimeout(() => setStage(2), 600);
+      const t2 = setTimeout(() => setStage(3), 2200);
+      const t3 = setTimeout(() => setStage(4), 3200);
+      timers.current = [t1, t2, t3];
+      return () => timers.current.forEach(clearTimeout);
     }
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -416,7 +417,7 @@ function FinaleScreen({ answers }) {
       </p>
 
       {/* Summary card */}
-      {stage >= 4 && answers?.project_idea && (
+      {stage >= 4 && (
         <div style={{
           background: T.color.bgCard,
           border: `1.5px solid ${T.color.border}`,
@@ -431,7 +432,7 @@ function FinaleScreen({ answers }) {
             Your project
           </div>
           <div style={{ fontSize: 16, color: T.color.text, lineHeight: 1.5, marginBottom: 12 }}>
-            {answers.project_idea}
+            {answers?.project_idea || "Your AI project"}
           </div>
           <div style={{ fontSize: 13, color: T.color.textLight }}>
             Your project lives in your Claude conversation. Come back here anytime to refresh your skills.

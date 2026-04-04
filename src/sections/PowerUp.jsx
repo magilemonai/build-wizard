@@ -114,7 +114,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
                 <details style={{ marginBottom: 16, fontSize: 15, color: T.color.textMuted }}>
                   <summary style={{ cursor: "pointer", color: T.color.textLight }}>Lost your Claude conversation?</summary>
                   <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
-                    I'm building a project about {answers.project_idea || "my project"}. We've been working on it together through several sections. Here's the best version so far: [paste your latest output]
+                    I'm building a project about {answers.project_idea || "my project"}. We've already gone through exercises, prompting, structured output, and adding personal context. Here's the best version of what I've built so far: [paste your latest output]
                   </div>
                 </details>
               )}

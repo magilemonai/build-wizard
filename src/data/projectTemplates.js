@@ -47,6 +47,10 @@ const projectTemplates = {
       name: "An email drafting assistant in your voice",
       desc: "Handles recurring message formats — status updates, follow-ups, responses — in a tone that sounds like you, not like a robot. Today we get it drafting three real messages you'd actually send.",
       learns: "System prompts for voice and tone, structured templates, iteration, and reviewing AI output before it represents you." },
+    { keywords: ["social", "media", "post", "caption", "linkedin", "instagram", "twitter", "tiktok"],
+      name: "A social media content assistant",
+      desc: "Generates posts, captions, and content ideas matched to your brand voice and platform. Today we build a system that drafts a week of posts you'd actually publish.",
+      learns: "System prompts for brand voice, structured output (content calendars), iteration on tone, and reviewing AI-drafted content before it represents you." },
     { keywords: ["report", "data", "spreadsheet", "excel", "csv", "analys", "number", "metric", "dashboard"],
       name: "A data summarizer for stakeholder updates",
       desc: "Pulls insights from your spreadsheets and formats them into clear narratives for the people who need them. Today we build one that turns raw data into a summary your team would value.",
@@ -130,7 +134,9 @@ export function derivePathCard(answers) {
     : matched.desc;
 
   return {
-    projectName: isFallback && idea ? `Your ${type === "work" ? "work" : "personal"} project: ${idea.length > 40 ? idea.slice(0, 40) + "..." : idea}` : matched.name,
+    projectName: isFallback && idea
+      ? `Your ${type === "work" ? "work" : "personal"} project: ${idea.length > 40 ? idea.slice(0, idea.lastIndexOf(" ", 40)) + "..." : idea}`
+      : matched.name,
     projectDescription,
     level: levelMap[answers.experience] || "Explorer",
     time: timeMap[answers.time] || "~1 hour",

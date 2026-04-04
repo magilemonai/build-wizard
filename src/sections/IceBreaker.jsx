@@ -177,7 +177,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
               />
               {stepIndex === 0 && canSkipToFoundation && (
                 <button
-                  onClick={onComplete}
+                  onClick={() => { onComplete(); }}
                   style={{
                     display: "block",
                     marginTop: 16,

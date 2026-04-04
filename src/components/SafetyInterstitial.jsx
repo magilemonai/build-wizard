@@ -44,7 +44,7 @@ export default function SafetyInterstitial({ title, points, children, onContinue
           While we're at it
         </div>
         <h3 style={{
-          fontFamily: T.font.display, fontSize: 24, fontWeight: 400,
+          fontFamily: T.font.display, fontSize: "clamp(22px,4vw,28px)", fontWeight: 400,
           fontStyle: "italic", lineHeight: 1.3,
           color: T.color.text, margin: "0 0 16px 0",
         }}>

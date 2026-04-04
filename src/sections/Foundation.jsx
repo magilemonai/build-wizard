@@ -246,10 +246,10 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 }}>
                   {[
                     { idx: 0, size: 22, color: T.color.copper },
-                    { idx: 1, size: 18, color: T.color.sage },
-                    { idx: 2, size: 24, color: T.color.copper },
-                    { idx: 3, size: 18, color: T.color.sage },
-                    { idx: 4, size: 20, color: T.color.copper },
+                    { idx: 1, size: 20, color: T.color.sage },
+                    { idx: 2, size: 28, color: T.color.copper },
+                    { idx: 3, size: 20, color: T.color.sage },
+                    { idx: 4, size: 24, color: T.color.copper },
                   ].map((s, i) => (
                     <div key={i} style={{
                       animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.25 + i * 0.08}s both, celebrateFloat 3s ease-in-out ${1.0 + i * 0.3}s infinite`,
