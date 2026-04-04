@@ -295,27 +295,39 @@ function NextStepsScreen({ answers, BackButton }) {
 /* ━━━ Finale: the big celebration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function FinaleScreen() {
   const ref = useRef(null);
+  const timers = useRef([]);
   const [stage, setStage] = useState(0);
   // 0 = waiting for scroll, 1 = scatter, 2 = shapes land, 3 = text appears, 4 = full
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // Fallback for browsers without IntersectionObserver
+    if (!("IntersectionObserver" in window)) {
+      setStage(1);
+      setTimeout(() => setStage(2), 600);
+      setTimeout(() => setStage(3), 2200);
+      setTimeout(() => setStage(4), 3200);
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           observer.disconnect();
-          // Staggered reveal: each stage triggers after the previous settles
-          setStage(1); // scatter particles fly
-          setTimeout(() => setStage(2), 600);  // shapes start bouncing in
-          setTimeout(() => setStage(3), 2200); // text fades in after shapes settle
-          setTimeout(() => setStage(4), 3200); // buttons appear
+          setStage(1);
+          const t1 = setTimeout(() => setStage(2), 600);
+          const t2 = setTimeout(() => setStage(3), 2200);
+          const t3 = setTimeout(() => setStage(4), 3200);
+          timers.current = [t1, t2, t3];
         }
       },
-      { threshold: 0.6 } // Wait until well within view
+      { threshold: 0.6 }
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      timers.current.forEach(clearTimeout);
+    };
   }, []);
 
   return (

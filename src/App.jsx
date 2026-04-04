@@ -113,7 +113,7 @@ export default function App() {
     if (currentStep && answers[currentStep.id] !== undefined && currentValue === null) {
       setCurrentValue(answers[currentStep.id]);
     }
-  }, [stepIndex, currentStep]);
+  }, [stepIndex, currentStep, answers]);
 
   // Generic section navigation: skip transition on re-entry
   const goToSection = useCallback((section) => {
