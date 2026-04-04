@@ -19,18 +19,18 @@ export default function WelcomeScreen({ onBegin }) {
           position: "relative", width: 220, height: 120,
           margin: "0 auto 40px",
         }}>
-          {/* Top row: triangle, square, pentagon */}
+          {/* Top row: triangle, square, pentagon — centered on 50% */}
           <div style={{
             position: "absolute",
-            left: "calc(50% - 72px)", top: "calc(50% - 22px)",
+            left: "calc(50% - 60px)", top: "calc(50% - 22px)",
             opacity: 0,
             animation: "fallBounce 1.4s cubic-bezier(0.12, 0, 0.25, 1) 0.3s both",
           }}>
-            <OrganicShape shapeIndex={0} size={38} color={T.color.copper} />
+            <OrganicShape shapeIndex={0} size={36} color={T.color.copper} />
           </div>
           <div style={{
             position: "absolute",
-            left: "calc(50% - 17px)", top: "calc(50% - 26px)",
+            left: "calc(50% - 16px)", top: "calc(50% - 26px)",
             opacity: 0,
             animation: "fallBounceRight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 0.7s both",
           }}>
@@ -38,7 +38,7 @@ export default function WelcomeScreen({ onBegin }) {
           </div>
           <div style={{
             position: "absolute",
-            left: "calc(50% + 34px)", top: "calc(50% - 20px)",
+            left: "calc(50% + 26px)", top: "calc(50% - 20px)",
             opacity: 0,
             animation: "fallBounceStraight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.1s both",
           }}>
@@ -47,7 +47,7 @@ export default function WelcomeScreen({ onBegin }) {
           {/* Bottom row: hexagon, circle — centered under the top 3 */}
           <div style={{
             position: "absolute",
-            left: "calc(50% - 30px)", top: "calc(50% + 22px)",
+            left: "calc(50% - 28px)", top: "calc(50% + 22px)",
             opacity: 0,
             animation: "fallBounce 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.5s both",
           }}>
@@ -55,7 +55,7 @@ export default function WelcomeScreen({ onBegin }) {
           </div>
           <div style={{
             position: "absolute",
-            left: "calc(50% + 12px)", top: "calc(50% + 24px)",
+            left: "calc(50% + 6px)", top: "calc(50% + 24px)",
             opacity: 0,
             animation: "fallBounceRight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.9s both",
           }}>
