@@ -10,7 +10,7 @@ export default function SetupPrompt({ status }) {
   };
 
   return (
-    <div style={{ background: T.color.copperSoft, border: `1px solid rgba(191,123,94,0.18)`, borderRadius: 16, padding: "18px 22px", marginBottom: 24 }}>
+    <div style={{ background: T.color.copperSoft, border: `1px solid ${T.color.copperGlow}`, borderRadius: 16, padding: "18px 22px", marginBottom: 24 }}>
       <div style={{ fontSize: 15, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
         {status === "need_account" ? "Quick setup needed" : "One more thing"}
       </div>

@@ -14,7 +14,7 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
       {BackButton}
       <details style={{ marginBottom: 12, fontSize: 14, color: T.color.textMuted }}>
         <summary style={{ cursor: "pointer", color: T.color.textLight, fontSize: 13 }}>Lost your Claude conversation?</summary>
-        <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
+        <div style={{ marginTop: 8, padding: "10px 14px", background: T.color.bgSubtle, borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
           I'm building a project about {idea}. We've gone through the full build: prompting, structured output, system prompts, and multi-step workflows. Here's the final version of what I've built: [paste your latest output]
         </div>
       </details>
@@ -30,8 +30,8 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
         margin: "0 0 4px 0", lineHeight: 1.65,
       }}>
         Before you take this with you, one more habit to build: reviewing your work.
-        You don't need to understand every line. You need to understand what it does,
-        what it has access to, and what could go wrong.
+        Focus on what it does, what information it has access to, and what could go wrong.
+        That's the review instinct that makes AI use responsible.
       </p>
       <PromptCard
         prompt={`Let's review what we've built for "${idea}".\n\nGive me a plain-language walkthrough:\n1. What does this project actually do, in one paragraph?\n2. What information did I share with you to build it?\n3. If I wanted to share this with someone else, what should I double-check first?\n4. What's the one thing most likely to need updating over time?`}
@@ -104,7 +104,7 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
 
       <div style={{
         background: T.color.copperSoft,
-        border: `1px solid rgba(191,123,94,0.15)`,
+        border: `1px solid ${T.color.copperGlow}`,
         borderRadius: 12,
         padding: "16px 20px",
         marginBottom: 24,
@@ -269,8 +269,8 @@ function NextStepsScreen({ answers, BackButton }) {
         fontSize: 16, color: T.color.textMuted,
         margin: "0 0 24px 0", lineHeight: 1.65,
       }}>
-        You don't need a roadmap. You have the loop: try, evaluate, refine, expand.
-        But here are a few specific things worth doing next.
+        You have the loop: try, evaluate, refine, expand.
+        Here are the best places to aim it next.
       </p>
 
       {nextSteps.map((step) => (
@@ -346,18 +346,18 @@ function FinaleScreen({ answers }) {
         {stage >= 1 && [
           { x: -160, y: -70, rot: -60, idx: 0, size: 14, color: T.color.copper },
           { x: 140, y: -85, rot: 45, idx: 1, size: 12, color: T.color.sage },
-          { x: -90, y: -100, rot: -25, idx: 4, size: 10, color: `${T.color.copper}88` },
+          { x: -90, y: -100, rot: -25, idx: 4, size: 10, color: `${T.raw.copper}88` },
           { x: 170, y: -45, rot: 65, idx: 2, size: 13, color: T.color.sage },
-          { x: -180, y: -35, rot: -75, idx: 3, size: 14, color: `${T.color.sage}88` },
+          { x: -180, y: -35, rot: -75, idx: 3, size: 14, color: `${T.raw.sage}88` },
           { x: 75, y: -110, rot: 18, idx: 0, size: 9, color: T.color.copper },
-          { x: -50, y: -95, rot: -38, idx: 4, size: 11, color: `${T.color.sage}66` },
-          { x: 130, y: -70, rot: 55, idx: 1, size: 10, color: `${T.color.copper}66` },
+          { x: -50, y: -95, rot: -38, idx: 4, size: 11, color: `${T.raw.sage}66` },
+          { x: 130, y: -70, rot: 55, idx: 1, size: 10, color: `${T.raw.copper}66` },
           { x: -130, y: -80, rot: -50, idx: 2, size: 8, color: T.color.copper },
           { x: 40, y: -100, rot: 10, idx: 3, size: 9, color: T.color.sage },
-          { x: -25, y: -115, rot: -12, idx: 0, size: 7, color: `${T.color.copper}55` },
-          { x: 100, y: -90, rot: 38, idx: 4, size: 8, color: `${T.color.sage}55` },
-          { x: -200, y: -55, rot: -80, idx: 1, size: 10, color: `${T.color.copper}44` },
-          { x: 190, y: -60, rot: 70, idx: 3, size: 9, color: `${T.color.sage}44` },
+          { x: -25, y: -115, rot: -12, idx: 0, size: 7, color: `${T.raw.copper}55` },
+          { x: 100, y: -90, rot: 38, idx: 4, size: 8, color: `${T.raw.sage}55` },
+          { x: -200, y: -55, rot: -80, idx: 1, size: 10, color: `${T.raw.copper}44` },
+          { x: 190, y: -60, rot: 70, idx: 3, size: 9, color: `${T.raw.sage}44` },
           { x: -60, y: -120, rot: -15, idx: 2, size: 6, color: T.color.copper },
           { x: 55, y: -105, rot: 22, idx: 0, size: 7, color: T.color.sage },
         ].map((p, i) => (

@@ -3,7 +3,7 @@ import SectionShell from "../components/SectionShell.jsx";
 import PromptCard from "../components/PromptCard.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
-import OrganicShape from "../components/OrganicShape.jsx";
+import SectionCelebration from "../components/SectionCelebration.jsx";
 
 /* ━━━ Exercise Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function ExerciseScreen({ exercise, onConfirm }) {
@@ -237,37 +237,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
             <div style={{ padding: "40px 0" }}>
               {BackButton}
               <div style={{ textAlign: "center" }}>
-                <div style={{ position: "relative", height: 80, marginBottom: 16 }}>
-                  {[
-                    { x: -90, y: -40, rot: -45, idx: 0, size: 10, color: T.color.copper },
-                    { x: 70, y: -50, rot: 30, idx: 1, size: 8, color: T.color.sage },
-                    { x: -50, y: -60, rot: -20, idx: 4, size: 6, color: `${T.color.copper}88` },
-                    { x: 100, y: -30, rot: 50, idx: 2, size: 7, color: T.color.sage },
-                    { x: -110, y: -20, rot: -60, idx: 3, size: 9, color: `${T.color.sage}88` },
-                    { x: 40, y: -65, rot: 15, idx: 0, size: 5, color: T.color.copper },
-                  ].map((p, i) => (
-                    <div key={`scatter-${i}`} style={{
-                      position: "absolute", left: "50%", top: "60%",
-                      "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
-                      "--scatter-rot": `${p.rot}deg`,
-                      animation: `celebrateScatter 0.8s ${T.ease.smooth} ${i * 0.04}s both`,
-                    }}>
-                      <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
-                    </div>
-                  ))}
-                  <div style={{
-                    position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-                    display: "flex", gap: 14, alignItems: "flex-end",
-                  }}>
-                    {[0, 1, 4, 2, 3].map((idx, i) => (
-                      <div key={idx} style={{
-                        animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.08}s both, celebrateFloat 4s ease-in-out ${1.2 + i * 0.3}s infinite`,
-                      }}>
-                        <OrganicShape shapeIndex={idx} size={idx === 4 ? 26 : 20} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <SectionCelebration heroShapeIndex={1} intensity={1} />
                 <h2 style={{
                   fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                   fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
@@ -305,8 +275,8 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                   fontSize: 15, color: T.color.textMuted,
                   lineHeight: 1.6, maxWidth: 440, margin: "16px auto 0",
                 }}>
-                  Good stopping point, by the way. You've got the key safety habits down.
-                  Come back when you're ready, or keep going now.
+                  You've got the key safety habits down and momentum on your side.
+                  Next up: building your actual project.
                 </p>
                 <ContinueButton onClick={onComplete} label="Keep building" />
               </div>

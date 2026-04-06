@@ -56,7 +56,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
         marginTop: 24, marginBottom: 8,
         padding: outcome === "snag" ? "24px" : "32px 24px",
         background: outcome === "worked" ? T.color.copperSoft : T.color.bgSubtle,
-        border: `1.5px solid ${outcome === "worked" ? "rgba(191,123,94,0.2)" : T.color.border}`,
+        border: `1.5px solid ${outcome === "worked" ? T.color.copperGlow : T.color.border}`,
         borderRadius: 16,
         textAlign: outcome === "snag" ? "left" : "center",
         animation: "fadeInNotice 0.3s ease",
@@ -139,7 +139,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
         color: T.color.text,
         whiteSpace: "pre-wrap",
         wordBreak: "break-word",
-        background: "rgba(44,41,37,0.05)",
+        background: T.color.bgSubtle,
         borderTop: `1px solid ${T.color.border}`,
         borderBottom: `1px solid ${T.color.border}`,
       }}>

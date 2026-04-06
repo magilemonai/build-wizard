@@ -210,7 +210,7 @@ export default function App() {
         )}
 
         <div style={{
-          maxWidth: 680, margin: "0 auto", padding: "0 20px",
+          maxWidth: 740, margin: "0 auto", padding: "0 24px",
           paddingTop: showProgress ? 88 : 48, paddingBottom: 80,
         }}>
           {screen === SCREENS.INTERVIEW && currentStep && (
@@ -272,8 +272,8 @@ export default function App() {
                   marginTop: answers.setup !== "ready" ? 12 : 36, fontSize: 15, color: T.color.textMuted,
                   lineHeight: 1.65, textAlign: "center",
                 }}>
-                  Even if you stop here, you've got a project brief and a clear first step.<br />
-                  That's already more than most people start with.
+                  You've got a project brief and a clear first step.<br />
+                  Let's turn it into something real.
                 </p>
               </div>
             </PageTransition>

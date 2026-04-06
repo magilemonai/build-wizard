@@ -3,7 +3,7 @@ import SectionShell from "../components/SectionShell.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
-import OrganicShape from "../components/OrganicShape.jsx";
+import SectionCelebration from "../components/SectionCelebration.jsx";
 
 /* ━━━ Build steps: system prompts, workflows, tools, agents ━━━━ */
 function getBuildSteps(answers) {
@@ -72,13 +72,13 @@ function getBuildSteps(answers) {
         : "That roast probably surfaced some real weaknesses. Here's the good news: AI tools can do more " +
           "than point them out. They can read files, search the web, run code, and connect to other services. " +
           "When AI can take actions, not just produce text, that's the jump from assistant to agent. " +
-          "You don't need to use all of this today. But knowing it exists changes what you think is possible.",
+          "Knowing what's possible changes what you reach for next.",
       prompt: isComfortable
         ? `Here's an idea to try with Claude Code (in your terminal):\n\nI've been building "${idea}" in our conversation. Now I want to turn it into something that lives on my computer.\n\nCan you help me think about what this would look like as a simple file or script I could save and reuse? What would the structure be? Don't build it yet, just sketch the plan.`
         : `I've been building "${idea}" with you. I'm curious about what else is possible.\n\nTell me:\n1. What tools and capabilities do you have access to right now in this conversation?\n2. If I wanted to take what we've built and make it more permanent or powerful, what would my options be?\n3. What's one thing most people don't realize Claude can do?\n\nKeep it practical. I want to know what I could actually use, not a feature list.`,
       hint: isComfortable
         ? "Claude Code is available at claude.ai/code or as a CLI. The prompting skills you've built transfer directly."
-        : "You don't need to use any of these today. The point is knowing the spectrum: from conversation to code to agents. You'll find the right level for your needs.",
+        : "Now you know the spectrum: conversation to code to agents. The prompting skills you've built work at every level.",
     },
   ];
 }
@@ -116,7 +116,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
               {stepIndex === 0 && (
                 <details style={{ marginBottom: 12, fontSize: 14, color: T.color.textMuted }}>
                   <summary style={{ cursor: "pointer", color: T.color.textLight, fontSize: 13 }}>Lost your Claude conversation?</summary>
-                  <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
+                  <div style={{ marginTop: 8, padding: "10px 14px", background: T.color.bgSubtle, borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
                     I'm building a project about {answers.project_idea || "my project"}. We've already gone through exercises, prompting, structured output, and adding personal context. Here's the best version of what I've built so far: [paste your latest output]
                   </div>
                 </details>
@@ -157,44 +157,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
             <div style={{ padding: "40px 0" }}>
               {BackButton}
               <div style={{ textAlign: "center" }}>
-              {/* Celebration: bigger burst for Section 4 */}
-              <div style={{ position: "relative", height: 80, marginBottom: 16 }}>
-                {[
-                  { x: -100, y: -45, rot: -50, idx: 0, size: 10, color: T.color.copper },
-                  { x: 85, y: -55, rot: 35, idx: 1, size: 9, color: T.color.sage },
-                  { x: -60, y: -65, rot: -25, idx: 4, size: 7, color: `${T.color.copper}88` },
-                  { x: 110, y: -30, rot: 55, idx: 2, size: 8, color: T.color.sage },
-                  { x: -120, y: -20, rot: -65, idx: 3, size: 10, color: `${T.color.sage}88` },
-                  { x: 50, y: -70, rot: 20, idx: 0, size: 6, color: T.color.copper },
-                  { x: -35, y: -60, rot: -30, idx: 4, size: 7, color: `${T.color.sage}66` },
-                  { x: 95, y: -40, rot: 45, idx: 1, size: 8, color: `${T.color.copper}66` },
-                  { x: -75, y: -50, rot: -40, idx: 2, size: 5, color: T.color.copper },
-                  { x: 25, y: -62, rot: 12, idx: 3, size: 6, color: T.color.sage },
-                  { x: -40, y: -72, rot: -18, idx: 1, size: 7, color: `${T.color.copper}77` },
-                  { x: 115, y: -52, rot: 42, idx: 4, size: 6, color: `${T.color.sage}77` },
-                ].map((p, i) => (
-                  <div key={i} style={{
-                    position: "absolute", left: "50%", top: "60%",
-                    "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
-                    "--scatter-rot": `${p.rot}deg`,
-                    animation: `celebrateScatter 0.9s ${T.ease.smooth} ${i * 0.03}s both`,
-                  }}>
-                    <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
-                  </div>
-                ))}
-                <div style={{
-                  position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-                  display: "flex", gap: 14, alignItems: "flex-end",
-                }}>
-                  {[0, 1, 2, 3, 4].map((idx, i) => (
-                    <div key={idx} style={{
-                      animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.07}s both, celebrateFloat 3s ease-in-out ${1.2 + i * 0.25}s infinite`,
-                    }}>
-                      <OrganicShape shapeIndex={idx} size={idx === 4 ? 28 : 22} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <SectionCelebration heroShapeIndex={3} intensity={3} />
               <h2 style={{
                 fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,

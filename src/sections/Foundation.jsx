@@ -4,7 +4,7 @@ import SectionShell from "../components/SectionShell.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
-import OrganicShape from "../components/OrganicShape.jsx";
+import SectionCelebration from "../components/SectionCelebration.jsx";
 
 /* ━━━ Build steps: tailored prompts per project type ━━━━━━━━━━━━ */
 function getBuildSteps(answers) {
@@ -88,7 +88,7 @@ function CatchUpPrompt({ idea }) {
   return (
     <div style={{
       padding: "12px 14px",
-      background: "rgba(44,41,37,0.05)",
+      background: T.color.bgSubtle,
       borderRadius: 12,
       position: "relative",
     }}>
@@ -156,7 +156,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
               <div style={{
                 padding: "14px 18px",
                 background: T.color.copperSoft,
-                border: "1px solid rgba(191,123,94,0.15)",
+                border: `1px solid ${T.color.copperGlow}`,
                 borderRadius: 12,
                 marginBottom: 20,
               }}>
@@ -256,46 +256,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
             <div style={{ padding: "40px 0" }}>
               {BackButton}
               <div style={{ textAlign: "center" }}>
-              {/* Celebration */}
-              <div style={{ position: "relative", height: 70, marginBottom: 16 }}>
-                {[
-                  { x: -80, y: -35, rot: -40, idx: 2, size: 8, color: T.color.copper },
-                  { x: 65, y: -50, rot: 25, idx: 0, size: 7, color: T.color.sage },
-                  { x: -45, y: -55, rot: -15, idx: 4, size: 6, color: `${T.color.copper}77` },
-                  { x: 90, y: -25, rot: 45, idx: 3, size: 8, color: `${T.color.sage}77` },
-                  { x: -100, y: -15, rot: -55, idx: 1, size: 6, color: T.color.copper },
-                  { x: 35, y: -60, rot: 10, idx: 4, size: 5, color: T.color.sage },
-                  { x: -60, y: -48, rot: -30, idx: 0, size: 7, color: `${T.color.copper}66` },
-                  { x: 75, y: -38, rot: 35, idx: 3, size: 6, color: `${T.color.sage}66` },
-                ].map((p, i) => (
-                  <div key={i} style={{
-                    position: "absolute", left: "50%", top: "60%",
-                    "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
-                    "--scatter-rot": `${p.rot}deg`,
-                    animation: `celebrateScatter 0.8s ${T.ease.smooth} ${i * 0.04}s both`,
-                  }}>
-                    <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
-                  </div>
-                ))}
-                <div style={{
-                  position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-                  display: "flex", gap: 14, alignItems: "flex-end",
-                }}>
-                  {[
-                    { idx: 0, size: 22, color: T.color.copper },
-                    { idx: 1, size: 20, color: T.color.sage },
-                    { idx: 2, size: 28, color: T.color.copper },
-                    { idx: 3, size: 20, color: T.color.sage },
-                    { idx: 4, size: 24, color: T.color.copper },
-                  ].map((s, i) => (
-                    <div key={i} style={{
-                      animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.25 + i * 0.08}s both, celebrateFloat 3s ease-in-out ${1.0 + i * 0.3}s infinite`,
-                    }}>
-                      <OrganicShape shapeIndex={s.idx} size={s.size} color={s.color} />
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <SectionCelebration heroShapeIndex={2} intensity={2} />
               <h2 style={{
                 fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
@@ -326,9 +287,8 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 ))}
               </div>
               <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "16px auto 0" }}>
-                Another good stopping point. You've got a real project draft and the
-                core prompting skills to keep improving it. The next section levels it
-                up with system prompts and multi-step workflows.
+                You've got a real project draft and the core skills to keep improving it.
+                Next section: system prompts and multi-step workflows that take this further.
               </p>
               <ContinueButton onClick={onComplete} label="Level up" />
               </div>

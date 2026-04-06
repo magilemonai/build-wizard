@@ -59,7 +59,7 @@ export default function JourneyProgress({ currentSection, questionProgress }) {
       padding: "14px 0 40px", pointerEvents: "none",
     }}>
       <div style={{
-        maxWidth: 460, margin: "0 auto", padding: "0 20px",
+        maxWidth: 500, margin: "0 auto", padding: "0 24px",
         display: "flex", alignItems: "center",
       }}>
         {journeySteps.map((step, i) => {
