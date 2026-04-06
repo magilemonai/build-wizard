@@ -1,33 +1,25 @@
-import { useState, useEffect } from "react";
 import T from "../tokens.js";
 import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
 
 /* ━━━ SectionCelebration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Staged celebration:
-   1. Particles scatter outward (immediate)
-   2. All 5 shapes bounce into a line in natural order (staggered)
-   3. After settling: hero slides to center + grows, others slide aside
-   4. Non-hero shapes twirl gently in place (infinite loop)
+   Pure CSS keyframe celebration. No React state changes, no phase
+   swaps, no re-renders. Everything is a single render with staggered
+   animation delays:
 
-   The key: same DOM elements throughout, no re-rendering.
-   Phase change only updates transform values; CSS transition handles
-   the smooth movement.
+   0.0s-1.0s:  Particles scatter outward
+   0.3s-0.7s:  All 5 shapes bounce into a line (natural order)
+   1.5s:       Hero shape grows + lifts (CSS keyframe on the element)
+               Other shapes begin gentle twirl
+
+   heroShapeIndex: 0-4 (which shape owns this section)
+   intensity: 1-3 (particle count)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-const SLOT_WIDTH = 34; // 20px shape + 14px gap
-
 export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
-  const [rearranged, setRearranged] = useState(false);
-
-  useEffect(() => {
-    // Wait for bounce animations to finish, then trigger the rearrangement
-    const t = setTimeout(() => setRearranged(true), 1400);
-    return () => clearTimeout(t);
-  }, []);
-
-  // Particles
   const particleCounts = [6, 10, 14];
   const count = particleCounts[Math.min(intensity - 1, 2)];
+
+  // Deterministic particles
   const particles = [];
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2 + (heroShapeIndex * 0.7);
@@ -42,23 +34,11 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
     particles.push({ x, y, rot, idx: shapeIdx, size, color: baseColor + alphas[i % 3] });
   }
 
-  // Calculate where each shape needs to slide when rearranged.
-  // Natural order: [0, 1, 2, 3, 4] in slots [0, 1, 2, 3, 4]
-  // Final order:   [others[0], others[1], HERO, others[2], others[3]]
-  const heroNatural = heroShapeIndex; // natural slot index
-  const others = sectionShapes.filter((s) => s !== heroShapeIndex);
-
-  function getFinalSlot(shapeIdx) {
-    if (shapeIdx === heroShapeIndex) return 2; // center
-    const oi = others.indexOf(shapeIdx);
-    return oi < 2 ? oi : oi + 1; // skip slot 2
-  }
-
   return (
-    <div style={{ position: "relative", height: 120, marginBottom: 20 }}>
+    <div style={{ position: "relative", height: 110, marginBottom: 20 }}>
       {/* Scatter particles */}
       {particles.map((p, i) => (
-        <div key={`s-${i}`} style={{
+        <div key={`p-${i}`} style={{
           position: "absolute", left: "50%", top: "50%",
           "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
           "--scatter-rot": `${p.rot}deg`,
@@ -68,43 +48,29 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
         </div>
       ))}
 
-      {/* Shape line */}
+      {/* Shape line: all 5 shapes, hero gets special treatment */}
       <div style={{
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
         display: "flex", gap: 14, alignItems: "flex-end",
       }}>
-        {sectionShapes.map((shapeIdx, naturalSlot) => {
+        {sectionShapes.map((shapeIdx, i) => {
           const isHero = shapeIdx === heroShapeIndex;
-          const finalSlot = getFinalSlot(shapeIdx);
-          const dx = rearranged ? (finalSlot - naturalSlot) * SLOT_WIDTH : 0;
-          const scale = rearranged && isHero ? 2 : 1;
-          const liftY = rearranged && isHero ? -8 : 0;
-
           return (
             <div key={shapeIdx} style={{
-              // Bounce in (one-shot, fills forward — stays in final position)
-              animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + naturalSlot * 0.08}s both`,
-              zIndex: isHero && rearranged ? 2 : 1,
+              // Step 1: bounce into line (all shapes)
+              animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.08}s both`,
             }}>
-              {/* Inner wrapper handles the slide/scale transition separately */}
+              {/* Step 2: hero grows after bounce settles; others twirl */}
               <div style={{
-                transform: `translateX(${dx}px) translateY(${liftY}px) scale(${scale})`,
-                transition: rearranged
-                  ? `transform 0.9s ${T.ease.spring}`
-                  : "none",
+                animation: isHero
+                  ? `heroGrow 0.8s ${T.ease.spring} 1.4s both`
+                  : `twirlInPlace 3s ease-in-out ${1.6 + i * 0.15}s infinite`,
               }}>
-                {/* Twirl wrapper: only non-hero shapes twirl, and only after rearranging */}
-                <div style={{
-                  animation: rearranged && !isHero
-                    ? `twirlInPlace 3s ease-in-out ${0.2 * naturalSlot}s infinite`
-                    : "none",
-                }}>
-                  <OrganicShape
-                    shapeIndex={shapeIdx}
-                    size={20}
-                    color={isHero ? T.color.copper : (naturalSlot % 2 === 0 ? T.color.copper : T.color.sage)}
-                  />
-                </div>
+                <OrganicShape
+                  shapeIndex={shapeIdx}
+                  size={20}
+                  color={i % 2 === 0 ? T.color.copper : T.color.sage}
+                />
               </div>
             </div>
           );
