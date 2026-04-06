@@ -19,13 +19,15 @@ function getBuildSteps(answers) {
       title: "Give Claude a job description.",
       explanation:
         "Up to now, you've been explaining what you want each time. " +
-        "A system prompt is the context Claude starts every conversation with. " +
-        "Think of it as a job description: who Claude is, what it knows, how it should behave. " +
-        "Write it once, and every response gets better without you repeating yourself.",
+        "A system prompt is context you give Claude at the start of a conversation " +
+        "to shape how it behaves from that point on. " +
+        "Think of it as a job description: who Claude is, what it knows, how it should respond. " +
+        "The simplest way to use one: start a new conversation and paste it as your first message. " +
+        "Everything after that benefits from the context you set.",
       prompt: isWork
-        ? `I want you to act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nNow let's test it. Take what we've built for ${idea} and produce a ready-to-share version I could send to a colleague this week. Format it so they'd understand the value without needing context from our conversation.`
-        : `I want you to act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nNow let's test it. I have 30 free minutes right now and want to make progress on ${idea}. What should I do with that time? Be specific to what we've built so far, not generic advice.`,
-      hint: "Notice how the system prompt changed Claude's tone and approach. That context carries forward into every response in this conversation.",
+        ? `Before we continue, I want to set some ground rules for this conversation.\n\nFrom now on, act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nAcknowledge this role, then take what we've built for ${idea} and produce a ready-to-share version I could send to a colleague this week. Format it so they'd understand the value without needing context from our conversation.`
+        : `Before we continue, I want to set some ground rules for this conversation.\n\nFrom now on, act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nAcknowledge this role, then answer this: I have 30 free minutes right now and want to make progress on ${idea}. What should I do with that time? Be specific to what we've built so far, not generic advice.`,
+      hint: "Notice how Claude's tone and approach shifted after receiving that role. You just used a system prompt. On Claude Pro, you can save these permanently in a Project so they apply to every new conversation automatically. On the free plan, pasting it as your first message works the same way.",
     },
     {
       id: "workflows",

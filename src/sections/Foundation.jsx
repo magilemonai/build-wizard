@@ -148,12 +148,29 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
               </h2>
               <p style={{
                 fontSize: 16, color: T.color.textMuted,
-                margin: "0 0 20px 0", lineHeight: 1.65,
+                margin: "0 0 12px 0", lineHeight: 1.65,
               }}>
                 From here on, each step builds on the last. Keep the same Claude
                 conversation open in your other tab throughout this section. Each
                 prompt refers to what you built in the previous step.
               </p>
+              <div style={{
+                padding: "14px 18px",
+                background: T.color.copperSoft,
+                border: "1px solid rgba(191,123,94,0.15)",
+                borderRadius: 12,
+                marginBottom: 20,
+              }}>
+                <div style={{ fontSize: 15, fontWeight: 500, color: T.color.copper, marginBottom: 4 }}>
+                  Quick note on who's in charge
+                </div>
+                <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
+                  This wizard tells you what to try and why. Claude is the tool you're
+                  practicing with. If Claude suggests something different from what the
+                  wizard asks, follow the wizard. We're building skills in a specific
+                  order. You can explore freely after.
+                </p>
+              </div>
               <div style={{
                 padding: "16px 20px",
                 background: T.color.bgCard,

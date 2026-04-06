@@ -81,9 +81,9 @@ export default function getInterviewSteps(answers) {
   } else if (exp === "occasional") {
     steps.push({
       id: "followup",
-      question: "What's the gap between what you know about AI and what you actually do with it?",
-      subtext: "Most people in your position sense untapped potential. What does yours look like?",
-      type: "textarea", placeholder: "The thing I keep meaning to try is...",
+      question: "What have you used AI for so far, and what do you wish it could do better?",
+      subtext: "Even a rough sense helps us calibrate. No wrong answers.",
+      type: "textarea", placeholder: "I've used it for... but I wish it could...",
     });
   } else if (exp === "regular") {
     steps.push({

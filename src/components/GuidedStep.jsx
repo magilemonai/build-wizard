@@ -57,19 +57,21 @@ export default function GuidedStep({
         {explanation}
       </p>
 
-      {/* Prompt card */}
-      <PromptCard
-        key={prompt}
-        prompt={prompt}
-        context="Try this in Claude:"
-        outcomeLabels={{ worked: "Output looks good", snag: "Need to iterate", skip: "Skip (next step builds on this)" }}
-        onConfirm={onConfirm}
-      />
+      {/* Hint: shown before prompt so user reads it before switching tabs */}
+      {hint && (
+        <p style={{
+          fontSize: 15, color: T.color.textMuted,
+          margin: "0 0 6px 0", lineHeight: 1.6,
+          fontStyle: "italic",
+        }}>
+          {hint}
+        </p>
+      )}
 
-      {/* Hint */}
+      {/* Thinking note: before prompt so user knows to expect a wait */}
       {showThinkingNote && (
         <div style={{
-          marginTop: 14, padding: "10px 14px",
+          marginBottom: 8, padding: "10px 14px",
           background: T.color.bgSubtle,
           border: `1px solid ${T.color.border}`,
           borderRadius: 12,
@@ -81,15 +83,14 @@ export default function GuidedStep({
         </div>
       )}
 
-      {hint && (
-        <p style={{
-          fontSize: 15, color: T.color.textMuted,
-          marginTop: 8, lineHeight: 1.6,
-          fontStyle: "italic",
-        }}>
-          {hint}
-        </p>
-      )}
+      {/* Prompt card */}
+      <PromptCard
+        key={prompt}
+        prompt={prompt}
+        context="Try this in Claude:"
+        outcomeLabels={{ worked: "Output looks good", snag: "Need to iterate", skip: "Skip (next step builds on this)" }}
+        onConfirm={onConfirm}
+      />
     </div>
   );
 }

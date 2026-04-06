@@ -181,8 +181,8 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
           marginBottom: 8, fontFamily: T.font.body,
         }}>
           {hasPlaceholders
-            ? "Fill in the [brackets], paste into Claude, then tell us how it went:"
-            : "Paste it into Claude, then tell us how it went:"}
+            ? "Fill in the [brackets], paste into Claude, then come back here and tell us how it went:"
+            : "Paste it into Claude, then come back here and tell us how it went:"}
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {[
