@@ -27,9 +27,9 @@ const T = {
   // Raw hex values for contexts that need string manipulation (alpha concat, etc.)
   // These don't auto-switch with dark mode — use sparingly, only for decorative elements
   raw: {
-    copper: "#BF7B5E",
-    copperDark: "#D4916F",
-    sage: "#7A8B6A",
+    copper: "#9C5A3E",
+    copperDark: "#B36036",
+    sage: "#626F55",
     sageDark: "#8FA07E",
   },
   ease: {

@@ -2,7 +2,7 @@ import T from "../tokens.js";
 import { useIsMobile } from "../hooks.js";
 import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
 
-/* ━━━ Journey Progress (responsive) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ Journey Progress (responsive, clickable) ━━━━━━━━━━━━━━━━━ */
 export const journeySteps = [
   { key: "interview", label: "Interview" },
   { key: "icebreaker", label: "Ice Breaker" },
@@ -11,7 +11,7 @@ export const journeySteps = [
   { key: "ship", label: "Ship" },
 ];
 
-export default function JourneyProgress({ currentSection, questionProgress }) {
+export default function JourneyProgress({ currentSection, questionProgress, onSectionClick }) {
   const idx = journeySteps.findIndex((s) => s.key === currentSection);
   const mobile = useIsMobile();
 
@@ -28,17 +28,25 @@ export default function JourneyProgress({ currentSection, questionProgress }) {
     );
   };
 
+  const isClickable = (i) => onSectionClick && (i < idx || i === idx);
+
   if (mobile) {
     return (
       <div style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         background: `linear-gradient(to bottom, ${T.color.bg} 60%, ${T.color.bg}00 100%)`,
-        padding: "14px 20px 20px", pointerEvents: "none",
+        padding: "14px 20px 20px",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {journeySteps.map((s, i) => (
-              <div key={s.key}>{renderShape(i, i === idx ? 14 : 10, i === idx, i < idx)}</div>
+              <div
+                key={s.key}
+                onClick={isClickable(i) ? () => onSectionClick(s.key) : undefined}
+                style={{ cursor: isClickable(i) ? "pointer" : "default" }}
+              >
+                {renderShape(i, i === idx ? 14 : 10, i === idx, i < idx)}
+              </div>
             ))}
           </div>
           <span style={{
@@ -56,7 +64,7 @@ export default function JourneyProgress({ currentSection, questionProgress }) {
     <div style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
       background: `linear-gradient(to bottom, ${T.color.bg} 70%, ${T.color.bg}00 100%)`,
-      padding: "14px 0 40px", pointerEvents: "none",
+      padding: "14px 0 40px",
     }}>
       <div style={{
         maxWidth: 500, margin: "0 auto", padding: "0 24px",
@@ -64,12 +72,21 @@ export default function JourneyProgress({ currentSection, questionProgress }) {
       }}>
         {journeySteps.map((step, i) => {
           const active = i === idx, past = i < idx;
+          const clickable = isClickable(i);
           return (
             <div key={step.key} style={{
               display: "flex", alignItems: "center",
               flex: i < journeySteps.length - 1 ? 1 : "none",
             }}>
-              <div style={{ position: "relative" }}>
+              <div
+                onClick={clickable ? () => onSectionClick(step.key) : undefined}
+                style={{
+                  position: "relative",
+                  cursor: clickable ? "pointer" : "default",
+                  pointerEvents: "auto",
+                }}
+                title={clickable && past ? `Jump to ${step.label}` : undefined}
+              >
                 {renderShape(i, active ? 14 : 10, active, past)}
                 <div style={{
                   position: "absolute", top: "100%", left: "50%",
@@ -79,6 +96,7 @@ export default function JourneyProgress({ currentSection, questionProgress }) {
                   color: active ? T.color.copper : past ? T.color.sage : T.color.textLight,
                   opacity: active || past ? 1 : 0.45,
                   transition: `all 0.5s ${T.ease.smooth}`,
+                  pointerEvents: "auto",
                 }}>{step.label}</div>
               </div>
               {i < journeySteps.length - 1 && (
