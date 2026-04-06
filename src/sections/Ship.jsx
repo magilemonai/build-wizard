@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import T from "../tokens.js";
 import SectionShell from "../components/SectionShell.jsx";
-import SectionLabel from "../components/SectionLabel.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import PromptCard from "../components/PromptCard.jsx";
@@ -13,13 +12,12 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
   return (
     <div>
       {BackButton}
-      <details style={{ marginBottom: 16, fontSize: 15, color: T.color.textMuted }}>
-        <summary style={{ cursor: "pointer", color: T.color.textLight }}>Lost your Claude conversation?</summary>
+      <details style={{ marginBottom: 12, fontSize: 14, color: T.color.textMuted }}>
+        <summary style={{ cursor: "pointer", color: T.color.textLight, fontSize: 13 }}>Lost your Claude conversation?</summary>
         <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
           I'm building a project about {idea}. We've gone through the full build: prompting, structured output, system prompts, and multi-step workflows. Here's the final version of what I've built: [paste your latest output]
         </div>
       </details>
-      <SectionLabel>Section 5 · Ship</SectionLabel>
       <h2 style={{
         fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
         fontWeight: 400, lineHeight: 1.3, margin: "0 0 10px 0",
@@ -518,6 +516,7 @@ export default function Ship({ answers, onBack, onProgress }) {
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
+      sectionShapeIndex={4}
       renderStep={({ step, advance, BackButton }) => {
         if (!step) return null;
 
@@ -532,6 +531,7 @@ export default function Ship({ answers, onBack, onProgress }) {
               <SafetyInterstitial
                 title="The long game."
                 onContinue={advance}
+                sectionShapeIndex={4}
                 points={[
                   { title: "These habits scale with you.", body: "Your AI usage will grow from here. Your data footprint grows with it. The habits you built today (reviewing output, checking permissions, verifying facts) aren't just for beginners. They're the ongoing practice of using these tools well." },
                   { title: "Monthly audit.", body: "Check what tools have access to what. Review your privacy settings. Make sure your practices match your current risk level, not the one from six months ago. Five minutes, once a month. That's the habit that scales." },

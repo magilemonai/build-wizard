@@ -1,7 +1,6 @@
 import T from "../tokens.js";
 import { useState, useCallback, useRef, useEffect } from "react";
 import SectionShell from "../components/SectionShell.jsx";
-import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
@@ -131,6 +130,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
+      sectionShapeIndex={2}
       renderStep={({ step, stepIndex, advance, goBack, BackButton }) => {
         if (!step) return null;
 
@@ -138,7 +138,6 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
           return (
             <div>
               {BackButton}
-              <SectionLabel>Section 3 · Foundation</SectionLabel>
               <h2 style={{
                 fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                 fontWeight: 400, lineHeight: 1.3, margin: "0 0 10px 0",
@@ -170,6 +169,22 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                   wizard asks, follow the wizard. We're building skills in a specific
                   order. You can explore freely after.
                 </p>
+              </div>
+              <div style={{
+                padding: "12px 18px",
+                background: T.color.bgSubtle,
+                border: `1px solid ${T.color.border}`,
+                borderRadius: 12,
+                marginBottom: 20,
+                display: "flex", alignItems: "flex-start", gap: 10,
+                fontSize: 15, color: T.color.textMuted, lineHeight: 1.55,
+              }}>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+                <span>
+                  <strong style={{ color: T.color.text }}>Tip:</strong> Split your screen
+                  so the wizard is on one side and Claude on the other. Much easier than
+                  switching between tabs.
+                </span>
               </div>
               <div style={{
                 padding: "16px 20px",
@@ -205,6 +220,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 hint={s.hint}
                 showThinkingNote={s.showThinkingNote}
                 onConfirm={advance}
+                sectionShapeIndex={2}
               />
             </div>
           );
@@ -215,7 +231,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
           return (
             <div>
               {BackButton}
-              <SafetyInterstitial title="AI gets things wrong confidently." onContinue={advance}>
+              <SafetyInterstitial title="AI gets things wrong confidently." onContinue={advance} sectionShapeIndex={2}>
                 <p style={{ margin: "0 0 12px 0" }}>
                   If something in your output looked right but felt off, pay attention to that instinct.
                   These models fill gaps with plausible fiction and never flag it. They'll cite sources

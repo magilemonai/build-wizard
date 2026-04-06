@@ -1,20 +1,19 @@
 import { useState, useEffect } from "react";
 import T from "../tokens.js";
 
-/* ━━━ Threshold Interstitial (self-contained, auto-advances) ━━━━ */
+/* ━━━ Threshold Interstitial (user-paced transition) ━━━━━━━━━━━ */
 export default function ThresholdInterstitial({
   onComplete,
   headline = "Let's find your project.",
   subtext = "A few questions, then we build.",
 }) {
-  const [phase, setPhase] = useState(0); // 0=entering, 1=visible, 2=exiting
+  const [phase, setPhase] = useState(0); // 0=entering, 1=visible
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 50);
-    const t2 = setTimeout(() => setPhase(2), 1800);
-    const t3 = setTimeout(() => onComplete(), 2400);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, [onComplete]);
+    const t = setTimeout(() => setPhase(1), 50);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <div style={{
@@ -27,13 +26,8 @@ export default function ThresholdInterstitial({
           opacity: phase === 1 ? 1 : 0,
           transform: phase === 0
             ? "translateY(24px) scale(0.96)"
-            : phase === 2
-            ? "translateY(-16px) scale(1.02)"
             : "translateY(0) scale(1)",
-          filter: phase === 1 ? "blur(0px)" : "blur(3px)",
-          transition: phase === 2
-            ? `all 0.5s ${T.ease.page}`
-            : `all 0.6s ${T.ease.smooth}`,
+          transition: `all 0.6s ${T.ease.smooth}`,
         }}>
           <div style={{
             fontFamily: T.font.display, fontSize: 28, fontStyle: "italic",
@@ -41,9 +35,30 @@ export default function ThresholdInterstitial({
           }}>
             {headline}
           </div>
-          <div style={{ fontSize: 15, color: T.color.textMuted }}>
+          <div style={{ fontSize: 15, color: T.color.textMuted, marginBottom: 32 }}>
             {subtext}
           </div>
+          <button
+            onClick={onComplete}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            style={{
+              padding: "12px 32px",
+              background: hovered ? T.color.copper : "transparent",
+              color: hovered ? "#fff" : T.color.copper,
+              border: `1.5px solid ${T.color.copper}`,
+              borderRadius: 10,
+              fontFamily: T.font.body,
+              fontSize: 15,
+              fontWeight: 500,
+              cursor: "pointer",
+              transition: `all 0.25s ${T.ease.smooth}`,
+              opacity: phase === 1 ? 1 : 0,
+              transform: phase === 1 ? "translateY(0)" : "translateY(8px)",
+            }}
+          >
+            Continue →
+          </button>
         </div>
       </div>
   );

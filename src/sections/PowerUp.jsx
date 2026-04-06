@@ -1,6 +1,5 @@
 import T from "../tokens.js";
 import SectionShell from "../components/SectionShell.jsx";
-import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
@@ -19,15 +18,16 @@ function getBuildSteps(answers) {
       title: "Give Claude a job description.",
       explanation:
         "Up to now, you've been explaining what you want each time. " +
-        "A system prompt is context you give Claude at the start of a conversation " +
-        "to shape how it behaves from that point on. " +
-        "Think of it as a job description: who Claude is, what it knows, how it should respond. " +
-        "The simplest way to use one: start a new conversation and paste it as your first message. " +
-        "Everything after that benefits from the context you set.",
+        "A system prompt is the context Claude starts every conversation with. " +
+        "Think of it as a job description: who Claude is, what it knows, how it should behave. " +
+        "Write it once, and every response gets better without you repeating yourself.\n\n" +
+        "To set one: open a Project in Claude (or start a new conversation), " +
+        "and add your system prompt in the project instructions. " +
+        "Everything Claude does in that project will follow your instructions.",
       prompt: isWork
-        ? `Before we continue, I want to set some ground rules for this conversation.\n\nFrom now on, act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nAcknowledge this role, then take what we've built for ${idea} and produce a ready-to-share version I could send to a colleague this week. Format it so they'd understand the value without needing context from our conversation.`
-        : `Before we continue, I want to set some ground rules for this conversation.\n\nFrom now on, act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nAcknowledge this role, then answer this: I have 30 free minutes right now and want to make progress on ${idea}. What should I do with that time? Be specific to what we've built so far, not generic advice.`,
-      hint: "Notice how Claude's tone and approach shifted after receiving that role. You just used a system prompt. On Claude Pro, you can save these permanently in a Project so they apply to every new conversation automatically. On the free plan, pasting it as your first message works the same way.",
+        ? `I want you to act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nNow let's test it. Take what we've built for ${idea} and produce a ready-to-share version I could send to a colleague this week. Format it so they'd understand the value without needing context from our conversation.`
+        : `I want you to act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nNow let's test it. I have 30 free minutes right now and want to make progress on ${idea}. What should I do with that time? Be specific to what we've built so far, not generic advice.`,
+      hint: "Notice how the system prompt changed Claude's tone and approach. That context carries forward. In a Project, you'd save this as permanent instructions so every new conversation starts with it.",
     },
     {
       id: "workflows",
@@ -45,15 +45,16 @@ function getBuildSteps(answers) {
       hint: "Notice the quality jump between the single-pass version and the one that went through draft-critique-revise. That's the workflow pattern.",
       showThinkingNote: true,
     },
-    // Playful interlude before the tools step
+    // Tone control exercise before the tools step
     {
       id: "roast",
-      skillLabel: "Quick break",
-      title: "Let's have some fun before the last one.",
+      skillLabel: "Skill: Tone and creative control",
+      title: "Same tool, completely different voice.",
       explanation:
-        "You've been serious for a while. Before we cover tools and capabilities, " +
-        "let's use the skills you've built for something ridiculous. " +
-        "You know how to set context, iterate, and critique. Time to aim those skills at yourself.",
+        "You've been giving Claude serious, structured instructions. " +
+        "But the same prompting skills work for any tone: playful, blunt, casual, formal. " +
+        "Shifting Claude's voice on purpose (not by accident) is a real skill. " +
+        "Let's prove it by asking for something deliberately ridiculous.",
       prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for. Don't tell me to stop building and just use it. I know. Give me something more specific.`,
       hint: "Notice how Claude's tone changed because you asked for something different. Same tool, different mode. That flexibility is the point.",
     },
@@ -103,6 +104,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
+      sectionShapeIndex={3}
       renderStep={({ step, stepIndex, advance, goBack, BackButton }) => {
         if (!step) return null;
 
@@ -111,10 +113,9 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
           return (
             <div>
               {BackButton}
-              {stepIndex === 0 && <SectionLabel>Section 4 · Power Up</SectionLabel>}
               {stepIndex === 0 && (
-                <details style={{ marginBottom: 16, fontSize: 15, color: T.color.textMuted }}>
-                  <summary style={{ cursor: "pointer", color: T.color.textLight }}>Lost your Claude conversation?</summary>
+                <details style={{ marginBottom: 12, fontSize: 14, color: T.color.textMuted }}>
+                  <summary style={{ cursor: "pointer", color: T.color.textLight, fontSize: 13 }}>Lost your Claude conversation?</summary>
                   <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
                     I'm building a project about {answers.project_idea || "my project"}. We've already gone through exercises, prompting, structured output, and adding personal context. Here's the best version of what I've built so far: [paste your latest output]
                   </div>
@@ -128,6 +129,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
                 prompt={s.prompt}
                 hint={s.hint}
                 onConfirm={advance}
+                sectionShapeIndex={3}
               />
             </div>
           );
@@ -140,6 +142,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
               <SafetyInterstitial
                 title="More power, more surface area."
                 onContinue={advance}
+                sectionShapeIndex={3}
                 points={[
                   { title: "Permission scoping.", body: "When you give AI access to files, tools, or services, think of it like handing keys to a valet: competent, sure, but you wouldn't leave your wallet on the seat. Give access to what the task needs. Nothing more. Review what it's about to do before it does it." },
                   { title: "Hidden instructions are real.", body: "When AI agents process external content (a web page, a document, an email), that content can contain hidden instructions that hijack what the AI does next. This is called prompt injection. It's why blanket permissions and unreviewed actions are off the table." },

@@ -1,16 +1,14 @@
 import T from "../tokens.js";
 import SectionShell from "../components/SectionShell.jsx";
-import SectionLabel from "../components/SectionLabel.jsx";
 import PromptCard from "../components/PromptCard.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import OrganicShape from "../components/OrganicShape.jsx";
 
 /* ━━━ Exercise Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function ExerciseScreen({ exercise, onConfirm, showLabel }) {
+function ExerciseScreen({ exercise, onConfirm }) {
   return (
     <div>
-      {showLabel && <SectionLabel>Section 2 · Ice Breaker</SectionLabel>}
       <h2 style={{
         fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
         fontWeight: 400, lineHeight: 1.3, margin: "0 0 10px 0",
@@ -163,6 +161,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
+      sectionShapeIndex={1}
       renderStep={({ step, stepIndex, advance, BackButton }) => {
         if (!step) return null;
 
@@ -173,7 +172,6 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
               <ExerciseScreen
                 exercise={exercises[step.index]}
                 onConfirm={advance}
-                showLabel={stepIndex === 0}
               />
               {stepIndex === 0 && canSkipToFoundation && (
                 <button
@@ -207,6 +205,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                 <SafetyInterstitial
                   title="Three things before we go further."
                   onContinue={advance}
+                  sectionShapeIndex={1}
                   points={[
                     { title: "Your input leaves your computer.", body: "Everything you've typed went to a server. Claude processed it and sent results back. Check your privacy settings under Settings → Privacy." },
                     { title: "Think before you paste work data.", body: "Does your company have an AI policy? What plan are you on? If you don't know, ask your IT team or manager before sharing real work content." },
@@ -223,6 +222,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
               <SafetyInterstitial
                 title="Two things to know before we keep going."
                 onContinue={advance}
+                sectionShapeIndex={1}
                 points={[
                   { title: "Your input leaves your computer.", body: "Everything you've typed went to a server. Claude processed it and sent results back. Check your privacy settings in Claude under Settings → Privacy to see what's shared." },
                   { title: "Models matter.", body: "Claude has different models (Haiku, Sonnet, Opus) ranging from fast and light to deep and capable. You can also enable \"extended thinking\" for complex tasks. You don't need to change anything now, but the dial exists." },
