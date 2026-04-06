@@ -1,11 +1,10 @@
 import T from "../tokens.js";
 import { useState, useCallback, useRef, useEffect } from "react";
 import SectionShell from "../components/SectionShell.jsx";
-import SectionLabel from "../components/SectionLabel.jsx";
 import GuidedStep from "../components/GuidedStep.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
-import OrganicShape from "../components/OrganicShape.jsx";
+import SectionCelebration from "../components/SectionCelebration.jsx";
 
 /* ━━━ Build steps: tailored prompts per project type ━━━━━━━━━━━━ */
 function getBuildSteps(answers) {
@@ -89,7 +88,7 @@ function CatchUpPrompt({ idea }) {
   return (
     <div style={{
       padding: "12px 14px",
-      background: "rgba(44,41,37,0.05)",
+      background: T.color.bgSubtle,
       borderRadius: 12,
       position: "relative",
     }}>
@@ -121,7 +120,7 @@ function CatchUpPrompt({ idea }) {
 }
 
 /* ━━━ Foundation Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function Foundation({ answers, onComplete, onBack, onProgress }) {
+export default function Foundation({ answers, onComplete, onBack, onProgress, initialStep, onStepChange }) {
   const buildSteps = getBuildSteps(answers);
   const steps = buildStepSequence(answers);
   const idea = answers.project_idea || "my project";
@@ -131,6 +130,9 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
+      sectionShapeIndex={2}
+      initialStep={initialStep}
+      onStepChange={onStepChange}
       renderStep={({ step, stepIndex, advance, goBack, BackButton }) => {
         if (!step) return null;
 
@@ -138,7 +140,6 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
           return (
             <div>
               {BackButton}
-              <SectionLabel>Section 3 · Foundation</SectionLabel>
               <h2 style={{
                 fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                 fontWeight: 400, lineHeight: 1.3, margin: "0 0 10px 0",
@@ -148,12 +149,45 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
               </h2>
               <p style={{
                 fontSize: 16, color: T.color.textMuted,
-                margin: "0 0 20px 0", lineHeight: 1.65,
+                margin: "0 0 12px 0", lineHeight: 1.65,
               }}>
                 From here on, each step builds on the last. Keep the same Claude
                 conversation open in your other tab throughout this section. Each
                 prompt refers to what you built in the previous step.
               </p>
+              <div style={{
+                padding: "14px 18px",
+                background: T.color.copperSoft,
+                border: `1px solid ${T.color.copperGlow}`,
+                borderRadius: 12,
+                marginBottom: 20,
+              }}>
+                <div style={{ fontSize: 15, fontWeight: 500, color: T.color.copper, marginBottom: 4 }}>
+                  Quick note on who's in charge
+                </div>
+                <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
+                  This wizard tells you what to try and why. Claude is the tool you're
+                  practicing with. If Claude suggests something different from what the
+                  wizard asks, follow the wizard. We're building skills in a specific
+                  order. You can explore freely after.
+                </p>
+              </div>
+              <div style={{
+                padding: "12px 18px",
+                background: T.color.bgSubtle,
+                border: `1px solid ${T.color.border}`,
+                borderRadius: 12,
+                marginBottom: 20,
+                display: "flex", alignItems: "flex-start", gap: 10,
+                fontSize: 15, color: T.color.textMuted, lineHeight: 1.55,
+              }}>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+                <span>
+                  <strong style={{ color: T.color.text }}>Tip:</strong> Split your screen
+                  so the wizard is on one side and Claude on the other. Much easier than
+                  switching between tabs.
+                </span>
+              </div>
               <div style={{
                 padding: "16px 20px",
                 background: T.color.bgCard,
@@ -188,6 +222,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 hint={s.hint}
                 showThinkingNote={s.showThinkingNote}
                 onConfirm={advance}
+                sectionShapeIndex={2}
               />
             </div>
           );
@@ -198,16 +233,20 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
           return (
             <div>
               {BackButton}
-              <SafetyInterstitial title="AI gets things wrong confidently." onContinue={advance}>
+              <SafetyInterstitial title="AI gets things wrong confidently." onContinue={advance} sectionShapeIndex={2}>
                 <p style={{ margin: "0 0 12px 0" }}>
                   If something in your output looked right but felt off, pay attention to that instinct.
                   These models fill gaps with plausible fiction and never flag it. They'll cite sources
                   that don't exist, give advice that sounds authoritative but is wrong, and present
-                  guesses as facts.
+                  guesses as facts. This is called a <strong>hallucination.</strong>
+                </p>
+                <p style={{ margin: "0 0 12px 0" }}>
+                  <strong>What to do about it:</strong> Verify anything that matters before you use it.
+                  If Claude gives you a statistic, check it. If it cites a source, look it up.
+                  If it gives you a plan, ask yourself: "Does this make sense based on what I already know?"
                 </p>
                 <p style={{ margin: 0 }}>
-                  This is called a hallucination. Your job: <strong>verify anything that matters.</strong>{" "}
-                  That's not a limitation of the tool. That's the skill of using it well.
+                  This isn't a flaw to fear. It's the core skill of using AI well: trust the draft, verify the facts.
                 </p>
               </SafetyInterstitial>
             </div>
@@ -219,46 +258,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
             <div style={{ padding: "40px 0" }}>
               {BackButton}
               <div style={{ textAlign: "center" }}>
-              {/* Celebration */}
-              <div style={{ position: "relative", height: 70, marginBottom: 16 }}>
-                {[
-                  { x: -80, y: -35, rot: -40, idx: 2, size: 8, color: T.color.copper },
-                  { x: 65, y: -50, rot: 25, idx: 0, size: 7, color: T.color.sage },
-                  { x: -45, y: -55, rot: -15, idx: 4, size: 6, color: `${T.color.copper}77` },
-                  { x: 90, y: -25, rot: 45, idx: 3, size: 8, color: `${T.color.sage}77` },
-                  { x: -100, y: -15, rot: -55, idx: 1, size: 6, color: T.color.copper },
-                  { x: 35, y: -60, rot: 10, idx: 4, size: 5, color: T.color.sage },
-                  { x: -60, y: -48, rot: -30, idx: 0, size: 7, color: `${T.color.copper}66` },
-                  { x: 75, y: -38, rot: 35, idx: 3, size: 6, color: `${T.color.sage}66` },
-                ].map((p, i) => (
-                  <div key={i} style={{
-                    position: "absolute", left: "50%", top: "60%",
-                    "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
-                    "--scatter-rot": `${p.rot}deg`,
-                    animation: `celebrateScatter 0.8s ${T.ease.smooth} ${i * 0.04}s both`,
-                  }}>
-                    <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
-                  </div>
-                ))}
-                <div style={{
-                  position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-                  display: "flex", gap: 14, alignItems: "flex-end",
-                }}>
-                  {[
-                    { idx: 0, size: 22, color: T.color.copper },
-                    { idx: 1, size: 20, color: T.color.sage },
-                    { idx: 2, size: 28, color: T.color.copper },
-                    { idx: 3, size: 20, color: T.color.sage },
-                    { idx: 4, size: 24, color: T.color.copper },
-                  ].map((s, i) => (
-                    <div key={i} style={{
-                      animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.25 + i * 0.08}s both, celebrateFloat 3s ease-in-out ${1.0 + i * 0.3}s infinite`,
-                    }}>
-                      <OrganicShape shapeIndex={s.idx} size={s.size} color={s.color} />
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <SectionCelebration heroShapeIndex={2} intensity={2} />
               <h2 style={{
                 fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
@@ -270,10 +270,28 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 Prompted with context, shaped the output, and made it yours.
                 Those three moves work for any project in any AI tool.
               </p>
-              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>
-                Another good stopping point. You've got a real project draft and the
-                core prompting skills to keep improving it. The next section levels it
-                up with system prompts and multi-step workflows.
+              <div style={{
+                background: T.color.bgCard, border: `1px solid ${T.color.border}`,
+                borderRadius: 12, padding: "14px 18px", margin: "20px auto 0",
+                maxWidth: 360, textAlign: "left",
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 8 }}>
+                  Terms from this section
+                </div>
+                {[
+                  ["Structured output", "Telling AI what format to use (table, checklist, etc.)"],
+                  ["Context", "Your specific details that make output personal"],
+                  ["Hallucination", "When AI presents fiction as fact"],
+                ].map(([term, def]) => (
+                  <div key={term} style={{ fontSize: 14, lineHeight: 1.5, color: T.color.textMuted, padding: "3px 0" }}>
+                    <strong style={{ color: T.color.text }}>{term}</strong> — {def}
+                  </div>
+                ))}
+              </div>
+              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "16px auto 0" }}>
+                You've got a real project draft and the core skills to keep improving it.
+                Good place to take a break if you need one. Your progress is saved.
+                Next up: system prompts and multi-step workflows that take this further.
               </p>
               <ContinueButton onClick={onComplete} label="Level up" />
               </div>

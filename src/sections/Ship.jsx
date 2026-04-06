@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import T from "../tokens.js";
 import SectionShell from "../components/SectionShell.jsx";
-import SectionLabel from "../components/SectionLabel.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import PromptCard from "../components/PromptCard.jsx";
@@ -13,13 +12,12 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
   return (
     <div>
       {BackButton}
-      <details style={{ marginBottom: 16, fontSize: 15, color: T.color.textMuted }}>
-        <summary style={{ cursor: "pointer", color: T.color.textLight }}>Lost your Claude conversation?</summary>
-        <div style={{ marginTop: 8, padding: "10px 14px", background: "rgba(44,41,37,0.05)", borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
+      <details style={{ marginBottom: 12, fontSize: 14, color: T.color.textMuted }}>
+        <summary style={{ cursor: "pointer", color: T.color.textLight, fontSize: 13 }}>Lost your Claude conversation?</summary>
+        <div style={{ marginTop: 8, padding: "10px 14px", background: T.color.bgSubtle, borderRadius: 12, fontFamily: "'Courier New', Courier, monospace", fontSize: 13, lineHeight: 1.6, color: T.color.text }}>
           I'm building a project about {idea}. We've gone through the full build: prompting, structured output, system prompts, and multi-step workflows. Here's the final version of what I've built: [paste your latest output]
         </div>
       </details>
-      <SectionLabel>Section 5 · Ship</SectionLabel>
       <h2 style={{
         fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
         fontWeight: 400, lineHeight: 1.3, margin: "0 0 10px 0",
@@ -32,8 +30,8 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
         margin: "0 0 4px 0", lineHeight: 1.65,
       }}>
         Before you take this with you, one more habit to build: reviewing your work.
-        You don't need to understand every line. You need to understand what it does,
-        what it has access to, and what could go wrong.
+        Focus on what it does, what information it has access to, and what could go wrong.
+        That's the review instinct that makes AI use responsible.
       </p>
       <PromptCard
         prompt={`Let's review what we've built for "${idea}".\n\nGive me a plain-language walkthrough:\n1. What does this project actually do, in one paragraph?\n2. What information did I share with you to build it?\n3. If I wanted to share this with someone else, what should I double-check first?\n4. What's the one thing most likely to need updating over time?`}
@@ -106,7 +104,7 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
 
       <div style={{
         background: T.color.copperSoft,
-        border: `1px solid rgba(191,123,94,0.15)`,
+        border: `1px solid ${T.color.copperGlow}`,
         borderRadius: 12,
         padding: "16px 20px",
         marginBottom: 24,
@@ -271,8 +269,8 @@ function NextStepsScreen({ answers, BackButton }) {
         fontSize: 16, color: T.color.textMuted,
         margin: "0 0 24px 0", lineHeight: 1.65,
       }}>
-        You don't need a roadmap. You have the loop: try, evaluate, refine, expand.
-        But here are a few specific things worth doing next.
+        You have the loop: try, evaluate, refine, expand.
+        Here are the best places to aim it next.
       </p>
 
       {nextSteps.map((step) => (
@@ -348,18 +346,18 @@ function FinaleScreen({ answers }) {
         {stage >= 1 && [
           { x: -160, y: -70, rot: -60, idx: 0, size: 14, color: T.color.copper },
           { x: 140, y: -85, rot: 45, idx: 1, size: 12, color: T.color.sage },
-          { x: -90, y: -100, rot: -25, idx: 4, size: 10, color: `${T.color.copper}88` },
+          { x: -90, y: -100, rot: -25, idx: 4, size: 10, color: `${T.raw.copper}88` },
           { x: 170, y: -45, rot: 65, idx: 2, size: 13, color: T.color.sage },
-          { x: -180, y: -35, rot: -75, idx: 3, size: 14, color: `${T.color.sage}88` },
+          { x: -180, y: -35, rot: -75, idx: 3, size: 14, color: `${T.raw.sage}88` },
           { x: 75, y: -110, rot: 18, idx: 0, size: 9, color: T.color.copper },
-          { x: -50, y: -95, rot: -38, idx: 4, size: 11, color: `${T.color.sage}66` },
-          { x: 130, y: -70, rot: 55, idx: 1, size: 10, color: `${T.color.copper}66` },
+          { x: -50, y: -95, rot: -38, idx: 4, size: 11, color: `${T.raw.sage}66` },
+          { x: 130, y: -70, rot: 55, idx: 1, size: 10, color: `${T.raw.copper}66` },
           { x: -130, y: -80, rot: -50, idx: 2, size: 8, color: T.color.copper },
           { x: 40, y: -100, rot: 10, idx: 3, size: 9, color: T.color.sage },
-          { x: -25, y: -115, rot: -12, idx: 0, size: 7, color: `${T.color.copper}55` },
-          { x: 100, y: -90, rot: 38, idx: 4, size: 8, color: `${T.color.sage}55` },
-          { x: -200, y: -55, rot: -80, idx: 1, size: 10, color: `${T.color.copper}44` },
-          { x: 190, y: -60, rot: 70, idx: 3, size: 9, color: `${T.color.sage}44` },
+          { x: -25, y: -115, rot: -12, idx: 0, size: 7, color: `${T.raw.copper}55` },
+          { x: 100, y: -90, rot: 38, idx: 4, size: 8, color: `${T.raw.sage}55` },
+          { x: -200, y: -55, rot: -80, idx: 1, size: 10, color: `${T.raw.copper}44` },
+          { x: 190, y: -60, rot: 70, idx: 3, size: 9, color: `${T.raw.sage}44` },
           { x: -60, y: -120, rot: -15, idx: 2, size: 6, color: T.color.copper },
           { x: 55, y: -105, rot: 22, idx: 0, size: 7, color: T.color.sage },
         ].map((p, i) => (
@@ -416,13 +414,13 @@ function FinaleScreen({ answers }) {
         That was the whole promise. Everything from here is refinement and ambition.
       </p>
 
-      {/* Summary card */}
+      {/* Summary card: project + skills with section shapes */}
       {stage >= 4 && (
         <div style={{
           background: T.color.bgCard,
           border: `1.5px solid ${T.color.border}`,
           borderRadius: 16,
-          padding: "20px 24px",
+          padding: "24px 24px",
           margin: "0 auto 28px",
           maxWidth: 440,
           textAlign: "left",
@@ -431,10 +429,29 @@ function FinaleScreen({ answers }) {
           <div style={{ fontSize: 13, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.copper, marginBottom: 8 }}>
             Your project
           </div>
-          <div style={{ fontSize: 16, color: T.color.text, lineHeight: 1.5, marginBottom: 12 }}>
+          <div style={{ fontSize: 16, color: T.color.text, lineHeight: 1.5, marginBottom: 16 }}>
             {answers?.project_idea || "Your AI project"}
           </div>
-          <div style={{ fontSize: 13, color: T.color.textLight }}>
+          <div style={{ borderTop: `1px solid ${T.color.border}`, paddingTop: 14 }}>
+            <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 10 }}>
+              What you learned
+            </div>
+            {[
+              { shape: 1, label: "Prompting, iterating, artifacts", color: T.color.copper },
+              { shape: 2, label: "Structured output, context, hallucination awareness", color: T.color.sage },
+              { shape: 3, label: "System prompts, workflows, tone control, safety", color: T.color.copper },
+              { shape: 4, label: "Review habits, saving work, next steps", color: T.color.sage },
+            ].map((item, i) => (
+              <div key={i} style={{
+                display: "flex", alignItems: "center", gap: 10,
+                padding: "5px 0", fontSize: 14, color: T.color.textMuted, lineHeight: 1.45,
+              }}>
+                <OrganicShape shapeIndex={item.shape} size={12} color={item.color} />
+                {item.label}
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 13, color: T.color.textLight, marginTop: 14 }}>
             Your project lives in your Claude conversation. Come back here anytime to refresh your skills.
           </div>
         </div>
@@ -510,7 +527,7 @@ function buildStepSequence() {
 }
 
 /* ━━━ Ship Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function Ship({ answers, onBack, onProgress }) {
+export default function Ship({ answers, onBack, onProgress, initialStep, onStepChange }) {
   const steps = buildStepSequence();
 
   return (
@@ -518,6 +535,9 @@ export default function Ship({ answers, onBack, onProgress }) {
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
+      sectionShapeIndex={4}
+      initialStep={initialStep}
+      onStepChange={onStepChange}
       renderStep={({ step, advance, BackButton }) => {
         if (!step) return null;
 
@@ -532,9 +552,10 @@ export default function Ship({ answers, onBack, onProgress }) {
               <SafetyInterstitial
                 title="The long game."
                 onContinue={advance}
+                sectionShapeIndex={4}
                 points={[
-                  { title: "These habits scale with you.", body: "Your AI usage will grow from here. Your data footprint grows with it. The habits you built today (reviewing output, checking permissions, verifying facts) aren't just for beginners. They're the ongoing practice of using these tools well." },
-                  { title: "Monthly audit.", body: "Check what tools have access to what. Review your privacy settings. Make sure your practices match your current risk level, not the one from six months ago. Five minutes, once a month. That's the habit that scales." },
+                  { title: "These habits scale with you.", body: "Your AI usage will grow from here. Your data footprint grows with it. The habits you built today (reviewing output, checking permissions, verifying facts) aren't just for beginners. They're the ongoing practice of using these tools well. What to do: keep doing exactly what you practiced today. The specifics will change. The habits won't." },
+                  { title: "Set a monthly check-in.", body: "What to do: once a month, take five minutes. Check what tools have access to what. Review your privacy settings. Ask: do my practices still match how I'm actually using AI? Your risk level six months from now won't be the same as today. This one habit keeps everything else current." },
                 ]}
               />
             </div>

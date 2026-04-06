@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import T from "../tokens.js";
 import PromptCard from "./PromptCard.jsx";
+import OrganicShape from "./OrganicShape.jsx";
 
 /* ━━━ GuidedStep ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    The teach-then-do pattern for build sections.
@@ -19,6 +20,7 @@ export default function GuidedStep({
   hint,
   showThinkingNote,
   onConfirm,
+  sectionShapeIndex,
 }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
@@ -29,13 +31,17 @@ export default function GuidedStep({
       transform: visible ? "translateY(0)" : "translateY(12px)",
       transition: `all 0.4s ${T.ease.smooth}`,
     }}>
-      {/* Skill label */}
+      {/* Skill label with section shape */}
       {skillLabel && (
         <div style={{
+          display: "flex", alignItems: "center", gap: 8,
           fontSize: 13, fontWeight: 500, letterSpacing: "0.08em",
           textTransform: "uppercase", color: T.color.copper,
           marginBottom: 10, fontFamily: T.font.body,
         }}>
+          {sectionShapeIndex != null && (
+            <OrganicShape shapeIndex={sectionShapeIndex} size={10} color={T.color.copper} />
+          )}
           {skillLabel}
         </div>
       )}
@@ -57,19 +63,21 @@ export default function GuidedStep({
         {explanation}
       </p>
 
-      {/* Prompt card */}
-      <PromptCard
-        key={prompt}
-        prompt={prompt}
-        context="Try this in Claude:"
-        outcomeLabels={{ worked: "Output looks good", snag: "Need to iterate", skip: "Skip (next step builds on this)" }}
-        onConfirm={onConfirm}
-      />
+      {/* Hint: shown before prompt so user reads it before switching tabs */}
+      {hint && (
+        <p style={{
+          fontSize: 15, color: T.color.textMuted,
+          margin: "0 0 6px 0", lineHeight: 1.6,
+          fontStyle: "italic",
+        }}>
+          {hint}
+        </p>
+      )}
 
-      {/* Hint */}
+      {/* Thinking note: before prompt so user knows to expect a wait */}
       {showThinkingNote && (
         <div style={{
-          marginTop: 14, padding: "10px 14px",
+          marginBottom: 8, padding: "10px 14px",
           background: T.color.bgSubtle,
           border: `1px solid ${T.color.border}`,
           borderRadius: 12,
@@ -81,15 +89,14 @@ export default function GuidedStep({
         </div>
       )}
 
-      {hint && (
-        <p style={{
-          fontSize: 15, color: T.color.textMuted,
-          marginTop: 8, lineHeight: 1.6,
-          fontStyle: "italic",
-        }}>
-          {hint}
-        </p>
-      )}
+      {/* Prompt card */}
+      <PromptCard
+        key={prompt}
+        prompt={prompt}
+        context="Try this in Claude:"
+        outcomeLabels={{ worked: "Output looks good", snag: "Need to iterate", skip: "Skip (next step builds on this)" }}
+        onConfirm={onConfirm}
+      />
     </div>
   );
 }

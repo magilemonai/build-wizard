@@ -42,7 +42,7 @@ export default function WelcomeScreen({ onBegin }) {
             opacity: 0,
             animation: "fallBounceStraight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.1s both",
           }}>
-            <OrganicShape shapeIndex={2} size={32} color={`${T.color.copper}cc`} />
+            <OrganicShape shapeIndex={2} size={32} color={`${T.raw.copper}cc`} />
           </div>
           {/* Bottom row: hexagon, circle — centered under the top 3 */}
           <div style={{
@@ -51,7 +51,7 @@ export default function WelcomeScreen({ onBegin }) {
             opacity: 0,
             animation: "fallBounce 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.5s both",
           }}>
-            <OrganicShape shapeIndex={3} size={28} color={`${T.color.sage}bb`} />
+            <OrganicShape shapeIndex={3} size={28} color={`${T.raw.sage}bb`} />
           </div>
           <div style={{
             position: "absolute",
@@ -85,7 +85,7 @@ export default function WelcomeScreen({ onBegin }) {
         {mobile ? (
           <div style={{
             background: T.color.copperSoft,
-            border: `1px solid rgba(191,123,94,0.18)`,
+            border: `1px solid ${T.color.copperGlow}`,
             borderRadius: 12, padding: "14px 18px",
             maxWidth: 380, margin: "0 auto 36px",
           }}>

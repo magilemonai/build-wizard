@@ -56,7 +56,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
         marginTop: 24, marginBottom: 8,
         padding: outcome === "snag" ? "24px" : "32px 24px",
         background: outcome === "worked" ? T.color.copperSoft : T.color.bgSubtle,
-        border: `1.5px solid ${outcome === "worked" ? "rgba(191,123,94,0.2)" : T.color.border}`,
+        border: `1.5px solid ${outcome === "worked" ? T.color.copperGlow : T.color.border}`,
         borderRadius: 16,
         textAlign: outcome === "snag" ? "left" : "center",
         animation: "fadeInNotice 0.3s ease",
@@ -73,8 +73,8 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
           <>
             <div style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, marginBottom: 16 }}>
               Tell Claude what went wrong. "That didn't work because..." or "I wanted X
-              but got Y" teaches it what you need. Go back to your Claude tab, iterate on the
-              result, then come back here when you're ready.
+              but got Y" teaches it what you need. Iterate in Claude until you're happy,
+              then come back here for the next step. If Claude suggests its own next steps, ignore those and follow the wizard.
             </div>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <button
@@ -139,7 +139,7 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
         color: T.color.text,
         whiteSpace: "pre-wrap",
         wordBreak: "break-word",
-        background: "rgba(44,41,37,0.05)",
+        background: T.color.bgSubtle,
         borderTop: `1px solid ${T.color.border}`,
         borderBottom: `1px solid ${T.color.border}`,
       }}>
@@ -181,8 +181,8 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
           marginBottom: 8, fontFamily: T.font.body,
         }}>
           {hasPlaceholders
-            ? "Fill in the [brackets], paste into Claude, then tell us how it went:"
-            : "Paste it into Claude, then tell us how it went:"}
+            ? "Fill in the [brackets], paste into Claude, then come back here and tell us how it went:"
+            : "Paste it into Claude, then come back here and tell us how it went:"}
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {[

@@ -1,16 +1,14 @@
 import T from "../tokens.js";
 import SectionShell from "../components/SectionShell.jsx";
-import SectionLabel from "../components/SectionLabel.jsx";
 import PromptCard from "../components/PromptCard.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
-import OrganicShape from "../components/OrganicShape.jsx";
+import SectionCelebration from "../components/SectionCelebration.jsx";
 
 /* ━━━ Exercise Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function ExerciseScreen({ exercise, onConfirm, showLabel }) {
+function ExerciseScreen({ exercise, onConfirm }) {
   return (
     <div>
-      {showLabel && <SectionLabel>Section 2 · Ice Breaker</SectionLabel>}
       <h2 style={{
         fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
         fontWeight: 400, lineHeight: 1.3, margin: "0 0 10px 0",
@@ -150,7 +148,7 @@ function buildStepSequence(exercises, isWork) {
 }
 
 /* ━━━ IceBreaker Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function IceBreaker({ answers, onComplete, onBack, onProgress }) {
+export default function IceBreaker({ answers, onComplete, onBack, onProgress, initialStep, onStepChange }) {
   const experience = answers.experience || "tried";
   const isNovice = experience === "never" || experience === "tried";
   const isWork = answers.fork === "work";
@@ -163,6 +161,9 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
+      sectionShapeIndex={1}
+      initialStep={initialStep}
+      onStepChange={onStepChange}
       renderStep={({ step, stepIndex, advance, BackButton }) => {
         if (!step) return null;
 
@@ -173,7 +174,6 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
               <ExerciseScreen
                 exercise={exercises[step.index]}
                 onConfirm={advance}
-                showLabel={stepIndex === 0}
               />
               {stepIndex === 0 && canSkipToFoundation && (
                 <button
@@ -207,10 +207,11 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                 <SafetyInterstitial
                   title="Three things before we go further."
                   onContinue={advance}
+                  sectionShapeIndex={1}
                   points={[
-                    { title: "Your input leaves your computer.", body: "Everything you've typed went to a server. Claude processed it and sent results back. Check your privacy settings under Settings → Privacy." },
-                    { title: "Think before you paste work data.", body: "Does your company have an AI policy? What plan are you on? If you don't know, ask your IT team or manager before sharing real work content." },
-                    { title: "Models matter.", body: "Claude has different models (Haiku, Sonnet, Opus) ranging from fast and light to deep and capable. You can also enable \"extended thinking\" for complex tasks. You don't need to change anything now, but the dial exists." },
+                    { title: "Your input leaves your computer.", body: "Everything you type goes to a server for processing. That's how all AI tools work. What to do: open Claude's Settings → Privacy right now and review what's shared. You control whether your conversations are used for training." },
+                    { title: "Think before you paste work data.", body: "Does your company have an AI policy? If you don't know, find out before sharing real work content. What to do: ask your manager or IT team. Many companies have specific tools or plans approved for work use." },
+                    { title: "You can choose your model.", body: "Claude has different models (Haiku, Sonnet, Opus) from fast and light to deep and capable. You can also enable extended thinking for complex tasks. You don't need to change anything now, but knowing the dial exists means you're never stuck with one setting." },
                   ]}
                 />
               </div>
@@ -223,9 +224,10 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
               <SafetyInterstitial
                 title="Two things to know before we keep going."
                 onContinue={advance}
+                sectionShapeIndex={1}
                 points={[
-                  { title: "Your input leaves your computer.", body: "Everything you've typed went to a server. Claude processed it and sent results back. Check your privacy settings in Claude under Settings → Privacy to see what's shared." },
-                  { title: "Models matter.", body: "Claude has different models (Haiku, Sonnet, Opus) ranging from fast and light to deep and capable. You can also enable \"extended thinking\" for complex tasks. You don't need to change anything now, but the dial exists." },
+                  { title: "Your input leaves your computer.", body: "Everything you type goes to a server for processing. That's how all AI tools work. What to do: open Claude's Settings → Privacy right now and review what's shared. You control whether your conversations are used for training." },
+                  { title: "You can choose your model.", body: "Claude has different models (Haiku, Sonnet, Opus) from fast and light to deep and capable. You can also enable extended thinking for complex tasks. You don't need to change anything now, but knowing the dial exists means you're never stuck with one setting." },
                 ]}
               />
             </div>
@@ -237,37 +239,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
             <div style={{ padding: "40px 0" }}>
               {BackButton}
               <div style={{ textAlign: "center" }}>
-                <div style={{ position: "relative", height: 80, marginBottom: 16 }}>
-                  {[
-                    { x: -90, y: -40, rot: -45, idx: 0, size: 10, color: T.color.copper },
-                    { x: 70, y: -50, rot: 30, idx: 1, size: 8, color: T.color.sage },
-                    { x: -50, y: -60, rot: -20, idx: 4, size: 6, color: `${T.color.copper}88` },
-                    { x: 100, y: -30, rot: 50, idx: 2, size: 7, color: T.color.sage },
-                    { x: -110, y: -20, rot: -60, idx: 3, size: 9, color: `${T.color.sage}88` },
-                    { x: 40, y: -65, rot: 15, idx: 0, size: 5, color: T.color.copper },
-                  ].map((p, i) => (
-                    <div key={`scatter-${i}`} style={{
-                      position: "absolute", left: "50%", top: "60%",
-                      "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
-                      "--scatter-rot": `${p.rot}deg`,
-                      animation: `celebrateScatter 0.8s ${T.ease.smooth} ${i * 0.04}s both`,
-                    }}>
-                      <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
-                    </div>
-                  ))}
-                  <div style={{
-                    position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-                    display: "flex", gap: 14, alignItems: "flex-end",
-                  }}>
-                    {[0, 1, 4, 2, 3].map((idx, i) => (
-                      <div key={idx} style={{
-                        animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.08}s both, celebrateFloat 4s ease-in-out ${1.2 + i * 0.3}s infinite`,
-                      }}>
-                        <OrganicShape shapeIndex={idx} size={idx === 4 ? 26 : 20} color={i % 2 === 0 ? T.color.copper : T.color.sage} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <SectionCelebration heroShapeIndex={1} intensity={1} />
                 <h2 style={{
                   fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
                   fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
@@ -283,12 +255,31 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                     ? "You gave instructions, got results, and shaped the output. That's the whole loop. Now let's use it for something that matters to you."
                     : "It was easy. Hold onto that feeling. Now let's build something that matters."}
                 </p>
+                <div style={{
+                  background: T.color.bgCard, border: `1px solid ${T.color.border}`,
+                  borderRadius: 12, padding: "14px 18px", margin: "20px auto 0",
+                  maxWidth: 360, textAlign: "left",
+                }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 8 }}>
+                    Terms from this section
+                  </div>
+                  {[
+                    ["Prompt", "The instruction you give AI"],
+                    ["Artifact", "An interactive output Claude builds for you"],
+                    ["Iterate", "Refine the result by giving feedback"],
+                  ].map(([term, def]) => (
+                    <div key={term} style={{ fontSize: 14, lineHeight: 1.5, color: T.color.textMuted, padding: "3px 0" }}>
+                      <strong style={{ color: T.color.text }}>{term}</strong> — {def}
+                    </div>
+                  ))}
+                </div>
                 <p style={{
                   fontSize: 15, color: T.color.textMuted,
-                  lineHeight: 1.6, maxWidth: 440, margin: "0 auto",
+                  lineHeight: 1.6, maxWidth: 440, margin: "16px auto 0",
                 }}>
-                  Good stopping point, by the way. You've got the key safety habits down.
-                  Come back when you're ready, or keep going now.
+                  You've got the key safety habits down and momentum on your side.
+                  This is a good place to take a break if you need one. Your progress is saved.
+                  When you're ready, we'll build your actual project.
                 </p>
                 <ContinueButton onClick={onComplete} label="Keep building" />
               </div>

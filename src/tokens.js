@@ -1,24 +1,36 @@
-/* ━━━ Design Tokens ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ Design Tokens ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Colors reference CSS custom properties defined in global.css,
+   which switch between light and dark palettes automatically
+   via prefers-color-scheme media query.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const T = {
   color: {
-    bg: "#F7F5F0",
-    bgSubtle: "#EFECE5",
-    bgCard: "#FFFFFF",
-    text: "#2C2925",
-    textMuted: "#6B665F",
-    textLight: "#9E9890",
-    sage: "#7A8B6A",
-    sageSoft: "rgba(122,139,106,0.08)",
-    sageBorder: "rgba(122,139,106,0.2)",
-    copper: "#BF7B5E",
-    copperHover: "#A8694F",
-    copperSoft: "rgba(191,123,94,0.10)",
-    copperGlow: "rgba(191,123,94,0.25)",
-    border: "rgba(44,41,37,0.08)",
-    borderHover: "rgba(44,41,37,0.14)",
-    shadow: "rgba(44,41,37,0.05)",
-    shadowMed: "rgba(44,41,37,0.08)",
-    shadowDeep: "rgba(44,41,37,0.12)",
+    bg: "var(--color-bg)",
+    bgSubtle: "var(--color-bg-subtle)",
+    bgCard: "var(--color-bg-card)",
+    text: "var(--color-text)",
+    textMuted: "var(--color-text-muted)",
+    textLight: "var(--color-text-light)",
+    sage: "var(--color-sage)",
+    sageSoft: "var(--color-sage-soft)",
+    sageBorder: "var(--color-sage-border)",
+    copper: "var(--color-copper)",
+    copperHover: "var(--color-copper-hover)",
+    copperSoft: "var(--color-copper-soft)",
+    copperGlow: "var(--color-copper-glow)",
+    border: "var(--color-border)",
+    borderHover: "var(--color-border-hover)",
+    shadow: "var(--color-shadow)",
+    shadowMed: "var(--color-shadow-med)",
+    shadowDeep: "var(--color-shadow-deep)",
+  },
+  // Raw hex values for contexts that need string manipulation (alpha concat, etc.)
+  // These don't auto-switch with dark mode — use sparingly, only for decorative elements
+  raw: {
+    copper: "#9C5A3E",
+    copperDark: "#B36036",
+    sage: "#626F55",
+    sageDark: "#8FA07E",
   },
   ease: {
     smooth: "cubic-bezier(0.22,1,0.36,1)",

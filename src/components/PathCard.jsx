@@ -3,7 +3,7 @@ import T from "../tokens.js";
 import ContinueButton from "./ContinueButton.jsx";
 
 /* ━━━ Path Card (project plan) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function PathCard({ data, onContinue }) {
+export default function PathCard({ data, onContinue, quickPath }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => { const t = setTimeout(() => setVisible(true), 200); return () => clearTimeout(t); }, []);
 
@@ -40,7 +40,7 @@ export default function PathCard({ data, onContinue }) {
           {data.projectDescription}
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 16 }}>
-          {[{ label: "Duration", value: data.time }, { label: "Up next", value: "Ice Breaker" }, { label: "Setup", value: data.setup }].map((item) => (
+          {[{ label: "Duration", value: data.time }, { label: "Up next", value: quickPath ? "Foundation" : "Ice Breaker" }, { label: "Setup", value: data.setup }].map((item) => (
             <div key={item.label} style={{ padding: "12px 0", borderTop: `1px solid ${T.color.border}` }}>
               <div style={{ fontSize: 13, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 4, fontFamily: T.font.body }}>{item.label}</div>
               <div style={{ fontSize: 15, fontWeight: 500, fontFamily: T.font.body }}>{item.value}</div>
@@ -55,6 +55,11 @@ export default function PathCard({ data, onContinue }) {
           What you'll pick up along the way
         </div>
         <div style={{ fontSize: 15, color: T.color.text, lineHeight: 1.65 }}>{data.learns}</div>
+        {quickPath && (
+          <p style={{ fontSize: 14, color: T.color.textLight, margin: "10px 0 0", lineHeight: 1.5, fontStyle: "italic" }}>
+            Since you have experience and limited time, we'll skip the warm-up exercises and jump straight into building.
+          </p>
+        )}
         <ContinueButton onClick={onContinue} label="Start building" />
       </div>
     </div>
