@@ -9,7 +9,7 @@ import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
    around it, avoiding collisions. Then everyone snakes and twirls.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-const SLOT = 40; // 20px shape + 20px gap
+const SLOT = 48; // 20px shape + 28px gap (room for 3x hero)
 
 export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   const particleCounts = [6, 10, 14];
@@ -45,7 +45,7 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   }
 
   return (
-    <div style={{ position: "relative", height: 160, marginBottom: 20 }}>
+    <div style={{ position: "relative", height: 140, marginBottom: 20 }}>
       {/* Scatter particles */}
       {particles.map((p, i) => (
         <div key={`p-${i}`} style={{
@@ -61,7 +61,7 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
       {/* Shape line */}
       <div style={{
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-        display: "flex", gap: 20, alignItems: "flex-end",
+        display: "flex", gap: 28, alignItems: "flex-end",
       }}>
         {sectionShapes.map((shapeIdx, i) => {
           const isHero = shapeIdx === heroShapeIndex;
