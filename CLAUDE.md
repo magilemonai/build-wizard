@@ -1,8 +1,8 @@
 # CLAUDE.md — AI Onboarding Wizard
 
-This file captures every design decision, technical pattern, and implementation detail. The PDD (`ai-onboarding-wizard-pdd.md`) describes the vision. This file describes what we actually built, where we deviated, and why.
+This file captures every design decision, technical pattern, and implementation detail established during prototyping. The PDD (`ai-onboarding-wizard-pdd.md`) describes the vision. This file describes what we actually built, where we deviated, and why.
 
-Read both files before making changes. When they conflict, this file wins.
+Read both files before making changes. When they conflict, this file wins — it reflects tested decisions.
 
 ---
 
@@ -49,6 +49,9 @@ src/
     global.css           # Reset, keyframes, celebrations, prefers-reduced-motion
 public/
   favicon.svg            # Copper triangle
+  og-image.svg           # Editable source for social share image
+  og-image.png           # 1200x630 PNG for Open Graph/social platforms
+  CNAME                  # build.codywymore.com
 ```
 
 ---
@@ -85,14 +88,14 @@ public/
 ### The Shape System
 Organic CSS shapes using `clip-path` with hand-wobbled polygon coordinates. Progression: triangle(3) → square(4) → pentagon(5) → hexagon(6) → circle(inf). Maps to the five sections.
 
-Shapes appear in: welcome screen falling animation, journey progress bar, welcome journey pills, section anchor celebrations (scatter + bounce + float), and the final Ship screen (biggest celebration as climax).
+Shapes appear in: welcome screen falling animation (all 5, arranged 3-over-2), journey progress bar, welcome journey pills, section anchor celebrations (scatter + bounce + float), and the final Ship screen (biggest celebration as climax).
 
 ---
 
 ## Animation Architecture
 
 ### Reduced Motion
-All animations respect `prefers-reduced-motion: reduce` via a CSS media query in global.css that sets `animation-duration` and `transition-duration` to near-zero.
+All animations respect `prefers-reduced-motion: reduce` via a CSS media query in global.css that sets `animation-duration` and `transition-duration` to near-zero. A `usePrefersReducedMotion` hook is available in hooks.js for JS-side checks.
 
 ### Two Motion Types
 1. **"page"** — Horizontal slide with slight scale. Used within sections.
@@ -327,6 +330,27 @@ Log bugs in `testing-notes.md` with format: `- [ ] [Section] Description`
 
 ---
 
+## Deployment
+
+- **Live at:** `build.codywymore.com`
+- **Hosting:** GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`)
+- **Trigger:** Auto-deploys on push to `main` branch
+- **DNS:** Cloudflare CNAME `build` → `magilemonai.github.io`
+- **SSL:** GitHub Pages auto-provisions, HTTPS enforced
+- **Build:** `npm ci && npm run build` → serves `dist/`
+- **Social:** Open Graph + Twitter Card meta tags in index.html, PNG image at `/og-image.png`
+
+### To deploy changes:
+1. Merge branch to `main`
+2. GitHub Actions runs automatically
+3. Site updates in ~30 seconds
+
+### Future API integration:
+- Cloudflare Worker will proxy Claude API calls (keeps API key server-side)
+- Cost: ~$0.15-$0.50 per user for API calls (see PDD Section 7)
+
+---
+
 ## Development Workflow
 
 ### Self-Critique Pattern
@@ -355,15 +379,6 @@ Prioritize findings as P0 (blocking), P1 (important), P2 (quality), P3 (polish).
 
 ### Alpha Testing Protocol
 Test three paths (newcomer/personal, experienced/work, fallback/obscure). Log findings in `testing-notes.md` with section prefixes. Check console for `[Build Wizard Error]` messages. Use Ctrl+Shift+R to reset between runs. Three alpha personas to consider: Sarah (marketing, 30 min, nervous), Marcus (engineer, no rush, comfortable), Elena (business owner, 1 hour, curious).
-
----
-
-## Deployment Plan
-
-- **Static hosting:** GitHub Pages serves the Vite build output (`dist/`)
-- **CDN:** Cloudflare in front of GitHub Pages
-- **API proxy:** Cloudflare Worker handles Claude API calls, keeps API key server-side
-- **Cost:** ~$0.15-$0.50 per user for API calls (see PDD Section 7)
 
 ---
 
