@@ -64,14 +64,14 @@ function getExercises(answers) {
       title: "Let's start with something ridiculous.",
       description: "Copy this prompt into Claude in your other tab. Just paste it in and hit enter.",
       context: "Paste this into Claude:",
-      prompt: `Generate 5 random band names by combining a random adjective, a random animal, and a random occupation. Make them funny. Then generate 5 more that are even weirder.`,
+      prompt: `Generate 10 random band names by combining a random adjective, a random animal, and a random occupation. Make them funny.`,
       hint: "That's it. You just told an AI what to do and it did it. Everything from here is variations on that.",
     });
   } else {
     exercises.push({
       id: "band_names",
       title: "Quick warm-up. Something ridiculous.",
-      description: "You know the drill. Copy this into Claude.",
+      description: "Copy this prompt into Claude in your other tab. Paste it in and hit enter.",
       context: "Paste this into Claude:",
       prompt: `Write a Python script that generates 5 random band names by combining a random adjective with a random animal and a random occupation. Make them funny. Present the code and the output as an artifact I can see.`,
       hint: "If Claude asks to run the code, say yes.",
@@ -171,6 +171,39 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
           return (
             <div>
               {BackButton}
+              {stepIndex === 0 && (
+                <>
+                  <div style={{
+                    padding: "14px 18px", marginBottom: 16,
+                    background: T.color.copperSoft,
+                    border: `1px solid ${T.color.copperGlow}`,
+                    borderRadius: 12,
+                  }}>
+                    <div style={{ fontSize: 15, fontWeight: 500, color: T.color.copper, marginBottom: 4 }}>
+                      Quick note on who's in charge
+                    </div>
+                    <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
+                      This wizard tells you what to try and why. Claude is the tool you're
+                      practicing with. If Claude suggests something different, follow the wizard.
+                    </p>
+                  </div>
+                  <div style={{
+                    padding: "12px 18px", marginBottom: 20,
+                    background: T.color.bgSubtle,
+                    border: `1px solid ${T.color.border}`,
+                    borderRadius: 12,
+                    display: "flex", alignItems: "flex-start", gap: 10,
+                    fontSize: 15, color: T.color.textMuted, lineHeight: 1.55,
+                  }}>
+                    <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+                    <span>
+                      <strong style={{ color: T.color.text }}>Tip:</strong> Split your screen
+                      so the wizard is on one side and Claude on the other. Much easier than
+                      switching between tabs.
+                    </span>
+                  </div>
+                </>
+              )}
               <ExerciseScreen
                 exercise={exercises[step.index]}
                 onConfirm={advance}

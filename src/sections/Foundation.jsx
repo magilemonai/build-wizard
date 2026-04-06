@@ -26,6 +26,7 @@ function getBuildSteps(answers) {
         : `I want to build something around: ${idea}\n\nHere's what I care about:\n- This is a personal interest\n- I want something I'd actually use, not a generic result\n- Surprise me with how specific you can get\n\nGive me a first draft. Then I'll tell you what to change.`,
       hint: "Read what Claude gives you. What's close? What's off? Tell it. That back-and-forth is the actual skill you're building.",
       showThinkingNote: true,
+      coachingNote: "Read the output before clicking anything. What's useful? What's generic? That judgment is the skill.",
     },
     {
       id: "structured",
@@ -40,6 +41,7 @@ function getBuildSteps(answers) {
         ? `Take what you just created for "${idea}" and restructure it as:\n\n1. A one-paragraph summary at the top\n2. A table with columns for each key element\n3. A checklist of action items I can copy into my task manager\n\nKeep the same content, just organize it so I can actually use it at work.`
         : `Take the project you just built for me (about "${idea}") and repackage that exact output into three formats. Don't add new advice or content. Just restructure what you already gave me:\n\n1. A quick-reference card (the essentials from your output in a glanceable format)\n2. The key steps from your output as a simple table with columns\n3. Your top three recommendations from the output, ranked\n\nSame information you already wrote, just in more useful shapes.`,
       hint: "You shaped the output into the format you needed. That's the real skill: telling AI not just what to say, but how to present it.",
+      coachingNote: "Compare the structured version to the original. Same content, completely different usability.",
     },
     {
       id: "context",
@@ -56,6 +58,7 @@ function getBuildSteps(answers) {
         : `Let me give you more context about "${idea}":\n\n- My experience level with this is: [beginner/intermediate/etc.]\n- What I've already tried: [anything relevant]\n- What I'm specifically trying to achieve: [your goal]\n- Constraints that matter: [time, budget, space, equipment, etc.]\n\nNow revise what you built with all of this in mind. Make it genuinely mine, not generic.`,
       hint: "Notice how the output changed when you added real context. That's the difference between a template and a tool built for you.",
       showThinkingNote: true,
+      coachingNote: "The more specific you are about your situation, the less generic the output. That's the leverage.",
     },
   ];
 }
@@ -149,45 +152,12 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
               </h2>
               <p style={{
                 fontSize: 16, color: T.color.textMuted,
-                margin: "0 0 12px 0", lineHeight: 1.65,
+                margin: "0 0 20px 0", lineHeight: 1.65,
               }}>
                 From here on, each step builds on the last. Keep the same Claude
                 conversation open in your other tab throughout this section. Each
                 prompt refers to what you built in the previous step.
               </p>
-              <div style={{
-                padding: "14px 18px",
-                background: T.color.copperSoft,
-                border: `1px solid ${T.color.copperGlow}`,
-                borderRadius: 12,
-                marginBottom: 20,
-              }}>
-                <div style={{ fontSize: 15, fontWeight: 500, color: T.color.copper, marginBottom: 4 }}>
-                  Quick note on who's in charge
-                </div>
-                <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
-                  This wizard tells you what to try and why. Claude is the tool you're
-                  practicing with. If Claude suggests something different from what the
-                  wizard asks, follow the wizard. We're building skills in a specific
-                  order. You can explore freely after.
-                </p>
-              </div>
-              <div style={{
-                padding: "12px 18px",
-                background: T.color.bgSubtle,
-                border: `1px solid ${T.color.border}`,
-                borderRadius: 12,
-                marginBottom: 20,
-                display: "flex", alignItems: "flex-start", gap: 10,
-                fontSize: 15, color: T.color.textMuted, lineHeight: 1.55,
-              }}>
-                <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
-                <span>
-                  <strong style={{ color: T.color.text }}>Tip:</strong> Split your screen
-                  so the wizard is on one side and Claude on the other. Much easier than
-                  switching between tabs.
-                </span>
-              </div>
               <div style={{
                 padding: "16px 20px",
                 background: T.color.bgCard,
@@ -223,6 +193,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
                 showThinkingNote={s.showThinkingNote}
                 onConfirm={advance}
                 sectionShapeIndex={2}
+                coachingNote={s.coachingNote}
               />
             </div>
           );

@@ -11,7 +11,7 @@ export const journeySteps = [
   { key: "ship", label: "Ship" },
 ];
 
-export default function JourneyProgress({ currentSection, questionProgress, onSectionClick }) {
+export default function JourneyProgress({ currentSection, questionProgress, onSectionClick, stepCount, currentStep }) {
   const idx = journeySteps.findIndex((s) => s.key === currentSection);
   const mobile = useIsMobile();
 
@@ -100,18 +100,36 @@ export default function JourneyProgress({ currentSection, questionProgress, onSe
                 }}>{step.label}</div>
               </div>
               {i < journeySteps.length - 1 && (
-                <div style={{
-                  flex: 1, height: 1.5, margin: "0 6px",
-                  background: past ? T.color.sage : T.color.border,
-                  borderRadius: 1, position: "relative", overflow: "hidden",
-                }}>
-                  {active && (
+                <div style={{ flex: 1, margin: "0 6px", position: "relative" }}>
+                  <div style={{
+                    height: 1.5,
+                    background: past ? T.color.sage : T.color.border,
+                    borderRadius: 1, position: "relative", overflow: "hidden",
+                  }}>
+                    {active && (
+                      <div style={{
+                        position: "absolute", left: 0, top: 0, bottom: 0,
+                        width: `${questionProgress * 100}%`,
+                        background: T.color.copper, borderRadius: 1,
+                        transition: `width 0.6s ${T.ease.smooth}`,
+                      }} />
+                    )}
+                  </div>
+                  {/* Sub-progress dots for active section */}
+                  {active && stepCount > 1 && (
                     <div style={{
-                      position: "absolute", left: 0, top: 0, bottom: 0,
-                      width: `${questionProgress * 100}%`,
-                      background: T.color.copper, borderRadius: 1,
-                      transition: `width 0.6s ${T.ease.smooth}`,
-                    }} />
+                      position: "absolute", top: 8, left: 0, right: 0,
+                      display: "flex", justifyContent: "center", gap: 4,
+                    }}>
+                      {Array.from({ length: stepCount }, (_, si) => (
+                        <div key={si} style={{
+                          width: 5, height: 5, borderRadius: "50%",
+                          background: si < currentStep ? T.color.sage : si === currentStep ? T.color.copper : T.color.border,
+                          transition: `all 0.3s ${T.ease.smooth}`,
+                          opacity: si <= currentStep ? 1 : 0.4,
+                        }} />
+                      ))}
+                    </div>
                   )}
                 </div>
               )}

@@ -28,6 +28,7 @@ function getBuildSteps(answers) {
         ? `I want you to act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nNow let's test it. Take what we've built for ${idea} and produce a ready-to-share version I could send to a colleague this week. Format it so they'd understand the value without needing context from our conversation.`
         : `I want you to act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nNow let's test it. I have 30 free minutes right now and want to make progress on ${idea}. What should I do with that time? Be specific to what we've built so far, not generic advice.`,
       hint: "Notice how the system prompt changed Claude's tone and approach. That context carries forward. In a Project, you'd save this as permanent instructions so every new conversation starts with it.",
+      coachingNote: "Compare this response to earlier ones. The system prompt didn't just change what Claude said. It changed how Claude thinks about the task.",
     },
     {
       id: "workflows",
@@ -44,17 +45,19 @@ function getBuildSteps(answers) {
         : `Let's level up what we built for "${idea}".\n\nStep 1: Critique your own work. What are the 3 biggest gaps or things that feel generic?\n\nStep 2: For each gap, explain what would make it genuinely useful versus just okay.\n\nStep 3: Rewrite the whole thing with those improvements. Make it something I'd actually come back to.\n\nDo all three steps now.`,
       hint: "Notice the quality jump between the single-pass version and the one that went through draft-critique-revise. That's the workflow pattern.",
       showThinkingNote: true,
+      coachingNote: "The critique step is where the real improvement happens. Watch for Claude finding things you wouldn't have caught.",
     },
     // Tone control exercise before the tools step
     {
       id: "roast",
       skillLabel: "Skill: Tone and creative control",
-      title: "Same tool, completely different voice.",
+      title: "Stress-test your idea.",
       explanation:
-        "You've been giving Claude serious, structured instructions. " +
-        "But the same prompting skills work for any tone: playful, blunt, casual, formal. " +
-        "Shifting Claude's voice on purpose (not by accident) is a real skill. " +
-        "Let's prove it by asking for something deliberately ridiculous.",
+        "This isn't part of your project. It's a skill exercise. " +
+        "You've been giving Claude serious, structured instructions, and it's been agreeable. " +
+        "Now ask it to push back. A good roast will sharpen your thinking: " +
+        "it surfaces weak spots, challenges assumptions, and gives you the kind of " +
+        "honest feedback that makes the next version better.",
       prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for. Don't tell me to stop building and just use it. I know. Give me something more specific.`,
       hint: "Notice how Claude's tone changed because you asked for something different. Same tool, different mode. That flexibility is the point.",
     },
@@ -132,6 +135,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress, initi
                 hint={s.hint}
                 onConfirm={advance}
                 sectionShapeIndex={3}
+                coachingNote={s.coachingNote}
               />
             </div>
           );
@@ -147,7 +151,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress, initi
                 sectionShapeIndex={3}
                 points={[
                   { title: "Permission scoping.", body: "When you give AI access to files, tools, or services, think of it like handing keys to a valet: competent, but you wouldn't leave your wallet on the seat. What to do: give access only to what the task needs. Review what it's about to do before it does it. If a tool asks for broad permissions, ask yourself: does this task actually require all of that?" },
-                  { title: "Hidden instructions are real.", body: "When AI processes external content (a web page, a document, an email), that content can contain hidden instructions that change what the AI does. This is called prompt injection. What to do: never give AI tools blanket permission to act on external content without reviewing the result. If you're using AI agents, check what they did before trusting the output. This isn't paranoia. It's the same instinct as not clicking a suspicious link." },
+                  { title: "Hidden instructions are real.", body: "When AI processes external content (a web page, a document, an email), that content can contain hidden instructions that change what the AI does. This is called prompt injection. Nothing we're doing in this wizard exposes you to it. You're typing prompts directly into Claude, not connecting it to outside content or building agents. But as your usage grows and you start giving AI access to documents, web pages, or tools, this is the thing to watch for. What to do: when that day comes, never give AI tools blanket permission to act on external content without reviewing the result first." },
                 ]}
               />
             </div>

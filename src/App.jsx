@@ -33,6 +33,14 @@ const SECTION_TRANSITIONS = {
 
 const SECTIONS_WITH_PROGRESS = [SCREENS.INTERVIEW, SCREENS.ICEBREAKER, SCREENS.FOUNDATION, SCREENS.POWERUP, SCREENS.SHIP];
 
+// Step counts per section (must match buildStepSequence in each section file)
+const SECTION_STEP_COUNTS = {
+  [SCREENS.ICEBREAKER]: 5,   // 3 exercises + safety + anchor
+  [SCREENS.FOUNDATION]: 6,   // continuity + 3 builds + safety + anchor
+  [SCREENS.POWERUP]: 6,      // 2 builds + safety + roast + tools + anchor
+  [SCREENS.SHIP]: 5,         // review + safety + save + reflection + nextsteps
+};
+
 const SECTION_TITLES = {
   [SCREENS.WELCOME]: "Build Something Real with AI",
   [SCREENS.TRANSITION]: "Build Something Real with AI",
@@ -214,6 +222,8 @@ export default function App() {
             currentSection={screen}
             questionProgress={progressValue}
             onSectionClick={handleProgressClick}
+            stepCount={SECTION_STEP_COUNTS[screen] || 0}
+            currentStep={progress.sectionSteps[screen] || 0}
           />
         )}
 
@@ -268,6 +278,15 @@ export default function App() {
                   Here's what we're building.
                 </h2>
                 <SetupPrompt status={interview.answers.setup} />
+                {interview.answers.setup !== "ready" && (
+                  <p style={{
+                    marginTop: 0, marginBottom: 20, fontSize: 14, color: T.color.textLight,
+                    lineHeight: 1.6, textAlign: "center",
+                  }}>
+                    On Claude's free plan, you have a daily message limit. If you run out mid-session,
+                    you can come back tomorrow and pick up where you left off.
+                  </p>
+                )}
                 <PathCard
                   data={derivePathCard(interview.answers)}
                   onContinue={() => {
@@ -280,23 +299,6 @@ export default function App() {
                   }}
                   quickPath={isQuickPath}
                 />
-                {interview.answers.setup !== "ready" && (
-                  <p style={{
-                    marginTop: 24, fontSize: 14, color: T.color.textLight,
-                    lineHeight: 1.6, textAlign: "center",
-                  }}>
-                    On Claude's free plan, you have a daily message limit. If you run out mid-session,
-                    you can come back tomorrow and pick up where you left off.
-                  </p>
-                )}
-                <p style={{
-                  marginTop: interview.answers.setup !== "ready" ? 12 : 36,
-                  fontSize: 15, color: T.color.textMuted,
-                  lineHeight: 1.65, textAlign: "center",
-                }}>
-                  You've got a project brief and a clear first step.<br />
-                  Let's turn it into something real.
-                </p>
               </div>
             </PageTransition>
           )}
