@@ -120,7 +120,7 @@ function CatchUpPrompt({ idea }) {
 }
 
 /* ━━━ Foundation Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function Foundation({ answers, onComplete, onBack, onProgress }) {
+export default function Foundation({ answers, onComplete, onBack, onProgress, initialStep, onStepChange }) {
   const buildSteps = getBuildSteps(answers);
   const steps = buildStepSequence(answers);
   const idea = answers.project_idea || "my project";
@@ -131,6 +131,8 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
       onBack={onBack}
       onProgress={onProgress}
       sectionShapeIndex={2}
+      initialStep={initialStep}
+      onStepChange={onStepChange}
       renderStep={({ step, stepIndex, advance, goBack, BackButton }) => {
         if (!step) return null;
 

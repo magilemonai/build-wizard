@@ -148,7 +148,7 @@ function buildStepSequence(exercises, isWork) {
 }
 
 /* ━━━ IceBreaker Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function IceBreaker({ answers, onComplete, onBack, onProgress }) {
+export default function IceBreaker({ answers, onComplete, onBack, onProgress, initialStep, onStepChange }) {
   const experience = answers.experience || "tried";
   const isNovice = experience === "never" || experience === "tried";
   const isWork = answers.fork === "work";
@@ -162,6 +162,8 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
       onBack={onBack}
       onProgress={onProgress}
       sectionShapeIndex={1}
+      initialStep={initialStep}
+      onStepChange={onStepChange}
       renderStep={({ step, stepIndex, advance, BackButton }) => {
         if (!step) return null;
 

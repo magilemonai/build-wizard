@@ -73,8 +73,8 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
           <>
             <div style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, marginBottom: 16 }}>
               Tell Claude what went wrong. "That didn't work because..." or "I wanted X
-              but got Y" teaches it what you need. Go back to your Claude tab, iterate on the
-              result, then come back here when you're ready.
+              but got Y" teaches it what you need. Iterate in Claude until you're happy,
+              then come back here for the next step. If Claude suggests its own next steps, ignore those and follow the wizard.
             </div>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <button

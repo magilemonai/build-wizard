@@ -51,6 +51,9 @@ export default function App() {
   const [sectionProgress, setSectionProgress] = useState({
     [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0,
   });
+  const [sectionSteps, setSectionSteps] = useState({
+    [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0,
+  });
   const visited = useRef(new Set());
 
   // Scroll to top and update page title on screen changes
@@ -70,6 +73,7 @@ export default function App() {
     setStaggerReady(true);
     setShowFirstLabel(true);
     setSectionProgress({ [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0 });
+    setSectionSteps({ [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0 });
     visited.current.clear();
   }, []);
 
@@ -131,6 +135,14 @@ export default function App() {
     [SCREENS.FOUNDATION]: (value) => setSectionProgress((prev) => ({ ...prev, [SCREENS.FOUNDATION]: value })),
     [SCREENS.POWERUP]: (value) => setSectionProgress((prev) => ({ ...prev, [SCREENS.POWERUP]: value })),
     [SCREENS.SHIP]: (value) => setSectionProgress((prev) => ({ ...prev, [SCREENS.SHIP]: value })),
+  }), []);
+
+  // Stable step index updaters (persist section position for back nav)
+  const stepUpdaters = useMemo(() => ({
+    [SCREENS.ICEBREAKER]: (value) => setSectionSteps((prev) => ({ ...prev, [SCREENS.ICEBREAKER]: value })),
+    [SCREENS.FOUNDATION]: (value) => setSectionSteps((prev) => ({ ...prev, [SCREENS.FOUNDATION]: value })),
+    [SCREENS.POWERUP]: (value) => setSectionSteps((prev) => ({ ...prev, [SCREENS.POWERUP]: value })),
+    [SCREENS.SHIP]: (value) => setSectionSteps((prev) => ({ ...prev, [SCREENS.SHIP]: value })),
   }), []);
 
   // Determine if current screen is a section transition
@@ -285,6 +297,8 @@ export default function App() {
               onComplete={() => goToSection(SCREENS.FOUNDATION)}
               onBack={() => setScreen(SCREENS.PATHCARD)}
               onProgress={progressUpdaters[SCREENS.ICEBREAKER]}
+              initialStep={sectionSteps[SCREENS.ICEBREAKER]}
+              onStepChange={stepUpdaters[SCREENS.ICEBREAKER]}
             />
           )}
 
@@ -294,6 +308,8 @@ export default function App() {
               onComplete={() => goToSection(SCREENS.POWERUP)}
               onBack={() => setScreen(SCREENS.ICEBREAKER)}
               onProgress={progressUpdaters[SCREENS.FOUNDATION]}
+              initialStep={sectionSteps[SCREENS.FOUNDATION]}
+              onStepChange={stepUpdaters[SCREENS.FOUNDATION]}
             />
           )}
 
@@ -303,6 +319,8 @@ export default function App() {
               onComplete={() => goToSection(SCREENS.SHIP)}
               onBack={() => setScreen(SCREENS.FOUNDATION)}
               onProgress={progressUpdaters[SCREENS.POWERUP]}
+              initialStep={sectionSteps[SCREENS.POWERUP]}
+              onStepChange={stepUpdaters[SCREENS.POWERUP]}
             />
           )}
 
@@ -311,6 +329,8 @@ export default function App() {
               answers={answers}
               onBack={() => setScreen(SCREENS.POWERUP)}
               onProgress={progressUpdaters[SCREENS.SHIP]}
+              initialStep={sectionSteps[SCREENS.SHIP]}
+              onStepChange={stepUpdaters[SCREENS.SHIP]}
             />
           )}
         </div>

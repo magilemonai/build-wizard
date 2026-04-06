@@ -527,7 +527,7 @@ function buildStepSequence() {
 }
 
 /* ━━━ Ship Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function Ship({ answers, onBack, onProgress }) {
+export default function Ship({ answers, onBack, onProgress, initialStep, onStepChange }) {
   const steps = buildStepSequence();
 
   return (
@@ -536,6 +536,8 @@ export default function Ship({ answers, onBack, onProgress }) {
       onBack={onBack}
       onProgress={onProgress}
       sectionShapeIndex={4}
+      initialStep={initialStep}
+      onStepChange={onStepChange}
       renderStep={({ step, advance, BackButton }) => {
         if (!step) return null;
 

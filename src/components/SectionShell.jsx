@@ -10,8 +10,8 @@ import OrganicShape from "./OrganicShape.jsx";
    Optional sectionShapeIndex adds a step progress indicator using
    the section's owned shape.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function SectionShell({ steps, renderStep, onBack, onProgress, sectionShapeIndex }) {
-  const [stepIndex, setStepIndex] = useState(0);
+export default function SectionShell({ steps, renderStep, onBack, onProgress, sectionShapeIndex, initialStep, onStepChange }) {
+  const [stepIndex, setStepIndex] = useState(initialStep || 0);
   const [direction, setDirection] = useState(1);
 
   const currentStep = steps[stepIndex];
@@ -21,9 +21,10 @@ export default function SectionShell({ steps, renderStep, onBack, onProgress, se
     setStepIndex((i) => {
       const next = i + 1;
       onProgress?.(next / steps.length);
+      onStepChange?.(next);
       return next;
     });
-  }, [steps.length, onProgress]);
+  }, [steps.length, onProgress, onStepChange]);
 
   const goBack = useCallback(() => {
     if (stepIndex <= 0) {
@@ -34,9 +35,10 @@ export default function SectionShell({ steps, renderStep, onBack, onProgress, se
     setStepIndex((i) => {
       const next = i - 1;
       onProgress?.(next / steps.length);
+      onStepChange?.(next);
       return next;
     });
-  }, [stepIndex, onBack, steps.length, onProgress]);
+  }, [stepIndex, onBack, steps.length, onProgress, onStepChange]);
 
   const content = renderStep({
     step: currentStep,

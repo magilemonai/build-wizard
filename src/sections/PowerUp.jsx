@@ -95,7 +95,7 @@ function buildStepSequence() {
 }
 
 /* ━━━ PowerUp Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
+export default function PowerUp({ answers, onComplete, onBack, onProgress, initialStep, onStepChange }) {
   const buildSteps = getBuildSteps(answers);
   const steps = buildStepSequence();
 
@@ -105,6 +105,8 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
       onBack={onBack}
       onProgress={onProgress}
       sectionShapeIndex={3}
+      initialStep={initialStep}
+      onStepChange={onStepChange}
       renderStep={({ step, stepIndex, advance, goBack, BackButton }) => {
         if (!step) return null;
 
