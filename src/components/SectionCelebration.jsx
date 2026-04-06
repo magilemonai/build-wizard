@@ -11,8 +11,9 @@ import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 // Slot spacing: 20px shape + 14px gap = 34px per slot
-const SLOT = 34;
-const CENTER = 2; // center slot index
+// 20px shape + 20px gap = 40px per slot (extra gap avoids collisions at 1.5x scale)
+const SLOT = 40;
+const CENTER = 2;
 
 export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   const particleCounts = [6, 10, 14];
@@ -53,7 +54,7 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
       {/* Shape line */}
       <div style={{
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-        display: "flex", gap: 14, alignItems: "flex-end",
+        display: "flex", gap: 20, alignItems: "flex-end",
       }}>
         {sectionShapes.map((shapeIdx, i) => {
           const isHero = shapeIdx === heroShapeIndex;
@@ -66,13 +67,13 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
               <div style={{
                 "--leap-x": `${heroLeapX}px`,
                 animation: isHero
-                  ? `heroLeap 1s ${T.ease.spring} 1.4s both`
-                  : `snakeWave 2.5s ease-in-out ${1.8 + i * 0.2}s infinite`,
+                  ? `heroLeap 1.3s ${T.ease.smooth} 1.4s both`
+                  : `snakeWave 2.5s ease-in-out ${2.2 + i * 0.25}s infinite`,
               }}>
                 {/* Layer 3: twirl (non-hero only) */}
                 <div style={{
                   animation: !isHero
-                    ? `twirlInPlace 3s ease-in-out ${2.0 + i * 0.15}s infinite`
+                    ? `twirlInPlace 3s ease-in-out ${2.8 + i * 0.15}s infinite`
                     : "none",
                 }}>
                   <OrganicShape
