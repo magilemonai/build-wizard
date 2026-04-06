@@ -223,10 +223,10 @@ body {
 
 /* Hero does an occasional spin in place after landing */
 @keyframes heroSpin {
-  0%, 85% { transform: translateX(var(--move-x)) scale(2.5) rotate(0deg); }
-  90% { transform: translateX(var(--move-x)) scale(2.5) rotate(180deg); }
-  95% { transform: translateX(var(--move-x)) scale(2.5) rotate(350deg); }
-  100% { transform: translateX(var(--move-x)) scale(2.5) rotate(360deg); }
+  0%, 85% { transform: rotate(0deg); }
+  92% { transform: rotate(200deg); }
+  97% { transform: rotate(345deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Non-hero shapes slide to their new slot */

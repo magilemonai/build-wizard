@@ -9,7 +9,7 @@ import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
    around it, avoiding collisions. Then everyone snakes and twirls.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-const SLOT = 36; // 20px shape + 16px gap
+const SLOT = 30; // 20px shape + 10px gap
 
 export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   const particleCounts = [6, 10, 14];
@@ -35,13 +35,20 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   const others = sectionShapes.filter((s) => s !== heroShapeIndex);
   // Final arrangement: [others[0], others[1], HERO, others[2], others[3]]
 
+  // Extra px of clearance on each side of the hero's landing spot
+  const HERO_PADDING = 12;
+
   function getMoveX(shapeIdx, naturalSlot) {
     if (shapeIdx === heroShapeIndex) {
       return (2 - naturalSlot) * SLOT; // hero → center
     }
     const oi = others.indexOf(shapeIdx);
     const finalSlot = oi < 2 ? oi : oi + 1; // skip slot 2 (hero's spot)
-    return (finalSlot - naturalSlot) * SLOT;
+    const base = (finalSlot - naturalSlot) * SLOT;
+    // Push shapes adjacent to hero outward for clearance
+    if (finalSlot < 2) return base - HERO_PADDING; // left of hero: nudge left
+    if (finalSlot > 2) return base + HERO_PADDING; // right of hero: nudge right
+    return base;
   }
 
   return (
@@ -61,7 +68,7 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
       {/* Shape line */}
       <div style={{
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-        display: "flex", gap: 16, alignItems: "flex-end",
+        display: "flex", gap: 10, alignItems: "flex-end",
       }}>
         {sectionShapes.map((shapeIdx, i) => {
           const isHero = shapeIdx === heroShapeIndex;
@@ -72,18 +79,19 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
               // Layer 1: bounce into line
               animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.08}s both`,
             }}>
-              {/* Layer 2: slide to final position (hero AND others) */}
+              {/* Layer 2: slide to final position */}
               <div style={{
                 "--move-x": `${moveX}px`,
                 transformOrigin: isHero ? "bottom center" : "center",
                 animation: isHero
-                  ? `heroLeap 2s linear 1.4s both, heroSpin 4s ease-in-out 3.8s infinite`
+                  ? `heroLeap 2s linear 1.4s both`
                   : `shapeSlide 1.2s ${T.ease.smooth} 1.6s both`,
               }}>
-                {/* Layer 3: ambient motion after rearrangement */}
+                {/* Layer 3: hero spin / non-hero ambient */}
                 <div style={{
+                  transformOrigin: "center center",
                   animation: isHero
-                    ? "none"
+                    ? `heroSpin 4s ease-in-out 3.8s infinite`
                     : `snakeWave 2.5s ease-in-out ${3.0 + i * 0.25}s infinite, twirlInPlace 3.5s ease-in-out ${3.0 + i * 0.2}s infinite`,
                 }}>
                   <OrganicShape
