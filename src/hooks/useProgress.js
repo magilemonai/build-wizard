@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useRef } from "react";
-import { SCREENS } from "../screens.js";
+import { SCREENS, BUILD_SECTIONS } from "../screens.js";
 import { defaultProgress, defaultSteps } from "./usePersistence.js";
 
 /* ━━━ Section Progress Hook ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -30,18 +30,16 @@ export default function useProgress(saved, setScreen) {
 
   // Stable per-section updaters (memoized to prevent re-renders)
   const progressUpdaters = useMemo(() => {
-    const sections = [SCREENS.ICEBREAKER, SCREENS.FOUNDATION, SCREENS.POWERUP, SCREENS.SHIP];
     const result = {};
-    for (const s of sections) {
+    for (const s of BUILD_SECTIONS) {
       result[s] = (value) => setSectionProgress((prev) => ({ ...prev, [s]: value }));
     }
     return result;
   }, []);
 
   const stepUpdaters = useMemo(() => {
-    const sections = [SCREENS.ICEBREAKER, SCREENS.FOUNDATION, SCREENS.POWERUP, SCREENS.SHIP];
     const result = {};
-    for (const s of sections) {
+    for (const s of BUILD_SECTIONS) {
       result[s] = (value) => setSectionSteps((prev) => ({ ...prev, [s]: value }));
     }
     return result;

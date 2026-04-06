@@ -59,7 +59,7 @@ export default function WelcomeScreen({ onBegin }) {
             opacity: 0,
             animation: "fallBounceRight 1.4s cubic-bezier(0.12, 0, 0.25, 1) 1.9s both",
           }}>
-            <OrganicShape shapeIndex={4} size={26} color={`${T.color.text}30`} />
+            <OrganicShape shapeIndex={4} size={26} color={T.color.sage} />
           </div>
         </div>
 

@@ -22,23 +22,17 @@ function ExerciseScreen({ exercise, onConfirm }) {
       }}>
         {exercise.description}
       </p>
-      <PromptCard
-        key={exercise.id}
-        prompt={exercise.prompt}
-        context={exercise.context}
-        onConfirm={onConfirm}
-      />
       {exercise.hint && (
         <p style={{
           fontSize: 15, color: T.color.textMuted,
-          marginTop: 14, lineHeight: 1.6,
+          margin: "10px 0 6px", lineHeight: 1.6,
           fontStyle: "italic",
         }}>
           {exercise.hint}
         </p>
       )}
       <div style={{
-        marginTop: 14, padding: "10px 14px",
+        marginBottom: 6, padding: "10px 14px",
         background: T.color.bgSubtle,
         border: `1px solid ${T.color.border}`,
         borderRadius: 12,
@@ -48,6 +42,12 @@ function ExerciseScreen({ exercise, onConfirm }) {
         <span style={{ fontSize: 16 }}>⏳</span>
         Claude may take a moment, especially if it's building an artifact. That's normal.
       </div>
+      <PromptCard
+        key={exercise.id}
+        prompt={exercise.prompt}
+        context={exercise.context}
+        onConfirm={onConfirm}
+      />
     </div>
   );
 }
@@ -82,7 +82,7 @@ function getExercises(answers) {
     exercises.push({
       id: "magic_8ball",
       title: "Now something a little more interactive.",
-      description: "This time you'll give Claude more specific instructions. Same thing: copy and paste.",
+      description: "This time you'll give Claude more specific instructions. It only answers yes-or-no questions, so keep them simple. Copy and paste:",
       context: "Paste this into Claude:",
       prompt: `I want you to be a Magic 8-Ball. I'll ask you a yes-or-no question, and you respond in character: first say "The spirits are consulting..." then give me a mystical, funny answer. Make the answers more creative than the standard Magic -Ball responses.\n\nMy first question: Will I finish everything on my to-do list today?`,
       hint: "Try asking it a few more questions. Notice how it stays in character across the conversation.",

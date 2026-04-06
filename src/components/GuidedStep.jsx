@@ -75,20 +75,44 @@ export default function GuidedStep({
         </p>
       )}
 
-      {/* Shape coaching note: the section's shape "speaks" */}
+      {/* Shape coaching note: the section's shape "speaks" with personality */}
       {coachingNote && sectionShapeIndex != null && (
         <div style={{
-          display: "flex", gap: 12, alignItems: "flex-start",
-          padding: "12px 16px",
+          display: "flex", gap: 16, alignItems: "flex-start",
+          padding: "16px 18px",
           background: T.color.bgSubtle,
           border: `1px solid ${T.color.border}`,
-          borderRadius: 12,
+          borderRadius: 14,
           marginBottom: 10,
+          position: "relative",
         }}>
-          <div style={{ flexShrink: 0, marginTop: 2 }}>
-            <OrganicShape shapeIndex={sectionShapeIndex} size={16} color={T.color.copper} />
+          {/* Animated shape with sparkles */}
+          <div style={{ flexShrink: 0, position: "relative", width: 36, height: 36 }}>
+            <div style={{
+              animation: "gentleSpin 12s linear infinite",
+              lineHeight: 0,
+            }}>
+              <OrganicShape shapeIndex={sectionShapeIndex} size={32} color={T.color.copper} />
+            </div>
+            {/* Sparkles */}
+            {[
+              { top: -4, right: -2, delay: 0 },
+              { top: 8, right: -6, delay: 1.2 },
+              { bottom: -2, left: 2, delay: 0.6 },
+            ].map((pos, i) => (
+              <div key={i} style={{
+                position: "absolute", ...pos, width: 5, height: 5,
+                borderRadius: "50%",
+                background: T.color.copper,
+                animation: `sparkle 2s ease-in-out ${pos.delay}s infinite`,
+              }} />
+            ))}
           </div>
-          <div style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.55 }}>
+          {/* Speech bubble-style text */}
+          <div style={{
+            fontSize: 15, color: T.color.textMuted, lineHeight: 1.6,
+            paddingTop: 4,
+          }}>
             {coachingNote}
           </div>
         </div>
