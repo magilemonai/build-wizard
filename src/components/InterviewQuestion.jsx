@@ -3,6 +3,7 @@ import T from "../tokens.js";
 import ChoiceButton from "./ChoiceButton.jsx";
 import TextInput from "./TextInput.jsx";
 import ContinueButton from "./ContinueButton.jsx";
+import OrganicShape from "./OrganicShape.jsx";
 
 /* ━━━ Interview Question (with gated stagger + contextual notice) ━ */
 export default function InterviewQuestion({ question, subtext, type, options, value, onChange, onContinue, placeholder, staggerReady, notice }) {
@@ -19,12 +20,24 @@ export default function InterviewQuestion({ question, subtext, type, options, va
 
   return (
     <div>
-      <h2 style={{
-        fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
-        fontWeight: 400, lineHeight: 1.3, margin: "0 0 8px 0", color: T.color.text,
-      }}>{question}</h2>
-      {subtext && <p style={{ fontSize: 16, color: T.color.textMuted, margin: "0 0 28px 0", lineHeight: 1.65 }}>{subtext}</p>}
-      {!subtext && <div style={{ height: 28 }} />}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 8 }}>
+        <div style={{
+          flexShrink: 0, marginTop: 8,
+          animation: "gentleSpin 16s linear infinite",
+          lineHeight: 0, opacity: 0.7,
+        }}>
+          <OrganicShape shapeIndex={0} size={22} color={T.color.copper} />
+        </div>
+        <div>
+          <h2 style={{
+            fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
+            fontWeight: 400, lineHeight: 1.3, margin: "0 0 6px 0", color: T.color.text,
+          }}>{question}</h2>
+          {subtext && <p style={{ fontSize: 16, color: T.color.textMuted, margin: 0, lineHeight: 1.65 }}>{subtext}</p>}
+        </div>
+      </div>
+      {!subtext && <div style={{ height: 12 }} />}
+      <div style={{ height: 16 }} />
 
       {type === "choice" && options.map((opt, i) => (
         <ChoiceButton key={opt.value} selected={value === opt.value}

@@ -79,19 +79,18 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
             </div>
           ))
         ) : (
-          // Phase 1: rearranged with hero center + large, others twirl
+          // Phase 1: hero grows in place via heroArc scale, others twirl
           finalOrder.map((shapeIdx, i) => {
             const isHero = shapeIdx === heroShapeIndex;
             return (
               <div key={`p1-${shapeIdx}`} style={{
                 animation: isHero
-                  ? `heroArc 0.8s ${T.ease.spring} 0s both`
+                  ? `heroArc 0.9s ${T.ease.spring} 0.1s both`
                   : `twirlInPlace 3s ease-in-out ${0.3 + i * 0.2}s infinite`,
-                transition: `all 0.4s ${T.ease.smooth}`,
               }}>
                 <OrganicShape
                   shapeIndex={shapeIdx}
-                  size={isHero ? 40 : 20}
+                  size={20}
                   color={isHero ? T.color.copper : (i % 2 === 0 ? T.color.sage : T.color.copper)}
                 />
               </div>
