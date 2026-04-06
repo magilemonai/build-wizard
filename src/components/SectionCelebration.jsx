@@ -2,24 +2,22 @@ import T from "../tokens.js";
 import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
 
 /* ━━━ SectionCelebration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Pure CSS keyframe celebration. No React state changes, no phase
-   swaps, no re-renders. Everything is a single render with staggered
-   animation delays:
+   Pure CSS keyframe celebration:
 
-   0.0s-1.0s:  Particles scatter outward
-   0.3s-0.7s:  All 5 shapes bounce into a line (natural order)
-   1.5s:       Hero shape grows + lifts (CSS keyframe on the element)
-               Other shapes begin gentle twirl
-
-   heroShapeIndex: 0-4 (which shape owns this section)
-   intensity: 1-3 (particle count)
+   0.0-0.9s:  Particles scatter
+   0.3-0.7s:  All 5 shapes bounce into a line
+   1.4s:      Hero leaps up, arcs to center, lands big
+   1.8s+:     Others twirl; whole line snakes up and down
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+// Slot spacing: 20px shape + 14px gap = 34px per slot
+const SLOT = 34;
+const CENTER = 2; // center slot index
 
 export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   const particleCounts = [6, 10, 14];
   const count = particleCounts[Math.min(intensity - 1, 2)];
 
-  // Deterministic particles
   const particles = [];
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2 + (heroShapeIndex * 0.7);
@@ -34,8 +32,12 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
     particles.push({ x, y, rot, idx: shapeIdx, size, color: baseColor + alphas[i % 3] });
   }
 
+  // How far the hero needs to leap horizontally (in px)
+  const heroNatural = heroShapeIndex; // natural slot = shape index
+  const heroLeapX = (CENTER - heroNatural) * SLOT;
+
   return (
-    <div style={{ position: "relative", height: 110, marginBottom: 20 }}>
+    <div style={{ position: "relative", height: 120, marginBottom: 20 }}>
       {/* Scatter particles */}
       {particles.map((p, i) => (
         <div key={`p-${i}`} style={{
@@ -48,7 +50,7 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
         </div>
       ))}
 
-      {/* Shape line: all 5 shapes, hero gets special treatment */}
+      {/* Shape line */}
       <div style={{
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
         display: "flex", gap: 14, alignItems: "flex-end",
@@ -57,20 +59,28 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
           const isHero = shapeIdx === heroShapeIndex;
           return (
             <div key={shapeIdx} style={{
-              // Step 1: bounce into line (all shapes)
+              // Layer 1: bounce into line
               animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.08}s both`,
             }}>
-              {/* Step 2: hero grows after bounce settles; others twirl */}
+              {/* Layer 2: hero leaps to center; others get snake wave */}
               <div style={{
+                "--leap-x": `${heroLeapX}px`,
                 animation: isHero
-                  ? `heroGrow 0.8s ${T.ease.spring} 1.4s both`
-                  : `twirlInPlace 3s ease-in-out ${1.6 + i * 0.15}s infinite`,
+                  ? `heroLeap 1s ${T.ease.spring} 1.4s both`
+                  : `snakeWave 2.5s ease-in-out ${1.8 + i * 0.2}s infinite`,
               }}>
-                <OrganicShape
-                  shapeIndex={shapeIdx}
-                  size={20}
-                  color={i % 2 === 0 ? T.color.copper : T.color.sage}
-                />
+                {/* Layer 3: twirl (non-hero only) */}
+                <div style={{
+                  animation: !isHero
+                    ? `twirlInPlace 3s ease-in-out ${2.0 + i * 0.15}s infinite`
+                    : "none",
+                }}>
+                  <OrganicShape
+                    shapeIndex={shapeIdx}
+                    size={20}
+                    color={i % 2 === 0 ? T.color.copper : T.color.sage}
+                  />
+                </div>
               </div>
             </div>
           );
