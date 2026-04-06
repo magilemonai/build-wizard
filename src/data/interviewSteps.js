@@ -6,7 +6,7 @@ export default function getInterviewSteps(answers) {
   steps.push({
     id: "fork",
     question: "What would you like to build?",
-    subtext: "Work projects teach you things you'll use tomorrow. Personal projects light the spark faster. Both paths cover the same skills.",
+    subtext: "Pick whichever feels right. Both paths teach the same skills.",
     type: "choice",
     options: [
       { value: "work", label: "Something for work" },
@@ -18,14 +18,14 @@ export default function getInterviewSteps(answers) {
     steps.push({
       id: "project_idea",
       question: "What's something you do every week that feels repetitive?",
-      subtext: "The best first AI project is a real task you already do. We'll build a tool that handles part of it.",
+      subtext: "Think of a task you do regularly. We'll build a tool that handles part of it.",
       type: "textarea", placeholder: "Every Monday I have to...",
     });
   } else if (answers.fork === "personal") {
     steps.push({
       id: "project_idea",
       question: "What's something you're into outside of work?",
-      subtext: "A hobby, a side project, something you'd spend a Saturday afternoon on. We'll build around it.",
+      subtext: "A hobby, a side project, something you enjoy. We'll turn it into your first AI project.",
       type: "textarea", placeholder: "I'm really into...",
     });
   }
@@ -47,7 +47,7 @@ export default function getInterviewSteps(answers) {
   steps.push({
     id: "code_feeling",
     question: 'When you hear the word "code," what\'s your gut reaction?',
-    subtext: "Be honest. There's a right answer and it's the true one.",
+    subtext: "No wrong answer. This shapes what we show you.",
     type: "choice",
     options: [
       { value: "nervous", label: "Nervous — that's not my world" },
@@ -76,12 +76,12 @@ export default function getInterviewSteps(answers) {
       id: "followup",
       question: "What made you curious enough to try this?",
       subtext: "Could be something you read, a problem you have, or plain curiosity.",
-      type: "textarea", placeholder: "There's no wrong answer here...",
+      type: "textarea", placeholder: "A colleague mentioned it...",
     });
   } else if (exp === "occasional") {
     steps.push({
       id: "followup",
-      question: "What have you used AI for so far, and what do you wish it could do better?",
+      question: "What have you used AI for? What's been frustrating about it?",
       subtext: "Even a rough sense helps us calibrate. No wrong answers.",
       type: "textarea", placeholder: "I've used it for... but I wish it could...",
     });
@@ -98,6 +98,7 @@ export default function getInterviewSteps(answers) {
   steps.push({
     id: "time",
     question: "How much time do you have right now?",
+    subtext: "We'll adjust the pace. You can always come back.",
     type: "choice",
     options: [
       { value: "30min", label: "About 30 minutes" },
@@ -109,7 +110,7 @@ export default function getInterviewSteps(answers) {
   steps.push({
     id: "setup",
     question: "Do you have Claude ready to go?",
-    subtext: "You'll need it open in another tab for the building sections. Free accounts work fine.",
+    subtext: "You'll paste prompts into Claude as we go. A free account works fine.",
     type: "choice",
     options: [
       { value: "ready", label: "Yes, it's open" },

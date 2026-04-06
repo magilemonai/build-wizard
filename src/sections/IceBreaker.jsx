@@ -70,7 +70,7 @@ function ExerciseScreen({ exercise, onConfirm }) {
         fontSize: 15, color: T.color.textMuted, lineHeight: 1.5,
       }}>
         <span style={{ fontSize: 16 }}>⏳</span>
-        Claude may take a moment, especially if it's building an artifact. That's normal.
+        Claude may take a moment, especially for interactive outputs. That's normal.
       </div>
       <PromptCard
         key={exercise.id}
@@ -92,16 +92,16 @@ function getExercises(answers) {
     exercises.push({
       id: "band_names",
       title: "Let's start with something ridiculous.",
-      description: "Copy this prompt into Claude in your other tab. Just paste it in and hit enter.",
+      description: "Copy this prompt and paste it into Claude. Press Enter.",
       context: "Paste this into Claude:",
       prompt: `Generate 10 random band names by combining a random adjective, a random animal, and a random occupation. Make them funny.`,
-      coaching: "This is just to see the loop in action: you give an instruction, Claude responds. Simple as that.",
+      coaching: "This is just to see how it works: you give an instruction, Claude responds.",
     });
   } else {
     exercises.push({
       id: "band_names",
       title: "Quick warm-up. Something ridiculous.",
-      description: "Copy this prompt into Claude in your other tab. Paste it in and hit enter.",
+      description: "Copy this prompt and paste it into Claude. Press Enter.",
       context: "Paste this into Claude:",
       prompt: `Write a Python script that generates 5 random band names by combining a random adjective with a random animal and a random occupation. Make them funny. Present the code and the output as an artifact I can see.`,
       hint: "If Claude asks to run the code, say yes.",
@@ -114,7 +114,7 @@ function getExercises(answers) {
       id: "magic_8ball",
       title: "Now something a little more interactive.",
       description: "This time you'll give Claude more specific instructions. It only answers yes-or-no questions, so keep them simple. Copy and paste:",
-      coaching: "You're giving Claude a role to play. See how it stays in character? That's the foundation for system prompts later.",
+      coaching: "You're giving Claude a role to play. Notice how it stays in character? We'll use that technique later.",
       context: "Paste this into Claude:",
       prompt: `I want you to be a Magic 8-Ball. I'll ask you a yes-or-no question, and you respond in character: first say "The spirits are consulting..." then give me a mystical, funny answer. Make the answers more creative than the standard Magic -Ball responses.\n\nMy first question: Will I finish everything on my to-do list today?`,
       hint: "After you get the first answer, try asking a few more questions. See how Claude stays in character across the conversation.",
@@ -137,12 +137,12 @@ function getExercises(answers) {
     if (isNovice) {
       exercises.push({
         id: "project_bridge",
-        title: "One more. This one actually builds something.",
-        description: "Time to see Claude create a real tool. This is a preview of what we'll build for real in the next section.",
+        title: "One more. This one's for your project.",
+        description: "Now let's point Claude at your project idea. This is a warm-up version of what we'll build next.",
         context: "Paste this into Claude:",
         prompt: `Build me a simple interactive tool related to: "${projectIdea.trim()}"\n\nMake it something I can actually click around and use, not just text. Keep it fun and simple. Present it as an artifact.`,
-        hint: "This is a preview. The next section does this for real, tailored to what you actually need.",
-        coaching: "You just went from an idea to a working tool. That's the whole pattern we'll use from here.",
+        hint: "Keep this. The next section builds on it.",
+        coaching: "You just went from an idea to a working tool. That's the process for everything from here.",
       });
     } else {
       exercises.push({
@@ -215,7 +215,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
                 color: T.color.text, margin: "0 0 20px 0", textAlign: "center",
               }}>
-                Before your first prompt.
+                Before you start
               </h2>
               <div style={{
                 padding: "20px 24px", marginBottom: 16,
@@ -224,12 +224,12 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
                 borderRadius: 14,
               }}>
                 <div style={{ fontSize: 16, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
-                  This wizard is your guide. Claude is your tool.
+                  We'll guide you step by step. Claude does the building.
                 </div>
                 <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.65, margin: 0 }}>
-                  Each step here gives you a prompt to paste into Claude.
-                  If Claude suggests its own next steps, ignore those and come back here.
-                  We're building skills in a specific order.
+                  Each step gives you a prompt to copy into Claude.
+                  If Claude suggests next steps of its own, come back here first.
+                  We have a plan.
                 </p>
               </div>
               <div style={{
@@ -242,8 +242,8 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
               }}>
                 <span style={{ fontSize: 20, flexShrink: 0 }}>💡</span>
                 <span>
-                  <strong style={{ color: T.color.text }}>Split your screen</strong> so the wizard
-                  is on one side and Claude on the other. Much easier than switching tabs.
+                  <strong style={{ color: T.color.text }}>Split your screen</strong> so this page is
+                  on one side and Claude on the other. Easier than switching tabs.
                 </span>
               </div>
               <ContinueButton onClick={advance} label="Got it" />
@@ -276,7 +276,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
                     padding: 0,
                   }}
                 >
-                  Already comfortable with AI? Skip to Foundation &rarr;
+                  Already comfortable with AI? Skip to building your project &rarr;
                 </button>
               )}
             </div>
@@ -336,7 +336,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
                   lineHeight: 1.7, maxWidth: 460, margin: "0 auto 8px",
                 }}>
                   {isNovice
-                    ? "You gave instructions, got results, and shaped the output. That's the whole loop. Now let's use it for something that matters to you."
+                    ? "You gave instructions, got results, and refined them. That cycle works for anything. Now let's apply it to your project."
                     : "It was easy. Hold onto that feeling. Now let's build something that matters."}
                 </p>
                 <div style={{

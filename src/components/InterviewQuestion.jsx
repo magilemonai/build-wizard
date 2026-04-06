@@ -20,13 +20,22 @@ export default function InterviewQuestion({ question, subtext, type, options, va
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 8 }}>
-        <div style={{
-          flexShrink: 0, marginTop: 8,
-          animation: "gentleSpin 16s linear infinite",
-          lineHeight: 0, opacity: 0.7,
-        }}>
-          <OrganicShape shapeIndex={0} size={22} color={T.color.copper} />
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 8 }}>
+        <div style={{ flexShrink: 0, marginTop: 6, position: "relative", width: 36, height: 36 }}>
+          <div style={{ animation: "gentleSpin 14s linear infinite", lineHeight: 0 }}>
+            <OrganicShape shapeIndex={0} size={32} color={T.color.copper} />
+          </div>
+          {[
+            { top: -4, right: -2, delay: 0 },
+            { top: 10, right: -6, delay: 1.2 },
+            { bottom: -2, left: 4, delay: 0.6 },
+          ].map((pos, i) => (
+            <div key={i} style={{
+              position: "absolute", ...pos, width: 5, height: 5,
+              borderRadius: "50%", background: T.color.copper,
+              animation: `sparkle 2s ease-in-out ${pos.delay}s infinite`,
+            }} />
+          ))}
         </div>
         <div>
           <h2 style={{

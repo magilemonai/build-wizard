@@ -76,9 +76,9 @@ export default function WelcomeScreen({ onBegin }) {
         <p style={{
           fontSize: 17, lineHeight: 1.7, color: T.color.textMuted, maxWidth: 420, margin: "0 auto 20px",
         }}>
-          We'll figure out what you want to make, hand you the tools,
-          teach you what to watch out for, and get out of the way.
-          One finished project. No experience required.
+          A few questions, then we build something together.
+          You'll leave with a finished project and the skills to keep going.
+          No experience required.
         </p>
 
         {/* Device recommendation — actionable on mobile, gentle on desktop */}
@@ -90,9 +90,8 @@ export default function WelcomeScreen({ onBegin }) {
             maxWidth: 380, margin: "0 auto 36px",
           }}>
             <p style={{ fontSize: 13, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
-              This experience works best on a laptop or desktop, where you can keep
-              Claude open in another tab. Consider bookmarking this page and coming back
-              on a bigger screen.
+              This works best on a laptop or desktop. Bookmark this page and
+              come back on a bigger screen.
             </p>
           </div>
         ) : null}
@@ -114,7 +113,7 @@ export default function WelcomeScreen({ onBegin }) {
               transition: `all 0.2s ${T.ease.smooth}`,
             }}
           >
-            Open <strong style={{ color: T.color.copper }}>claude.ai</strong> in another tab before you start ↗
+            You'll need <strong style={{ color: T.color.copper }}>claude.ai</strong> open in another tab later ↗
           </a>
         )}
 

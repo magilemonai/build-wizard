@@ -138,7 +138,7 @@ export default function GuidedStep({
         key={prompt}
         prompt={prompt}
         context="Try this in Claude:"
-        outcomeLabels={{ worked: "Output looks good", snag: "Need to iterate", skip: "Skip (next step builds on this)" }}
+        outcomeLabels={{ worked: "Output looks good", snag: "Need to refine", skip: "Skip this step" }}
         onConfirm={onConfirm}
       />
     </div>

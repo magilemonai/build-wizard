@@ -30,8 +30,8 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
         margin: "0 0 4px 0", lineHeight: 1.65,
       }}>
         Before you take this with you, one more habit to build: reviewing your work.
-        Focus on what it does, what information it has access to, and what could go wrong.
-        That's the review instinct that makes AI use responsible.
+        One last habit: reviewing what you built. Focus on what it does,
+        what data it uses, and what could go wrong.
       </p>
       <PromptCard
         prompt={`Let's review what we've built for "${idea}".\n\nGive me a plain-language walkthrough:\n1. What does this project actually do, in one paragraph?\n2. What information did I share with you to build it?\n3. If I wanted to share this with someone else, what should I double-check first?\n4. What's the one thing most likely to need updating over time?`}
@@ -44,7 +44,7 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
         marginTop: 14, lineHeight: 1.6,
         fontStyle: "italic",
       }}>
-        This review habit takes 30 seconds and catches the things you'd miss. Every time. Not paranoia. Just practice.
+        This takes 30 seconds and catches things you'd miss. Worth doing every time.
       </p>
     </div>
   );
@@ -74,7 +74,7 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
         margin: "0 0 24px 0", lineHeight: 1.65,
       }}>
         Conversations can expire or get lost. Before you close that tab, take
-        a moment to save what you built somewhere durable.
+        a moment to save your work somewhere you'll find it.
       </p>
 
       <div style={{
@@ -115,11 +115,11 @@ function SaveShareStep({ answers, onContinue, BackButton }) {
         <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
           If Claude created an artifact, click the copy icon on it, then select
           "Publish" from the dropdown. That gives you a public URL you can send
-          to anyone. You built something worth showing off.
+          to anyone. It's your work. Share it if you're proud of it.
         </p>
       </div>
 
-      <ContinueButton onClick={onContinue} label="Continue to reflection" />
+      <ContinueButton onClick={onContinue} label="Continue" />
     </div>
   );
 }
@@ -159,7 +159,7 @@ function ReflectionScreen({ answers, onContinue, BackButton }) {
         fontSize: 16, color: T.color.textMuted,
         margin: "0 0 24px 0", lineHeight: 1.65,
       }}>
-        This wasn't just a Claude tutorial. Every skill you practiced works in any AI tool.
+        Every skill you practiced works in any AI tool.
         If you switch to GPT, Gemini, or whatever comes next, everything here still applies.
       </p>
 
@@ -188,14 +188,14 @@ function ReflectionScreen({ answers, onContinue, BackButton }) {
 
       <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.65, margin: 0 }}>
         {level === "never" || level === "tried"
-          ? "A few hours ago, you hadn't really used AI. Now you have a project, a process, and the safety habits to do this responsibly. That's a big shift."
+          ? "When you started, you hadn't really used AI. Now you have a project, a process, and the safety habits to do this responsibly. That's a real shift."
           : isWork
-          ? "You turned a vague sense of 'I should use AI more' into a real tool for real work. The gap between knowing about AI and using it well just closed."
-          : "You went from occasional use to a structured approach with real techniques. The difference between poking at AI and using it well is exactly what you just practiced."
+          ? "You have a working tool and a process for building more. That's a real start."
+          : "The difference between trying AI and using it well is exactly what you practiced here."
         }
       </p>
 
-      <ContinueButton onClick={onContinue} label="What's next" />
+      <ContinueButton onClick={onContinue} label="See what's next" />
     </div>
   );
 }
@@ -269,7 +269,7 @@ function NextStepsScreen({ answers, BackButton }) {
         fontSize: 16, color: T.color.textMuted,
         margin: "0 0 24px 0", lineHeight: 1.65,
       }}>
-        You have the loop: try, evaluate, refine, expand.
+        You have the process: try, check, refine, repeat.
         Here are the best places to aim it next.
       </p>
 
@@ -411,7 +411,7 @@ function FinaleScreen({ answers }) {
         transform: stage >= 3 ? "translateY(0)" : "translateY(14px)",
         transition: `all 0.7s ${T.ease.smooth} 0.3s`,
       }}>
-        That was the whole promise. Everything from here is refinement and ambition.
+        That was the promise. You delivered.
       </p>
 
       {/* Summary card: project + skills with section shapes */}
@@ -452,7 +452,7 @@ function FinaleScreen({ answers }) {
             ))}
           </div>
           <div style={{ fontSize: 13, color: T.color.textLight, marginTop: 14 }}>
-            Your project lives in your Claude conversation. Come back here anytime to refresh your skills.
+            Your project lives in your Claude conversation. Come back here anytime.
           </div>
         </div>
       )}
@@ -554,7 +554,7 @@ export default function Ship({ answers, onBack, onProgress, initialStep, onStepC
                 onContinue={advance}
                 sectionShapeIndex={4}
                 points={[
-                  { title: "These habits scale with you.", body: "Your AI usage will grow from here. Your data footprint grows with it. The habits you built today (reviewing output, checking permissions, verifying facts) aren't just for beginners. They're the ongoing practice of using these tools well. What to do: keep doing exactly what you practiced today. The specifics will change. The habits won't." },
+                  { title: "These habits grow with you.", body: "As you use AI more, you'll share more data with it. The habits you built today (reviewing output, checking permissions, verifying facts) aren't just for beginners. They're the ongoing practice. What to do: keep doing exactly what you practiced today. The specifics will change. The habits won't." },
                   { title: "Set a monthly check-in.", body: "What to do: once a month, take five minutes. Check what tools have access to what. Review your privacy settings. Ask: do my practices still match how I'm actually using AI? Your risk level six months from now won't be the same as today. This one habit keeps everything else current." },
                 ]}
               />

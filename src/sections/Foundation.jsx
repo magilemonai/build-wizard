@@ -17,10 +17,10 @@ function getBuildSteps(answers) {
       skillLabel: "Skill: Prompting well",
       title: "Your first prompt is a rough draft.",
       explanation:
-        "Most people type one sentence and judge the result. " +
-        "The skill is treating that first attempt as a starting point. " +
-        "Give context, be specific about what you want, and then iterate. " +
-        "Try it, read the output, refine, try again. That loop is the whole game.",
+        "Your first prompt is a rough draft, not a final answer. " +
+        "The skill is treating it as a starting point. " +
+        "Give context, be specific, then refine. " +
+        "Try, read, adjust, repeat.",
       prompt: isWork
         ? `I need help with: ${idea}\n\nHere's the context:\n- This is for my work\n- I do this task regularly\n- A good result would save me real time\n\nGive me a first draft of a tool or template for this. Then I'll tell you what to change.`
         : `I want to build something around: ${idea}\n\nHere's what I care about:\n- This is a personal interest\n- I want something I'd actually use, not a generic result\n- Surprise me with how specific you can get\n\nGive me a first draft. Then I'll tell you what to change.`,
@@ -31,12 +31,11 @@ function getBuildSteps(answers) {
     {
       id: "structured",
       skillLabel: "Skill: Structured output",
-      title: "Tell it what shape you want the answer in.",
+      title: "Tell Claude how to format the answer.",
       explanation:
         "You've been prompting in paragraphs. But Claude can give you tables, templates, " +
         "checklists, step-by-step plans, even formatted data you can paste into a spreadsheet. " +
-        "You're just telling it what container to put the answer in. " +
-        "Same skill as prompting. It just looks a little more like code.",
+        "Same skill, different format.",
       prompt: isWork
         ? `Take what you just created for "${idea}" and restructure it as:\n\n1. A one-paragraph summary at the top\n2. A table with columns for each key element\n3. A checklist of action items I can copy into my task manager\n\nKeep the same content, just organize it so I can actually use it at work.`
         : `Take the project you just built for me (about "${idea}") and repackage that exact output into three formats. Don't add new advice or content. Just restructure what you already gave me:\n\n1. A quick-reference card (the essentials from your output in a glanceable format)\n2. The key steps from your output as a simple table with columns\n3. Your top three recommendations from the output, ranked\n\nSame information you already wrote, just in more useful shapes.`,
@@ -154,7 +153,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
                 color: T.color.text, margin: "0 0 20px 0", textAlign: "center",
               }}>
-                Before your first prompt.
+                Before you start
               </h2>
               <div style={{
                 padding: "20px 24px", marginBottom: 16,
@@ -163,12 +162,12 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
                 borderRadius: 14,
               }}>
                 <div style={{ fontSize: 16, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
-                  This wizard is your guide. Claude is your tool.
+                  We'll guide you step by step. Claude does the building.
                 </div>
                 <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.65, margin: 0 }}>
-                  Each step here gives you a prompt to paste into Claude.
-                  If Claude suggests its own next steps, ignore those and come back here.
-                  We're building skills in a specific order.
+                  Each step gives you a prompt to copy into Claude.
+                  If Claude suggests next steps of its own, come back here first.
+                  We have a plan.
                 </p>
               </div>
               <div style={{
@@ -180,8 +179,8 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
               }}>
                 <span style={{ fontSize: 20, flexShrink: 0 }}>💡</span>
                 <span>
-                  <strong style={{ color: T.color.text }}>Split your screen</strong> so the wizard
-                  is on one side and Claude on the other. Much easier than switching tabs.
+                  <strong style={{ color: T.color.text }}>Split your screen</strong> so this page is
+                  on one side and Claude on the other. Easier than switching tabs.
                 </span>
               </div>
               <ContinueButton onClick={advance} label="Got it" />
@@ -221,15 +220,15 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
                 fontWeight: 400, lineHeight: 1.3, margin: "0 0 10px 0",
                 color: T.color.text,
               }}>
-                One important thing before we start.
+                Keep your Claude conversation open.
               </h2>
               <p style={{
                 fontSize: 16, color: T.color.textMuted,
                 margin: "0 0 20px 0", lineHeight: 1.65,
               }}>
                 From here on, each step builds on the last. Keep the same Claude
-                conversation open in your other tab throughout this section. Each
-                prompt refers to what you built in the previous step.
+                conversation open. Each prompt refers to what you built in the
+                previous step.
               </p>
               <div style={{
                 padding: "16px 20px",
@@ -280,9 +279,8 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
               <SafetyInterstitial title="AI gets things wrong confidently." onContinue={advance} sectionShapeIndex={2}>
                 <p style={{ margin: "0 0 12px 0" }}>
                   If something in your output looked right but felt off, pay attention to that instinct.
-                  These models fill gaps with plausible fiction and never flag it. They'll cite sources
-                  that don't exist, give advice that sounds authoritative but is wrong, and present
-                  guesses as facts. This is called a <strong>hallucination.</strong>
+                  AI can cite sources that don't exist and present guesses as facts.
+                  It never warns you when it's doing this. This is called a <strong>hallucination.</strong>
                 </p>
                 <p style={{ margin: "0 0 12px 0" }}>
                   <strong>What to do about it:</strong> Verify anything that matters before you use it.
@@ -290,7 +288,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
                   If it gives you a plan, ask yourself: "Does this make sense based on what I already know?"
                 </p>
                 <p style={{ margin: 0 }}>
-                  This isn't a flaw to fear. It's the core skill of using AI well: trust the draft, verify the facts.
+                  The habit: trust the draft as a starting point, then verify anything that matters.
                 </p>
               </SafetyInterstitial>
             </div>
@@ -312,7 +310,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
               </h2>
               <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 520, margin: "0 auto 8px" }}>
                 Prompted with context, shaped the output, and made it yours.
-                Those three moves work for any project in any AI tool.
+                Those skills transfer to any AI tool.
               </p>
               <div style={{
                 background: T.color.bgCard, border: `1px solid ${T.color.border}`,
@@ -337,7 +335,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
                 Good place to take a break if you need one. Your progress is saved.
                 Next up: system prompts and multi-step workflows that take this further.
               </p>
-              <ContinueButton onClick={onComplete} label="Level up" />
+              <ContinueButton onClick={onComplete} label="Continue" />
               </div>
             </div>
           );
