@@ -34,7 +34,8 @@ const SECTION_TRANSITIONS = {
 const SECTIONS_WITH_PROGRESS = [SCREENS.INTERVIEW, SCREENS.ICEBREAKER, SCREENS.FOUNDATION, SCREENS.POWERUP, SCREENS.SHIP];
 
 // Step counts per section (must match buildStepSequence in each section file)
-const SECTION_STEP_COUNTS = {
+// Base step counts per section (Quick Path adds 1 to Foundation for safety)
+const BASE_STEP_COUNTS = {
   [SCREENS.ICEBREAKER]: 5,   // 3 exercises + safety + anchor
   [SCREENS.FOUNDATION]: 6,   // continuity + 3 builds + safety + anchor
   [SCREENS.POWERUP]: 6,      // 2 builds + safety + roast + tools + anchor
@@ -74,11 +75,14 @@ export default function App() {
   // Quick path flag
   const isQuickPath = shouldUseQuickPath(interview.answers);
 
-  // Scroll to top and update page title
+  // Scroll to top, update title, manage focus on screen changes
   useEffect(() => {
     window.scrollTo(0, 0);
     const baseScreen = screen.replace(/-transition$/, "");
     document.title = SECTION_TITLES[baseScreen] || SECTION_TITLES[screen] || "Build Wizard";
+    // Move focus to main content for keyboard/screen-reader users
+    const main = document.querySelector("[data-main-content]");
+    if (main) main.focus({ preventScroll: true });
   }, [screen]);
 
   // Persist state on meaningful changes
@@ -207,22 +211,23 @@ export default function App() {
   // Quick path: IceBreaker → Foundation (skip exercises)
   const iceOnComplete = isQuickPath
     ? () => { analytics.trackQuickPath(); navigateToSection(SCREENS.FOUNDATION); }
-    : () => navigateToSection(SCREENS.FOUNDATION);
+    : () => { analytics.trackSectionComplete(SCREENS.ICEBREAKER); navigateToSection(SCREENS.FOUNDATION); };
 
   return (
     <>
       <GrainOverlay />
-      <div style={{
+      <div data-main-content tabIndex={-1} style={{
         minHeight: "100vh", background: T.color.bg,
         fontFamily: T.font.body, color: T.color.text,
         overflowX: "hidden", position: "relative", zIndex: 1,
+        outline: "none",
       }}>
         {showProgress && (
           <JourneyProgress
             currentSection={screen}
             questionProgress={progressValue}
             onSectionClick={handleProgressClick}
-            stepCount={SECTION_STEP_COUNTS[screen] || 0}
+            stepCount={(BASE_STEP_COUNTS[screen] || 0) + (screen === SCREENS.FOUNDATION && isQuickPath ? 1 : 0)}
             currentStep={progress.sectionSteps[screen] || 0}
           />
         )}
@@ -317,18 +322,19 @@ export default function App() {
           {screen === SCREENS.FOUNDATION && (
             <Foundation
               answers={interview.answers}
-              onComplete={() => navigateToSection(SCREENS.POWERUP)}
+              onComplete={() => { analytics.trackSectionComplete(SCREENS.FOUNDATION); navigateToSection(SCREENS.POWERUP); }}
               onBack={() => setScreen(isQuickPath ? SCREENS.PATHCARD : SCREENS.ICEBREAKER)}
               onProgress={progress.progressUpdaters[SCREENS.FOUNDATION]}
               initialStep={progress.sectionSteps[SCREENS.FOUNDATION]}
               onStepChange={progress.stepUpdaters[SCREENS.FOUNDATION]}
+              quickPath={isQuickPath}
             />
           )}
 
           {screen === SCREENS.POWERUP && (
             <PowerUp
               answers={interview.answers}
-              onComplete={() => navigateToSection(SCREENS.SHIP)}
+              onComplete={() => { analytics.trackSectionComplete(SCREENS.POWERUP); navigateToSection(SCREENS.SHIP); }}
               onBack={() => setScreen(SCREENS.FOUNDATION)}
               onProgress={progress.progressUpdaters[SCREENS.POWERUP]}
               initialStep={progress.sectionSteps[SCREENS.POWERUP]}

@@ -1,6 +1,25 @@
+import { useState } from "react";
 import T from "../tokens.js";
 import { useIsMobile } from "../hooks.js";
 import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
+
+function HoverShape({ shapeIndex, size, color, active, clickable }) {
+  const [hovered, setHovered] = useState(false);
+  const scale = active ? 1.3 : (hovered && clickable) ? 1.2 : 1;
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        transition: `all 0.3s ${T.ease.smooth}`,
+        transform: `scale(${scale})`,
+        lineHeight: 0,
+      }}
+    >
+      <OrganicShape shapeIndex={shapeIndex} size={size} color={color} />
+    </div>
+  );
+}
 
 /* ━━━ Journey Progress (responsive, clickable) ━━━━━━━━━━━━━━━━━ */
 export const journeySteps = [
@@ -14,19 +33,6 @@ export const journeySteps = [
 export default function JourneyProgress({ currentSection, questionProgress, onSectionClick, stepCount, currentStep }) {
   const idx = journeySteps.findIndex((s) => s.key === currentSection);
   const mobile = useIsMobile();
-
-  const renderShape = (i, size, active, past) => {
-    const color = past ? T.color.sage : active ? T.color.copper : T.color.border;
-    return (
-      <div style={{
-        transition: `all 0.5s ${T.ease.smooth}`,
-        transform: active ? "scale(1.3)" : "scale(1)",
-        lineHeight: 0,
-      }}>
-        <OrganicShape shapeIndex={sectionShapes[i]} size={size} color={color} />
-      </div>
-    );
-  };
 
   const isClickable = (i) => onSectionClick && (i < idx || i === idx);
 
@@ -45,7 +51,7 @@ export default function JourneyProgress({ currentSection, questionProgress, onSe
                 onClick={isClickable(i) ? () => onSectionClick(s.key) : undefined}
                 style={{ cursor: isClickable(i) ? "pointer" : "default" }}
               >
-                {renderShape(i, i === idx ? 14 : 10, i === idx, i < idx)}
+                <HoverShape shapeIndex={sectionShapes[i]} size={i === idx ? 14 : 10} color={i < idx ? T.color.sage : i === idx ? T.color.copper : T.color.border} active={i === idx} clickable={isClickable(i)} />
               </div>
             ))}
           </div>
@@ -87,7 +93,7 @@ export default function JourneyProgress({ currentSection, questionProgress, onSe
                 }}
                 title={clickable && past ? `Jump to ${step.label}` : undefined}
               >
-                {renderShape(i, active ? 14 : 10, active, past)}
+                <HoverShape shapeIndex={sectionShapes[i]} size={active ? 14 : 10} color={past ? T.color.sage : active ? T.color.copper : T.color.border} active={active} clickable={isClickable(i)} />
                 <div style={{
                   position: "absolute", top: "100%", left: "50%",
                   transform: "translateX(-50%)", marginTop: 8, whiteSpace: "nowrap",
@@ -115,19 +121,25 @@ export default function JourneyProgress({ currentSection, questionProgress, onSe
                       }} />
                     )}
                   </div>
-                  {/* Sub-progress dots for active section */}
+                  {/* Sub-progress: mini section shapes under active bar */}
                   {active && stepCount > 1 && (
                     <div style={{
                       position: "absolute", top: 8, left: 0, right: 0,
                       display: "flex", justifyContent: "center", gap: 4,
+                      lineHeight: 0,
                     }}>
                       {Array.from({ length: stepCount }, (_, si) => (
                         <div key={si} style={{
-                          width: 5, height: 5, borderRadius: "50%",
-                          background: si < currentStep ? T.color.sage : si === currentStep ? T.color.copper : T.color.border,
                           transition: `all 0.3s ${T.ease.smooth}`,
-                          opacity: si <= currentStep ? 1 : 0.4,
-                        }} />
+                          opacity: si <= currentStep ? 1 : 0.35,
+                          transform: si === currentStep ? "scale(1.3)" : "scale(1)",
+                        }}>
+                          <OrganicShape
+                            shapeIndex={sectionShapes[i]}
+                            size={5}
+                            color={si < currentStep ? T.color.sage : si === currentStep ? T.color.copper : T.color.border}
+                          />
+                        </div>
                       ))}
                     </div>
                   )}

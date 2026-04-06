@@ -104,7 +104,11 @@ export default function WelcomeBack({ savedScreen, projectIdea, onResume, onStar
         </button>
 
         <button
-          onClick={onStartOver}
+          onClick={() => {
+            if (window.confirm("This will clear all your progress. Start fresh?")) {
+              onStartOver();
+            }
+          }}
           style={{
             background: "none", border: "none", cursor: "pointer",
             color: T.color.textLight, fontFamily: T.font.body, fontSize: 14,

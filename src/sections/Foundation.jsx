@@ -26,7 +26,7 @@ function getBuildSteps(answers) {
         : `I want to build something around: ${idea}\n\nHere's what I care about:\n- This is a personal interest\n- I want something I'd actually use, not a generic result\n- Surprise me with how specific you can get\n\nGive me a first draft. Then I'll tell you what to change.`,
       hint: "Read what Claude gives you. What's close? What's off? Tell it. That back-and-forth is the actual skill you're building.",
       showThinkingNote: true,
-      coachingNote: "Read the output before clicking anything. What's useful? What's generic? That judgment is the skill.",
+      coachingNote: "Before you click anything: what's useful in the output? What feels generic? That judgment is the skill you're building.",
     },
     {
       id: "structured",
@@ -41,7 +41,7 @@ function getBuildSteps(answers) {
         ? `Take what you just created for "${idea}" and restructure it as:\n\n1. A one-paragraph summary at the top\n2. A table with columns for each key element\n3. A checklist of action items I can copy into my task manager\n\nKeep the same content, just organize it so I can actually use it at work.`
         : `Take the project you just built for me (about "${idea}") and repackage that exact output into three formats. Don't add new advice or content. Just restructure what you already gave me:\n\n1. A quick-reference card (the essentials from your output in a glanceable format)\n2. The key steps from your output as a simple table with columns\n3. Your top three recommendations from the output, ranked\n\nSame information you already wrote, just in more useful shapes.`,
       hint: "You shaped the output into the format you needed. That's the real skill: telling AI not just what to say, but how to present it.",
-      coachingNote: "Compare the structured version to the original. Same content, completely different usability.",
+      coachingNote: "Compare this to the original. Same information, different shape. Which version would you actually use?",
     },
     {
       id: "context",
@@ -58,20 +58,22 @@ function getBuildSteps(answers) {
         : `Let me give you more context about "${idea}":\n\n- My experience level with this is: [beginner/intermediate/etc.]\n- What I've already tried: [anything relevant]\n- What I'm specifically trying to achieve: [your goal]\n- Constraints that matter: [time, budget, space, equipment, etc.]\n\nNow revise what you built with all of this in mind. Make it genuinely mine, not generic.`,
       hint: "Notice how the output changed when you added real context. That's the difference between a template and a tool built for you.",
       showThinkingNote: true,
-      coachingNote: "The more specific you are about your situation, the less generic the output. That's the leverage.",
+      coachingNote: "How different does the output look now that Claude knows your specifics? What would you add next?",
     },
   ];
 }
 
-function buildStepSequence(answers) {
-  return [
-    { type: "continuity" },
-    { type: "build", index: 0 },
-    { type: "build", index: 1 },
-    { type: "safety", variant: answers.fork === "work" ? "work" : "personal" },
-    { type: "build", index: 2 },
-    { type: "anchor" },
-  ];
+function buildStepSequence(answers, quickPath) {
+  const steps = [];
+  // Quick Path users skipped IceBreaker safety — insert condensed version
+  if (quickPath) steps.push({ type: "quicksafety", variant: answers.fork === "work" ? "work" : "personal" });
+  steps.push({ type: "continuity" });
+  steps.push({ type: "build", index: 0 });
+  steps.push({ type: "build", index: 1 });
+  steps.push({ type: "safety", variant: answers.fork === "work" ? "work" : "personal" });
+  steps.push({ type: "build", index: 2 });
+  steps.push({ type: "anchor" });
+  return steps;
 }
 
 /* ━━━ Catch-up prompt with copy button ━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -123,9 +125,9 @@ function CatchUpPrompt({ idea }) {
 }
 
 /* ━━━ Foundation Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function Foundation({ answers, onComplete, onBack, onProgress, initialStep, onStepChange }) {
+export default function Foundation({ answers, onComplete, onBack, onProgress, initialStep, onStepChange, quickPath }) {
   const buildSteps = getBuildSteps(answers);
-  const steps = buildStepSequence(answers);
+  const steps = buildStepSequence(answers, quickPath);
   const idea = answers.project_idea || "my project";
 
   return (
@@ -138,6 +140,29 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
       onStepChange={onStepChange}
       renderStep={({ step, stepIndex, advance, goBack, BackButton }) => {
         if (!step) return null;
+
+        // Quick Path: condensed safety from IceBreaker (data privacy + models)
+        if (step.type === "quicksafety") {
+          const isWork = step.variant === "work";
+          return (
+            <div>
+              {BackButton}
+              <SafetyInterstitial
+                title={isWork ? "Three things before we build." : "Two things before we build."}
+                onContinue={advance}
+                sectionShapeIndex={2}
+                points={isWork ? [
+                  { title: "Your input leaves your computer.", body: "Everything you type goes to a server for processing. What to do: open Claude's Settings → Privacy and review what's shared. You control whether your conversations are used for training." },
+                  { title: "Think before you paste work data.", body: "Does your company have an AI policy? If you don't know, find out before sharing real work content. What to do: ask your manager or IT team." },
+                  { title: "You can choose your model.", body: "Claude has different models (Haiku, Sonnet, Opus) from fast and light to deep and capable. You can also enable extended thinking. You don't need to change anything now, but the dial exists." },
+                ] : [
+                  { title: "Your input leaves your computer.", body: "Everything you type goes to a server for processing. What to do: open Claude's Settings → Privacy and review what's shared. You control whether your conversations are used for training." },
+                  { title: "You can choose your model.", body: "Claude has different models (Haiku, Sonnet, Opus) from fast and light to deep and capable. You can also enable extended thinking. You don't need to change anything now, but the dial exists." },
+                ]}
+              />
+            </div>
+          );
+        }
 
         if (step.type === "continuity") {
           return (

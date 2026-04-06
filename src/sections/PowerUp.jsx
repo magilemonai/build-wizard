@@ -28,7 +28,7 @@ function getBuildSteps(answers) {
         ? `I want you to act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nNow let's test it. Take what we've built for ${idea} and produce a ready-to-share version I could send to a colleague this week. Format it so they'd understand the value without needing context from our conversation.`
         : `I want you to act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nNow let's test it. I have 30 free minutes right now and want to make progress on ${idea}. What should I do with that time? Be specific to what we've built so far, not generic advice.`,
       hint: "Notice how the system prompt changed Claude's tone and approach. That context carries forward. In a Project, you'd save this as permanent instructions so every new conversation starts with it.",
-      coachingNote: "Compare this response to earlier ones. The system prompt didn't just change what Claude said. It changed how Claude thinks about the task.",
+      coachingNote: "How does this response compare to your earlier ones? What changed about Claude's approach, not just its words?",
     },
     {
       id: "workflows",
@@ -45,7 +45,7 @@ function getBuildSteps(answers) {
         : `Let's level up what we built for "${idea}".\n\nStep 1: Critique your own work. What are the 3 biggest gaps or things that feel generic?\n\nStep 2: For each gap, explain what would make it genuinely useful versus just okay.\n\nStep 3: Rewrite the whole thing with those improvements. Make it something I'd actually come back to.\n\nDo all three steps now.`,
       hint: "Notice the quality jump between the single-pass version and the one that went through draft-critique-revise. That's the workflow pattern.",
       showThinkingNote: true,
-      coachingNote: "The critique step is where the real improvement happens. Watch for Claude finding things you wouldn't have caught.",
+      coachingNote: "Did Claude's critique catch anything you missed? What surprised you about the revised version?",
     },
     // Tone control exercise before the tools step
     {

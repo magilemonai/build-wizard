@@ -2,9 +2,9 @@ import T from "../tokens.js";
 import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
 
 /* ━━━ SectionCelebration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Celebration animation for section anchors. The section's own shape
-   arcs dramatically into center position. Supporting shapes orbit
-   and dance around it.
+   Section's hero shape arcs dramatically into center of a line.
+   Supporting shapes bounce in on either side and twirl in place.
+   Scatter particles burst outward.
 
    heroShapeIndex: the shape that "owns" this section (0-4)
    intensity: escalating particle count (1=light, 2=medium, 3=heavy)
@@ -13,27 +13,39 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   const particleCounts = [6, 10, 14];
   const count = particleCounts[Math.min(intensity - 1, 2)];
 
+  // Generate scatter particles (seeded by heroShapeIndex for stability)
   const particles = [];
   for (let i = 0; i < count; i++) {
-    const angle = (i / count) * Math.PI * 2 + (i * 0.3);
-    const radius = 50 + Math.random() * 80;
+    const angle = (i / count) * Math.PI * 2 + (heroShapeIndex * 0.7);
+    const radius = 50 + (i * 13) % 80;
     const x = Math.cos(angle) * radius;
-    const y = -30 - Math.random() * 70;
-    const rot = (Math.random() - 0.5) * 120;
+    const y = -30 - (i * 17) % 70;
+    const rot = ((i * 47) % 120) - 60;
     const shapeIdx = sectionShapes[i % 5];
-    const size = 5 + Math.random() * 6;
+    const size = 5 + (i * 3) % 6;
     const isCopper = i % 2 === 0;
-    const alpha = Math.random() > 0.5 ? "" : (Math.random() > 0.5 ? "88" : "66");
+    const alphas = ["", "88", "66"];
+    const alpha = alphas[i % 3];
     const baseColor = isCopper ? T.raw.copper : T.raw.sage;
     particles.push({ x, y, rot, idx: shapeIdx, size, color: baseColor + alpha });
   }
 
-  // Supporting shapes: all section shapes except the hero, orbiting around center
-  const supporters = sectionShapes.filter((s) => s !== heroShapeIndex);
+  // Build the line: supporters on sides, hero in center
+  // Order: 2 left supporters | hero | 2 right supporters
+  const allShapes = sectionShapes.slice();
+  const heroPos = allShapes.indexOf(heroShapeIndex);
+  const supporters = allShapes.filter((s) => s !== heroShapeIndex);
+  const lineOrder = [
+    { idx: supporters[0], size: 18, color: T.color.sage, isHero: false },
+    { idx: supporters[1], size: 20, color: T.color.copper, isHero: false },
+    { idx: heroShapeIndex, size: 40, color: T.color.copper, isHero: true },
+    { idx: supporters[2], size: 20, color: T.color.sage, isHero: false },
+    { idx: supporters[3], size: 18, color: T.color.copper, isHero: false },
+  ];
 
   return (
-    <div style={{ position: "relative", height: 120, marginBottom: 20 }}>
-      {/* Scatter particles */}
+    <div style={{ position: "relative", height: 110, marginBottom: 20 }}>
+      {/* Scatter particles: burst outward */}
       {particles.map((p, i) => (
         <div key={`s-${i}`} style={{
           position: "absolute", left: "50%", top: "50%",
@@ -45,41 +57,20 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
         </div>
       ))}
 
-      {/* Supporting shapes: orbit around center */}
-      {supporters.map((shapeIdx, i) => {
-        const orbitRadius = 40 + i * 6;
-        const startDelay = 0.4 + i * 0.12;
-        return (
-          <div key={`o-${shapeIdx}`} style={{
-            position: "absolute",
-            left: "50%", top: "50%",
-            marginLeft: -10, marginTop: -10,
-            "--orbit-r": `${orbitRadius}px`,
-            opacity: 0,
-            animation: `celebrateBounce 0.7s ${T.ease.spring} ${startDelay}s both, orbitDance 8s linear ${startDelay + 0.7}s infinite`,
-          }}>
-            <OrganicShape
-              shapeIndex={shapeIdx}
-              size={18}
-              color={i % 2 === 0 ? T.color.sage : T.color.copper}
-            />
-          </div>
-        );
-      })}
-
-      {/* Hero shape: dramatic arc into center */}
+      {/* Shape line: bounce in then twirl */}
       <div style={{
-        position: "absolute",
-        left: "50%", top: "50%",
-        marginLeft: -20, marginTop: -20,
-        animation: `heroArc 1.2s ${T.ease.spring} 0.2s both`,
-        zIndex: 2,
+        position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+        display: "flex", gap: 14, alignItems: "flex-end",
       }}>
-        <OrganicShape
-          shapeIndex={heroShapeIndex}
-          size={40}
-          color={T.color.copper}
-        />
+        {lineOrder.map((s, i) => (
+          <div key={`l-${i}`} style={{
+            animation: s.isHero
+              ? `heroArc 1.1s ${T.ease.spring} 0.2s both`
+              : `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.08}s both, twirlInPlace 3s ease-in-out ${1.2 + i * 0.25}s infinite`,
+          }}>
+            <OrganicShape shapeIndex={s.idx} size={s.size} color={s.color} />
+          </div>
+        ))}
       </div>
     </div>
   );

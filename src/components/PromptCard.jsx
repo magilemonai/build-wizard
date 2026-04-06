@@ -25,7 +25,12 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
       setCopied(true);
       clearTimeout(copyTimer.current);
       copyTimer.current = setTimeout(() => setCopied(false), hasPlaceholders ? 4000 : 2000);
-    } catch {}
+    } catch {
+      // Clipboard API unavailable — prompt user to select manually
+      setCopied("manual");
+      clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setCopied(false), 4000);
+    }
   }, [prompt, hasPlaceholders]);
 
   const outcomeContent = {
@@ -95,7 +100,9 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
                 transition: `all 0.25s ${T.ease.smooth}`,
               }}
             >
-              {copied
+              {copied === "manual"
+              ? "Select the text above and copy manually"
+              : copied
               ? (hasPlaceholders ? "✓ Copied — fill in the [brackets] before pasting" : "✓ Copied")
               : "Copy to clipboard"}
             </button>
