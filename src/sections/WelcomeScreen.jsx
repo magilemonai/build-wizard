@@ -113,7 +113,7 @@ export default function WelcomeScreen({ onBegin }) {
               transition: `all 0.2s ${T.ease.smooth}`,
             }}
           >
-            You'll need <strong style={{ color: T.color.copper }}>claude.ai</strong> open in another tab later ↗
+            Open <strong style={{ color: T.color.copper }}>claude.ai</strong> in another tab — split screen works best ↗
           </a>
         )}
 
