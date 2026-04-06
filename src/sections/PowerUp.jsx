@@ -27,7 +27,7 @@ function getBuildSteps(answers) {
       prompt: isWork
         ? `I want you to act as my assistant for: ${idea}\n\nHere's your role:\n- You understand my workflow and the tools I use\n- You write in a professional but not stiff tone\n- You always structure output so I can copy it directly into my work\n- When you're uncertain, say so instead of guessing\n\nNow let's test it. Take what we've built for ${idea} and produce a ready-to-share version I could send to a colleague this week. Format it so they'd understand the value without needing context from our conversation.`
         : `I want you to act as my personal guide for: ${idea}\n\nHere's your role:\n- You know my experience level and preferences (from what I've told you)\n- You're encouraging but honest when something won't work\n- You give specific, actionable advice, not vague suggestions\n- You use a warm, conversational tone\n\nNow let's test it. I have 30 free minutes right now and want to make progress on ${idea}. What should I do with that time? Be specific to what we've built so far, not generic advice.`,
-      hint: "Notice how the system prompt changed Claude's tone and approach. That context carries forward. In a Project, you'd save this as permanent instructions so every new conversation starts with it.",
+      hint: "In a Project, you can save these instructions so every new conversation starts with them.",
       coachingNote: "How does this response compare to your earlier ones? What changed about Claude's approach, not just its words?",
     },
     {
@@ -43,7 +43,7 @@ function getBuildSteps(answers) {
       prompt: isWork
         ? `Let's improve what we built for "${idea}" using a multi-step workflow.\n\nStep 1: Look at the output you've created so far and identify the 3 biggest weaknesses. Be honest and specific.\n\nStep 2: For each weakness, explain what a better version would look like.\n\nStep 3: Now rewrite the whole thing, incorporating all three improvements.\n\nGo through all three steps now.`
         : `Let's level up what we built for "${idea}".\n\nStep 1: Critique your own work. What are the 3 biggest gaps or things that feel generic?\n\nStep 2: For each gap, explain what would make it genuinely useful versus just okay.\n\nStep 3: Rewrite the whole thing with those improvements. Make it something I'd actually come back to.\n\nDo all three steps now.`,
-      hint: "Notice the quality jump between the single-pass version and the one that went through draft-critique-revise. That's the workflow pattern.",
+      hint: "The draft-critique-revise loop produces dramatically better results than a single pass.",
       showThinkingNote: true,
       coachingNote: "Did Claude's critique catch anything you missed? What surprised you about the revised version?",
     },
@@ -59,7 +59,7 @@ function getBuildSteps(answers) {
         "it surfaces weak spots, challenges assumptions, and gives you the kind of " +
         "honest feedback that makes the next version better.",
       prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for. Don't tell me to stop building and just use it. I know. Give me something more specific.`,
-      hint: "Notice how Claude's tone changed because you asked for something different. Same tool, different mode. That flexibility is the point.",
+      hint: "Same tool, different mode. The ability to shift Claude's voice on purpose is itself a skill.",
     },
     {
       id: "tools",
