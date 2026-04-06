@@ -40,7 +40,7 @@ function getBuildSteps(answers) {
       prompt: isWork
         ? `Take what you just created for "${idea}" and restructure it as:\n\n1. A one-paragraph summary at the top\n2. A table with columns for each key element\n3. A checklist of action items I can copy into my task manager\n\nKeep the same content, just organize it so I can actually use it at work.`
         : `Take the project you just built for me (about "${idea}") and repackage that exact output into three formats. Don't add new advice or content. Just restructure what you already gave me:\n\n1. A quick-reference card (the essentials from your output in a glanceable format)\n2. The key steps from your output as a simple table with columns\n3. Your top three recommendations from the output, ranked\n\nSame information you already wrote, just in more useful shapes.`,
-      hint: "You shaped the output into the format you needed. That's the real skill: telling AI not just what to say, but how to present it.",
+      hint: "You're telling AI not just what to say, but how to present it. That's the skill.",
       coachingNote: "Compare this to the original. Same information, different shape. Which version would you actually use?",
     },
     {
@@ -56,7 +56,7 @@ function getBuildSteps(answers) {
       prompt: isWork
         ? `Let me give you more context about "${idea}":\n\n- Here's how I currently handle this: [describe your current process briefly]\n- The part that takes the most time is: [the bottleneck]\n- I've tried improving it by: [what you've tried]\n- The constraints I'm working with are: [time, tools, team size, etc.]\n\nNow revise what you built to fit my actual situation. Be specific to what I just told you.`
         : `Let me give you more context about "${idea}":\n\n- My experience level with this is: [beginner/intermediate/etc.]\n- What I've already tried: [anything relevant]\n- What I'm specifically trying to achieve: [your goal]\n- Constraints that matter: [time, budget, space, equipment, etc.]\n\nNow revise what you built with all of this in mind. Make it genuinely mine, not generic.`,
-      hint: "Notice how the output changed when you added real context. That's the difference between a template and a tool built for you.",
+      hint: "The more specific you are, the less generic the result. That's the difference between a template and a tool.",
       showThinkingNote: true,
       coachingNote: "How different does the output look now that Claude knows your specifics? What would you add next?",
     },

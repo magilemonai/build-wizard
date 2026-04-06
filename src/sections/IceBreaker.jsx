@@ -1,6 +1,7 @@
 import T from "../tokens.js";
 import SectionShell from "../components/SectionShell.jsx";
 import PromptCard from "../components/PromptCard.jsx";
+import OrganicShape from "../components/OrganicShape.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import SectionCelebration from "../components/SectionCelebration.jsx";
@@ -30,6 +31,35 @@ function ExerciseScreen({ exercise, onConfirm }) {
         }}>
           {exercise.hint}
         </p>
+      )}
+      {exercise.coaching && (
+        <div style={{
+          display: "flex", gap: 16, alignItems: "flex-start",
+          padding: "16px 18px",
+          background: T.color.bgSubtle,
+          border: `1px solid ${T.color.border}`,
+          borderRadius: 14,
+          marginBottom: 8,
+        }}>
+          <div style={{ flexShrink: 0, position: "relative", width: 36, height: 36 }}>
+            <div style={{ animation: "gentleSpin 12s linear infinite", lineHeight: 0 }}>
+              <OrganicShape shapeIndex={1} size={32} color={T.color.copper} />
+            </div>
+            {[
+              { top: -4, right: -2, delay: 0 },
+              { bottom: -2, left: 2, delay: 0.6 },
+            ].map((pos, i) => (
+              <div key={i} style={{
+                position: "absolute", ...pos, width: 5, height: 5,
+                borderRadius: "50%", background: T.color.copper,
+                animation: `sparkle 2s ease-in-out ${pos.delay}s infinite`,
+              }} />
+            ))}
+          </div>
+          <div style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, paddingTop: 4 }}>
+            {exercise.coaching}
+          </div>
+        </div>
       )}
       <div style={{
         marginBottom: 6, padding: "10px 14px",
@@ -65,7 +95,7 @@ function getExercises(answers) {
       description: "Copy this prompt into Claude in your other tab. Just paste it in and hit enter.",
       context: "Paste this into Claude:",
       prompt: `Generate 10 random band names by combining a random adjective, a random animal, and a random occupation. Make them funny.`,
-      hint: "That's it. You just told an AI what to do and it did it. Everything from here is variations on that.",
+      coaching: "This is just to see the loop in action: you give an instruction, Claude responds. Simple as that.",
     });
   } else {
     exercises.push({
@@ -75,6 +105,7 @@ function getExercises(answers) {
       context: "Paste this into Claude:",
       prompt: `Write a Python script that generates 5 random band names by combining a random adjective with a random animal and a random occupation. Make them funny. Present the code and the output as an artifact I can see.`,
       hint: "If Claude asks to run the code, say yes.",
+      coaching: "You're asking Claude to write and run code. Same loop: instruction in, result out.",
     });
   }
 
@@ -83,9 +114,10 @@ function getExercises(answers) {
       id: "magic_8ball",
       title: "Now something a little more interactive.",
       description: "This time you'll give Claude more specific instructions. It only answers yes-or-no questions, so keep them simple. Copy and paste:",
+      coaching: "You're giving Claude a role to play. See how it stays in character? That's the foundation for system prompts later.",
       context: "Paste this into Claude:",
       prompt: `I want you to be a Magic 8-Ball. I'll ask you a yes-or-no question, and you respond in character: first say "The spirits are consulting..." then give me a mystical, funny answer. Make the answers more creative than the standard Magic -Ball responses.\n\nMy first question: Will I finish everything on my to-do list today?`,
-      hint: "Try asking it a few more questions. Notice how it stays in character across the conversation.",
+      hint: "After you get the first answer, try asking a few more questions. See how Claude stays in character across the conversation.",
     });
   } else {
     exercises.push({
@@ -94,7 +126,8 @@ function getExercises(answers) {
       description: "A bit more structured this time. Copy it in.",
       context: "Paste this into Claude:",
       prompt: `Build a Magic 8-Ball as an interactive artifact. It should have a text input for my question, a dramatic pause animation, then reveal a funny mystical answer. Make the answers more creative than the standard ones. Present it as something I can actually use.`,
-      hint: "Try asking it a few questions. Notice how Claude can build interactive tools, not just write text.",
+      hint: "Once it's built, try using it. Claude can build interactive tools, not just write text.",
+      coaching: "This is Claude building an interactive app from a description. You'll do this for your own project next.",
     });
   }
 
@@ -108,7 +141,8 @@ function getExercises(answers) {
         description: "Time to see Claude create a real tool. This is a preview of what we'll build for real in the next section.",
         context: "Paste this into Claude:",
         prompt: `Build me a simple interactive tool related to: "${projectIdea.trim()}"\n\nMake it something I can actually click around and use, not just text. Keep it fun and simple. Present it as an artifact.`,
-        hint: "You just got Claude to build you a working tool. That's what we'll do for real in the next section, but more tailored to what you actually need.",
+        hint: "This is a preview. The next section does this for real, tailored to what you actually need.",
+        coaching: "You just went from an idea to a working tool. That's the whole pattern we'll use from here.",
       });
     } else {
       exercises.push({
@@ -117,7 +151,8 @@ function getExercises(answers) {
         description: "Let's turn your project idea into something tangible.",
         context: "Paste this into Claude:",
         prompt: `Build me a quick prototype related to: "${projectIdea.trim()}"\n\nMake it a working interactive artifact: something I can use, not just read. Keep it scrappy but functional. This is a warm-up, not the final version.`,
-        hint: "Same pattern: describe what you want, Claude builds it, you refine from there. The next section does this for real.",
+        hint: "The pattern: describe what you want, Claude builds it, you refine. The next section does this for real.",
+        coaching: "You just went from a description to a working prototype. That's the loop we'll refine in the next section.",
       });
     }
   } else {
@@ -127,7 +162,8 @@ function getExercises(answers) {
       description: "Time to see Claude create a real tool you can use.",
       context: "Paste this into Claude:",
       prompt: `Build me a simple daily planner as an interactive artifact. It should let me type in tasks, set rough time estimates, and organize them into a prioritized schedule. Keep it clean and usable.`,
-      hint: "You just got Claude to build you a working tool. That's the pattern for everything from here.",
+      hint: "The pattern: describe what you want, Claude builds it, you refine from there.",
+      coaching: "Idea to working tool. That's the whole loop.",
     });
   }
 
