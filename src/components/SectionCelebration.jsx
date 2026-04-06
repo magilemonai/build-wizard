@@ -45,7 +45,7 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   }
 
   return (
-    <div style={{ position: "relative", height: 120, marginBottom: 20 }}>
+    <div style={{ position: "relative", height: 160, marginBottom: 20 }}>
       {/* Scatter particles */}
       {particles.map((p, i) => (
         <div key={`p-${i}`} style={{
@@ -76,7 +76,7 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
               <div style={{
                 "--move-x": `${moveX}px`,
                 animation: isHero
-                  ? `heroLeap 1.6s ease-in-out 1.4s both`
+                  ? `heroLeap 2s linear 1.4s both`
                   : `shapeSlide 1.2s ${T.ease.smooth} 1.6s both`,
               }}>
                 {/* Layer 3: ambient motion after rearrangement */}
