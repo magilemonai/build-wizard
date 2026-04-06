@@ -290,7 +290,8 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
               </div>
               <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "16px auto 0" }}>
                 You've got a real project draft and the core skills to keep improving it.
-                Next section: system prompts and multi-step workflows that take this further.
+                Good place to take a break if you need one. Your progress is saved.
+                Next up: system prompts and multi-step workflows that take this further.
               </p>
               <ContinueButton onClick={onComplete} label="Level up" />
               </div>

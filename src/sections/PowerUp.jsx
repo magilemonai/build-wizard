@@ -193,6 +193,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress, initi
               <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "16px auto 0" }}>
                 One section left. We'll finish the project, reflect on what you
                 learned, and set you up for what comes next.
+                Take a break here if you need one. Your progress is saved.
               </p>
               <ContinueButton onClick={onComplete} label="Finish strong" />
               </div>

@@ -40,21 +40,40 @@ const SECTION_TITLES = {
 };
 
 /* ━━━ Main App ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ Persistence helpers ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const STORAGE_KEY = "build-wizard-state";
+
+function loadSavedState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+function saveState(state) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+}
+
+function clearSavedState() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch {}
+}
+
+const defaultProgress = { [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0 };
+const defaultSteps = { [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0 };
+
 export default function App() {
-  const [screen, setScreen] = useState(SCREENS.WELCOME);
-  const [stepIndex, setStepIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const saved = useRef(loadSavedState());
+  const [screen, setScreen] = useState(() => saved.current?.screen || SCREENS.WELCOME);
+  const [stepIndex, setStepIndex] = useState(() => saved.current?.stepIndex || 0);
+  const [answers, setAnswers] = useState(() => saved.current?.answers || {});
   const [currentValue, setCurrentValue] = useState(null);
   const [direction, setDirection] = useState(1);
   const [staggerReady, setStaggerReady] = useState(true);
-  const [showFirstLabel, setShowFirstLabel] = useState(true);
-  const [sectionProgress, setSectionProgress] = useState({
-    [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0,
-  });
-  const [sectionSteps, setSectionSteps] = useState({
-    [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0,
-  });
-  const visited = useRef(new Set());
+  const [showFirstLabel, setShowFirstLabel] = useState(() => !saved.current);
+  const [sectionProgress, setSectionProgress] = useState(() => saved.current?.sectionProgress || { ...defaultProgress });
+  const [sectionSteps, setSectionSteps] = useState(() => saved.current?.sectionSteps || { ...defaultSteps });
+  const visited = useRef(new Set(saved.current?.visited || []));
 
   // Scroll to top and update page title on screen changes
   useEffect(() => {
@@ -63,8 +82,18 @@ export default function App() {
     document.title = SECTION_TITLES[baseScreen] || SECTION_TITLES[screen] || "Build Wizard";
   }, [screen]);
 
-  // Restart: reset all state to initial values
+  // Persist state to localStorage on meaningful changes
+  useEffect(() => {
+    if (screen === SCREENS.WELCOME) return; // Don't save initial state
+    saveState({
+      screen, stepIndex, answers, sectionProgress, sectionSteps,
+      visited: [...visited.current],
+    });
+  }, [screen, stepIndex, answers, sectionProgress, sectionSteps]);
+
+  // Restart: reset all state to initial values and clear saved progress
   const restart = useCallback(() => {
+    clearSavedState();
     setScreen(SCREENS.WELCOME);
     setStepIndex(0);
     setAnswers({});
@@ -72,8 +101,8 @@ export default function App() {
     setDirection(1);
     setStaggerReady(true);
     setShowFirstLabel(true);
-    setSectionProgress({ [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0 });
-    setSectionSteps({ [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0, [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0 });
+    setSectionProgress({ ...defaultProgress });
+    setSectionSteps({ ...defaultSteps });
     visited.current.clear();
   }, []);
 

@@ -278,7 +278,8 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
                   lineHeight: 1.6, maxWidth: 440, margin: "16px auto 0",
                 }}>
                   You've got the key safety habits down and momentum on your side.
-                  Next up: building your actual project.
+                  This is a good place to take a break if you need one. Your progress is saved.
+                  When you're ready, we'll build your actual project.
                 </p>
                 <ContinueButton onClick={onComplete} label="Keep building" />
               </div>
