@@ -259,8 +259,17 @@ export default function App() {
                 </h2>
                 <SetupPrompt status={answers.setup} />
                 <PathCard data={derivePathCard(answers)} onContinue={() => goToSection(SCREENS.ICEBREAKER)} />
+                {answers.setup !== "ready" && (
+                  <p style={{
+                    marginTop: 24, fontSize: 14, color: T.color.textLight,
+                    lineHeight: 1.6, textAlign: "center",
+                  }}>
+                    On Claude's free plan, you have a daily message limit. If you run out mid-session,
+                    you can come back tomorrow and pick up where you left off.
+                  </p>
+                )}
                 <p style={{
-                  marginTop: 36, fontSize: 15, color: T.color.textMuted,
+                  marginTop: answers.setup !== "ready" ? 12 : 36, fontSize: 15, color: T.color.textMuted,
                   lineHeight: 1.65, textAlign: "center",
                 }}>
                   Even if you stop here, you've got a project brief and a clear first step.<br />

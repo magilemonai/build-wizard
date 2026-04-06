@@ -207,9 +207,9 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                   onContinue={advance}
                   sectionShapeIndex={1}
                   points={[
-                    { title: "Your input leaves your computer.", body: "Everything you've typed went to a server. Claude processed it and sent results back. Check your privacy settings under Settings → Privacy." },
-                    { title: "Think before you paste work data.", body: "Does your company have an AI policy? What plan are you on? If you don't know, ask your IT team or manager before sharing real work content." },
-                    { title: "Models matter.", body: "Claude has different models (Haiku, Sonnet, Opus) ranging from fast and light to deep and capable. You can also enable \"extended thinking\" for complex tasks. You don't need to change anything now, but the dial exists." },
+                    { title: "Your input leaves your computer.", body: "Everything you type goes to a server for processing. That's how all AI tools work. What to do: open Claude's Settings → Privacy right now and review what's shared. You control whether your conversations are used for training." },
+                    { title: "Think before you paste work data.", body: "Does your company have an AI policy? If you don't know, find out before sharing real work content. What to do: ask your manager or IT team. Many companies have specific tools or plans approved for work use." },
+                    { title: "You can choose your model.", body: "Claude has different models (Haiku, Sonnet, Opus) from fast and light to deep and capable. You can also enable extended thinking for complex tasks. You don't need to change anything now, but knowing the dial exists means you're never stuck with one setting." },
                   ]}
                 />
               </div>
@@ -224,8 +224,8 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                 onContinue={advance}
                 sectionShapeIndex={1}
                 points={[
-                  { title: "Your input leaves your computer.", body: "Everything you've typed went to a server. Claude processed it and sent results back. Check your privacy settings in Claude under Settings → Privacy to see what's shared." },
-                  { title: "Models matter.", body: "Claude has different models (Haiku, Sonnet, Opus) ranging from fast and light to deep and capable. You can also enable \"extended thinking\" for complex tasks. You don't need to change anything now, but the dial exists." },
+                  { title: "Your input leaves your computer.", body: "Everything you type goes to a server for processing. That's how all AI tools work. What to do: open Claude's Settings → Privacy right now and review what's shared. You control whether your conversations are used for training." },
+                  { title: "You can choose your model.", body: "Claude has different models (Haiku, Sonnet, Opus) from fast and light to deep and capable. You can also enable extended thinking for complex tasks. You don't need to change anything now, but knowing the dial exists means you're never stuck with one setting." },
                 ]}
               />
             </div>
@@ -283,9 +283,27 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress }) 
                     ? "You gave instructions, got results, and shaped the output. That's the whole loop. Now let's use it for something that matters to you."
                     : "It was easy. Hold onto that feeling. Now let's build something that matters."}
                 </p>
+                <div style={{
+                  background: T.color.bgCard, border: `1px solid ${T.color.border}`,
+                  borderRadius: 12, padding: "14px 18px", margin: "20px auto 0",
+                  maxWidth: 360, textAlign: "left",
+                }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 8 }}>
+                    Terms from this section
+                  </div>
+                  {[
+                    ["Prompt", "The instruction you give AI"],
+                    ["Artifact", "An interactive output Claude builds for you"],
+                    ["Iterate", "Refine the result by giving feedback"],
+                  ].map(([term, def]) => (
+                    <div key={term} style={{ fontSize: 14, lineHeight: 1.5, color: T.color.textMuted, padding: "3px 0" }}>
+                      <strong style={{ color: T.color.text }}>{term}</strong> — {def}
+                    </div>
+                  ))}
+                </div>
                 <p style={{
                   fontSize: 15, color: T.color.textMuted,
-                  lineHeight: 1.6, maxWidth: 440, margin: "0 auto",
+                  lineHeight: 1.6, maxWidth: 440, margin: "16px auto 0",
                 }}>
                   Good stopping point, by the way. You've got the key safety habits down.
                   Come back when you're ready, or keep going now.

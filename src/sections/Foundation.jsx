@@ -236,11 +236,15 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                   If something in your output looked right but felt off, pay attention to that instinct.
                   These models fill gaps with plausible fiction and never flag it. They'll cite sources
                   that don't exist, give advice that sounds authoritative but is wrong, and present
-                  guesses as facts.
+                  guesses as facts. This is called a <strong>hallucination.</strong>
+                </p>
+                <p style={{ margin: "0 0 12px 0" }}>
+                  <strong>What to do about it:</strong> Verify anything that matters before you use it.
+                  If Claude gives you a statistic, check it. If it cites a source, look it up.
+                  If it gives you a plan, ask yourself: "Does this make sense based on what I already know?"
                 </p>
                 <p style={{ margin: 0 }}>
-                  This is called a hallucination. Your job: <strong>verify anything that matters.</strong>{" "}
-                  That's not a limitation of the tool. That's the skill of using it well.
+                  This isn't a flaw to fear. It's the core skill of using AI well: trust the draft, verify the facts.
                 </p>
               </SafetyInterstitial>
             </div>
@@ -303,7 +307,25 @@ export default function Foundation({ answers, onComplete, onBack, onProgress }) 
                 Prompted with context, shaped the output, and made it yours.
                 Those three moves work for any project in any AI tool.
               </p>
-              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>
+              <div style={{
+                background: T.color.bgCard, border: `1px solid ${T.color.border}`,
+                borderRadius: 12, padding: "14px 18px", margin: "20px auto 0",
+                maxWidth: 360, textAlign: "left",
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 8 }}>
+                  Terms from this section
+                </div>
+                {[
+                  ["Structured output", "Telling AI what format to use (table, checklist, etc.)"],
+                  ["Context", "Your specific details that make output personal"],
+                  ["Hallucination", "When AI presents fiction as fact"],
+                ].map(([term, def]) => (
+                  <div key={term} style={{ fontSize: 14, lineHeight: 1.5, color: T.color.textMuted, padding: "3px 0" }}>
+                    <strong style={{ color: T.color.text }}>{term}</strong> — {def}
+                  </div>
+                ))}
+              </div>
+              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "16px auto 0" }}>
                 Another good stopping point. You've got a real project draft and the
                 core prompting skills to keep improving it. The next section levels it
                 up with system prompts and multi-step workflows.

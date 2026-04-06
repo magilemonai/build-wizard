@@ -414,13 +414,13 @@ function FinaleScreen({ answers }) {
         That was the whole promise. Everything from here is refinement and ambition.
       </p>
 
-      {/* Summary card */}
+      {/* Summary card: project + skills with section shapes */}
       {stage >= 4 && (
         <div style={{
           background: T.color.bgCard,
           border: `1.5px solid ${T.color.border}`,
           borderRadius: 16,
-          padding: "20px 24px",
+          padding: "24px 24px",
           margin: "0 auto 28px",
           maxWidth: 440,
           textAlign: "left",
@@ -429,10 +429,29 @@ function FinaleScreen({ answers }) {
           <div style={{ fontSize: 13, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.copper, marginBottom: 8 }}>
             Your project
           </div>
-          <div style={{ fontSize: 16, color: T.color.text, lineHeight: 1.5, marginBottom: 12 }}>
+          <div style={{ fontSize: 16, color: T.color.text, lineHeight: 1.5, marginBottom: 16 }}>
             {answers?.project_idea || "Your AI project"}
           </div>
-          <div style={{ fontSize: 13, color: T.color.textLight }}>
+          <div style={{ borderTop: `1px solid ${T.color.border}`, paddingTop: 14 }}>
+            <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 10 }}>
+              What you learned
+            </div>
+            {[
+              { shape: 1, label: "Prompting, iterating, artifacts", color: T.color.copper },
+              { shape: 2, label: "Structured output, context, hallucination awareness", color: T.color.sage },
+              { shape: 3, label: "System prompts, workflows, tone control, safety", color: T.color.copper },
+              { shape: 4, label: "Review habits, saving work, next steps", color: T.color.sage },
+            ].map((item, i) => (
+              <div key={i} style={{
+                display: "flex", alignItems: "center", gap: 10,
+                padding: "5px 0", fontSize: 14, color: T.color.textMuted, lineHeight: 1.45,
+              }}>
+                <OrganicShape shapeIndex={item.shape} size={12} color={item.color} />
+                {item.label}
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 13, color: T.color.textLight, marginTop: 14 }}>
             Your project lives in your Claude conversation. Come back here anytime to refresh your skills.
           </div>
         </div>
@@ -533,8 +552,8 @@ export default function Ship({ answers, onBack, onProgress }) {
                 onContinue={advance}
                 sectionShapeIndex={4}
                 points={[
-                  { title: "These habits scale with you.", body: "Your AI usage will grow from here. Your data footprint grows with it. The habits you built today (reviewing output, checking permissions, verifying facts) aren't just for beginners. They're the ongoing practice of using these tools well." },
-                  { title: "Monthly audit.", body: "Check what tools have access to what. Review your privacy settings. Make sure your practices match your current risk level, not the one from six months ago. Five minutes, once a month. That's the habit that scales." },
+                  { title: "These habits scale with you.", body: "Your AI usage will grow from here. Your data footprint grows with it. The habits you built today (reviewing output, checking permissions, verifying facts) aren't just for beginners. They're the ongoing practice of using these tools well. What to do: keep doing exactly what you practiced today. The specifics will change. The habits won't." },
+                  { title: "Set a monthly check-in.", body: "What to do: once a month, take five minutes. Check what tools have access to what. Review your privacy settings. Ask: do my practices still match how I'm actually using AI? Your risk level six months from now won't be the same as today. This one habit keeps everything else current." },
                 ]}
               />
             </div>

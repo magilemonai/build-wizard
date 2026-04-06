@@ -144,8 +144,8 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
                 onContinue={advance}
                 sectionShapeIndex={3}
                 points={[
-                  { title: "Permission scoping.", body: "When you give AI access to files, tools, or services, think of it like handing keys to a valet: competent, sure, but you wouldn't leave your wallet on the seat. Give access to what the task needs. Nothing more. Review what it's about to do before it does it." },
-                  { title: "Hidden instructions are real.", body: "When AI agents process external content (a web page, a document, an email), that content can contain hidden instructions that hijack what the AI does next. This is called prompt injection. It's why blanket permissions and unreviewed actions are off the table." },
+                  { title: "Permission scoping.", body: "When you give AI access to files, tools, or services, think of it like handing keys to a valet: competent, but you wouldn't leave your wallet on the seat. What to do: give access only to what the task needs. Review what it's about to do before it does it. If a tool asks for broad permissions, ask yourself: does this task actually require all of that?" },
+                  { title: "Hidden instructions are real.", body: "When AI processes external content (a web page, a document, an email), that content can contain hidden instructions that change what the AI does. This is called prompt injection. What to do: never give AI tools blanket permission to act on external content without reviewing the result. If you're using AI agents, check what they did before trusting the output. This isn't paranoia. It's the same instinct as not clicking a suspicious link." },
                 ]}
               />
             </div>
@@ -207,7 +207,25 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress }) {
                 beyond conversation. Those are the tools that separate casual use from
                 real capability.
               </p>
-              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>
+              <div style={{
+                background: T.color.bgCard, border: `1px solid ${T.color.border}`,
+                borderRadius: 12, padding: "14px 18px", margin: "20px auto 0",
+                maxWidth: 360, textAlign: "left",
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: T.color.textLight, marginBottom: 8 }}>
+                  Terms from this section
+                </div>
+                {[
+                  ["System prompt", "Persistent context that shapes every AI response"],
+                  ["Workflow", "A chain of steps: draft, critique, revise"],
+                  ["Prompt injection", "Hidden instructions in external content"],
+                ].map(([term, def]) => (
+                  <div key={term} style={{ fontSize: 14, lineHeight: 1.5, color: T.color.textMuted, padding: "3px 0" }}>
+                    <strong style={{ color: T.color.text }}>{term}</strong> — {def}
+                  </div>
+                ))}
+              </div>
+              <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, maxWidth: 520, margin: "16px auto 0" }}>
                 One section left. We'll finish the project, reflect on what you
                 learned, and set you up for what comes next.
               </p>
