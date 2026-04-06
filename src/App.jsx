@@ -36,7 +36,7 @@ const SECTIONS_WITH_PROGRESS = [SCREENS.INTERVIEW, SCREENS.ICEBREAKER, SCREENS.F
 // Step counts per section (must match buildStepSequence in each section file)
 // Base step counts per section (Quick Path adds 1 to Foundation for safety)
 const BASE_STEP_COUNTS = {
-  [SCREENS.ICEBREAKER]: 5,   // 3 exercises + safety + anchor
+  [SCREENS.ICEBREAKER]: 6,   // onboarding + 3 exercises + safety + anchor
   [SCREENS.FOUNDATION]: 6,   // continuity + 3 builds + safety + anchor
   [SCREENS.POWERUP]: 6,      // 2 builds + safety + roast + tools + anchor
   [SCREENS.SHIP]: 5,         // review + safety + save + reflection + nextsteps
@@ -53,9 +53,9 @@ const SECTION_TITLES = {
   [SCREENS.SHIP]: "Ship — Build Wizard",
 };
 
-/* Quick Path: skip IceBreaker for 30-minute users who have experience */
+/* Quick Path: skip IceBreaker for 30-minute users */
 function shouldUseQuickPath(answers) {
-  return answers.time === "30min" && (answers.experience === "occasional" || answers.experience === "regular");
+  return answers.time === "30min";
 }
 
 /* ━━━ Main App ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -227,7 +227,7 @@ export default function App() {
             currentSection={screen}
             questionProgress={progressValue}
             onSectionClick={handleProgressClick}
-            stepCount={(BASE_STEP_COUNTS[screen] || 0) + (screen === SCREENS.FOUNDATION && isQuickPath ? 1 : 0)}
+            stepCount={(BASE_STEP_COUNTS[screen] || 0) + (screen === SCREENS.FOUNDATION && isQuickPath ? 2 : 0)}
             currentStep={progress.sectionSteps[screen] || 0}
           />
         )}

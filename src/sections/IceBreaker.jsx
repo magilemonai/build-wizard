@@ -173,6 +173,7 @@ function getExercises(answers) {
 /* ━━━ Step sequence ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function buildStepSequence(exercises, isWork) {
   const steps = [];
+  steps.push({ type: "onboarding" });
   steps.push({ type: "exercise", index: 0 });
   steps.push({ type: "exercise", index: 1 });
   steps.push({ type: "safety", variant: isWork ? "work" : "personal" });
@@ -203,43 +204,57 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
       renderStep={({ step, stepIndex, advance, BackButton }) => {
         if (!step) return null;
 
+        if (step.type === "onboarding") {
+          return (
+            <div style={{
+              maxWidth: 520, margin: "0 auto", padding: "40px 0",
+            }}>
+              {BackButton}
+              <h2 style={{
+                fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
+                fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
+                color: T.color.text, margin: "0 0 20px 0", textAlign: "center",
+              }}>
+                Before your first prompt.
+              </h2>
+              <div style={{
+                padding: "20px 24px", marginBottom: 16,
+                background: T.color.copperSoft,
+                border: `1px solid ${T.color.copperGlow}`,
+                borderRadius: 14,
+              }}>
+                <div style={{ fontSize: 16, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
+                  This wizard is your guide. Claude is your tool.
+                </div>
+                <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.65, margin: 0 }}>
+                  Each step here gives you a prompt to paste into Claude.
+                  If Claude suggests its own next steps, ignore those and come back here.
+                  We're building skills in a specific order.
+                </p>
+              </div>
+              <div style={{
+                padding: "20px 24px",
+                background: T.color.bgSubtle,
+                border: `1px solid ${T.color.border}`,
+                borderRadius: 14,
+                display: "flex", alignItems: "flex-start", gap: 14,
+                fontSize: 15, color: T.color.textMuted, lineHeight: 1.65,
+              }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>💡</span>
+                <span>
+                  <strong style={{ color: T.color.text }}>Split your screen</strong> so the wizard
+                  is on one side and Claude on the other. Much easier than switching tabs.
+                </span>
+              </div>
+              <ContinueButton onClick={advance} label="Got it" />
+            </div>
+          );
+        }
+
         if (step.type === "exercise") {
           return (
             <div>
               {BackButton}
-              {stepIndex === 0 && (
-                <>
-                  <div style={{
-                    padding: "14px 18px", marginBottom: 16,
-                    background: T.color.copperSoft,
-                    border: `1px solid ${T.color.copperGlow}`,
-                    borderRadius: 12,
-                  }}>
-                    <div style={{ fontSize: 15, fontWeight: 500, color: T.color.copper, marginBottom: 4 }}>
-                      Quick note on who's in charge
-                    </div>
-                    <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, margin: 0 }}>
-                      This wizard tells you what to try and why. Claude is the tool you're
-                      practicing with. If Claude suggests something different, follow the wizard.
-                    </p>
-                  </div>
-                  <div style={{
-                    padding: "12px 18px", marginBottom: 20,
-                    background: T.color.bgSubtle,
-                    border: `1px solid ${T.color.border}`,
-                    borderRadius: 12,
-                    display: "flex", alignItems: "flex-start", gap: 10,
-                    fontSize: 15, color: T.color.textMuted, lineHeight: 1.55,
-                  }}>
-                    <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
-                    <span>
-                      <strong style={{ color: T.color.text }}>Tip:</strong> Split your screen
-                      so the wizard is on one side and Claude on the other. Much easier than
-                      switching between tabs.
-                    </span>
-                  </div>
-                </>
-              )}
               <ExerciseScreen
                 exercise={exercises[step.index]}
                 onConfirm={advance}

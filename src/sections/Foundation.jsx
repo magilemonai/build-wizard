@@ -66,7 +66,10 @@ function getBuildSteps(answers) {
 function buildStepSequence(answers, quickPath) {
   const steps = [];
   // Quick Path users skipped IceBreaker safety — insert condensed version
-  if (quickPath) steps.push({ type: "quicksafety", variant: answers.fork === "work" ? "work" : "personal" });
+  if (quickPath) {
+    steps.push({ type: "onboarding" });
+    steps.push({ type: "quicksafety", variant: answers.fork === "work" ? "work" : "personal" });
+  }
   steps.push({ type: "continuity" });
   steps.push({ type: "build", index: 0 });
   steps.push({ type: "build", index: 1 });
@@ -140,6 +143,51 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
       onStepChange={onStepChange}
       renderStep={({ step, stepIndex, advance, goBack, BackButton }) => {
         if (!step) return null;
+
+        // Quick Path: onboarding (who's in charge + split screen)
+        if (step.type === "onboarding") {
+          return (
+            <div style={{ maxWidth: 520, margin: "0 auto", padding: "40px 0" }}>
+              {BackButton}
+              <h2 style={{
+                fontFamily: T.font.display, fontSize: "clamp(26px,5vw,34px)",
+                fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
+                color: T.color.text, margin: "0 0 20px 0", textAlign: "center",
+              }}>
+                Before your first prompt.
+              </h2>
+              <div style={{
+                padding: "20px 24px", marginBottom: 16,
+                background: T.color.copperSoft,
+                border: `1px solid ${T.color.copperGlow}`,
+                borderRadius: 14,
+              }}>
+                <div style={{ fontSize: 16, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
+                  This wizard is your guide. Claude is your tool.
+                </div>
+                <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.65, margin: 0 }}>
+                  Each step here gives you a prompt to paste into Claude.
+                  If Claude suggests its own next steps, ignore those and come back here.
+                  We're building skills in a specific order.
+                </p>
+              </div>
+              <div style={{
+                padding: "20px 24px",
+                background: T.color.bgSubtle, border: `1px solid ${T.color.border}`,
+                borderRadius: 14,
+                display: "flex", alignItems: "flex-start", gap: 14,
+                fontSize: 15, color: T.color.textMuted, lineHeight: 1.65,
+              }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>💡</span>
+                <span>
+                  <strong style={{ color: T.color.text }}>Split your screen</strong> so the wizard
+                  is on one side and Claude on the other. Much easier than switching tabs.
+                </span>
+              </div>
+              <ContinueButton onClick={advance} label="Got it" />
+            </div>
+          );
+        }
 
         // Quick Path: condensed safety from IceBreaker (data privacy + models)
         if (step.type === "quicksafety") {
