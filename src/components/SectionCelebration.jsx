@@ -2,18 +2,14 @@ import T from "../tokens.js";
 import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
 
 /* ━━━ SectionCelebration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Pure CSS keyframe celebration:
+   Pure CSS celebration. Each shape gets a custom --move-x property
+   that tells it where to slide after the initial bounce.
 
-   0.0-0.9s:  Particles scatter
-   0.3-0.7s:  All 5 shapes bounce into a line
-   1.4s:      Hero leaps up, arcs to center, lands big
-   1.8s+:     Others twirl; whole line snakes up and down
+   The hero slides to center and grows. Other shapes shift to fill
+   around it, avoiding collisions. Then everyone snakes and twirls.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-// Slot spacing: 20px shape + 14px gap = 34px per slot
-// 20px shape + 20px gap = 40px per slot (extra gap avoids collisions at 1.5x scale)
-const SLOT = 40;
-const CENTER = 2;
+const SLOT = 40; // 20px shape + 20px gap
 
 export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   const particleCounts = [6, 10, 14];
@@ -33,9 +29,20 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
     particles.push({ x, y, rot, idx: shapeIdx, size, color: baseColor + alphas[i % 3] });
   }
 
-  // How far the hero needs to leap horizontally (in px)
-  const heroNatural = heroShapeIndex; // natural slot = shape index
-  const heroLeapX = (CENTER - heroNatural) * SLOT;
+  // Calculate final slot for each shape after rearrangement.
+  // Goal: hero goes to center (slot 2), others fill remaining slots in order.
+  const heroNatural = heroShapeIndex;
+  const others = sectionShapes.filter((s) => s !== heroShapeIndex);
+  // Final arrangement: [others[0], others[1], HERO, others[2], others[3]]
+
+  function getMoveX(shapeIdx, naturalSlot) {
+    if (shapeIdx === heroShapeIndex) {
+      return (2 - naturalSlot) * SLOT; // hero → center
+    }
+    const oi = others.indexOf(shapeIdx);
+    const finalSlot = oi < 2 ? oi : oi + 1; // skip slot 2 (hero's spot)
+    return (finalSlot - naturalSlot) * SLOT;
+  }
 
   return (
     <div style={{ position: "relative", height: 120, marginBottom: 20 }}>
@@ -58,23 +65,25 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
       }}>
         {sectionShapes.map((shapeIdx, i) => {
           const isHero = shapeIdx === heroShapeIndex;
+          const moveX = getMoveX(shapeIdx, i);
+
           return (
             <div key={shapeIdx} style={{
               // Layer 1: bounce into line
               animation: `celebrateBounce 0.7s ${T.ease.spring} ${0.3 + i * 0.08}s both`,
             }}>
-              {/* Layer 2: hero leaps to center; others get snake wave */}
+              {/* Layer 2: slide to final position (hero AND others) */}
               <div style={{
-                "--leap-x": `${heroLeapX}px`,
+                "--move-x": `${moveX}px`,
                 animation: isHero
-                  ? `heroLeap 1.3s ${T.ease.smooth} 1.4s both`
-                  : `snakeWave 2.5s ease-in-out ${2.2 + i * 0.25}s infinite`,
+                  ? `heroLeap 1.4s ${T.ease.smooth} 1.4s both`
+                  : `shapeSlide 1s ${T.ease.smooth} 1.6s both`,
               }}>
-                {/* Layer 3: twirl (non-hero only) */}
+                {/* Layer 3: ambient motion after rearrangement */}
                 <div style={{
-                  animation: !isHero
-                    ? `twirlInPlace 3s ease-in-out ${2.8 + i * 0.15}s infinite`
-                    : "none",
+                  animation: isHero
+                    ? "none"
+                    : `snakeWave 2.5s ease-in-out ${3.0 + i * 0.25}s infinite, twirlInPlace 3.5s ease-in-out ${3.0 + i * 0.2}s infinite`,
                 }}>
                   <OrganicShape
                     shapeIndex={shapeIdx}
