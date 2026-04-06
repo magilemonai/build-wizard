@@ -3,13 +3,13 @@ import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
 
 /* ━━━ SectionCelebration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Celebration animation for section anchors. The section's own shape
-   gets hero sizing (center, largest). Other shapes support.
+   arcs dramatically into center position. Supporting shapes orbit
+   and dance around it.
 
    heroShapeIndex: the shape that "owns" this section (0-4)
    intensity: escalating particle count (1=light, 2=medium, 3=heavy)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
-  // Scatter particles: more particles at higher intensity
   const particleCounts = [6, 10, 14];
   const count = particleCounts[Math.min(intensity - 1, 2)];
 
@@ -28,22 +28,15 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
     particles.push({ x, y, rot, idx: shapeIdx, size, color: baseColor + alpha });
   }
 
-  // Bottom row: all 5 shapes, hero shape is biggest and centered
-  const bottomShapes = sectionShapes.map((shapeIdx, i) => {
-    const isHero = shapeIdx === heroShapeIndex;
-    return {
-      idx: shapeIdx,
-      size: isHero ? 36 : 20,
-      color: i % 2 === 0 ? T.color.copper : T.color.sage,
-      isHero,
-    };
-  });
+  // Supporting shapes: all section shapes except the hero, orbiting around center
+  const supporters = sectionShapes.filter((s) => s !== heroShapeIndex);
 
   return (
-    <div style={{ position: "relative", height: 100, marginBottom: 20 }}>
+    <div style={{ position: "relative", height: 120, marginBottom: 20 }}>
+      {/* Scatter particles */}
       {particles.map((p, i) => (
         <div key={`s-${i}`} style={{
-          position: "absolute", left: "50%", top: "60%",
+          position: "absolute", left: "50%", top: "50%",
           "--scatter-to": `translate(${p.x}px, ${p.y}px)`,
           "--scatter-rot": `${p.rot}deg`,
           animation: `celebrateScatter 0.9s ${T.ease.smooth} ${i * 0.03}s both`,
@@ -51,17 +44,42 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
           <OrganicShape shapeIndex={p.idx} size={p.size} color={p.color} />
         </div>
       ))}
-      <div style={{
-        position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-        display: "flex", gap: 14, alignItems: "flex-end",
-      }}>
-        {bottomShapes.map((s, i) => (
-          <div key={s.idx} style={{
-            animation: `celebrateBounce ${s.isHero ? "0.9s" : "0.7s"} ${T.ease.spring} ${0.3 + i * 0.08}s both, celebrateFloat ${s.isHero ? "3s" : "4s"} ease-in-out ${1.2 + i * 0.3}s infinite`,
+
+      {/* Supporting shapes: orbit around center */}
+      {supporters.map((shapeIdx, i) => {
+        const orbitRadius = 40 + i * 6;
+        const startDelay = 0.4 + i * 0.12;
+        return (
+          <div key={`o-${shapeIdx}`} style={{
+            position: "absolute",
+            left: "50%", top: "50%",
+            marginLeft: -10, marginTop: -10,
+            "--orbit-r": `${orbitRadius}px`,
+            opacity: 0,
+            animation: `celebrateBounce 0.7s ${T.ease.spring} ${startDelay}s both, orbitDance 8s linear ${startDelay + 0.7}s infinite`,
           }}>
-            <OrganicShape shapeIndex={s.idx} size={s.size} color={s.color} />
+            <OrganicShape
+              shapeIndex={shapeIdx}
+              size={18}
+              color={i % 2 === 0 ? T.color.sage : T.color.copper}
+            />
           </div>
-        ))}
+        );
+      })}
+
+      {/* Hero shape: dramatic arc into center */}
+      <div style={{
+        position: "absolute",
+        left: "50%", top: "50%",
+        marginLeft: -20, marginTop: -20,
+        animation: `heroArc 1.2s ${T.ease.spring} 0.2s both`,
+        zIndex: 2,
+      }}>
+        <OrganicShape
+          shapeIndex={heroShapeIndex}
+          size={40}
+          color={T.color.copper}
+        />
       </div>
     </div>
   );

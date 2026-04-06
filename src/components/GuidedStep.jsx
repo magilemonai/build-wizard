@@ -21,6 +21,7 @@ export default function GuidedStep({
   showThinkingNote,
   onConfirm,
   sectionShapeIndex,
+  coachingNote,
 }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
@@ -72,6 +73,25 @@ export default function GuidedStep({
         }}>
           {hint}
         </p>
+      )}
+
+      {/* Shape coaching note: the section's shape "speaks" */}
+      {coachingNote && sectionShapeIndex != null && (
+        <div style={{
+          display: "flex", gap: 12, alignItems: "flex-start",
+          padding: "12px 16px",
+          background: T.color.bgSubtle,
+          border: `1px solid ${T.color.border}`,
+          borderRadius: 12,
+          marginBottom: 10,
+        }}>
+          <div style={{ flexShrink: 0, marginTop: 2 }}>
+            <OrganicShape shapeIndex={sectionShapeIndex} size={16} color={T.color.copper} />
+          </div>
+          <div style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.55 }}>
+            {coachingNote}
+          </div>
+        </div>
       )}
 
       {/* Thinking note: before prompt so user knows to expect a wait */}

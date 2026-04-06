@@ -4,9 +4,8 @@ import ContinueButton from "./ContinueButton.jsx";
 import OrganicShape from "./OrganicShape.jsx";
 
 /* ━━━ Safety Interstitial ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   "While we're at it" safety lesson between exercises.
-   Points mode shows all points visible at once with numbered markers.
-   Children mode renders free-form content with a single continue.
+   Safety checkpoint between exercises. Warm red/warning tone to
+   signal importance. Points visible at once. Single "Got it" button.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function SafetyInterstitial({ title, points, children, onContinue, sectionShapeIndex }) {
   const [visible, setVisible] = useState(false);
@@ -21,21 +20,21 @@ export default function SafetyInterstitial({ title, points, children, onContinue
       transition: `all 0.5s ${T.ease.smooth}`,
     }}>
       <div style={{
-        background: T.color.sageSoft,
-        border: `1.5px solid ${T.color.sageBorder}`,
+        background: T.color.warningSoft,
+        border: `1.5px solid ${T.color.warningBorder}`,
         borderRadius: 16,
         padding: "28px 28px",
       }}>
         <div style={{
           display: "flex", alignItems: "center", gap: 8,
-          fontSize: 13, fontWeight: 500, letterSpacing: "0.08em",
-          textTransform: "uppercase", color: T.color.sage,
+          fontSize: 13, fontWeight: 600, letterSpacing: "0.08em",
+          textTransform: "uppercase", color: T.color.warning,
           marginBottom: 10, fontFamily: T.font.body,
         }}>
           {sectionShapeIndex != null && (
-            <OrganicShape shapeIndex={sectionShapeIndex} size={10} color={T.color.sage} />
+            <OrganicShape shapeIndex={sectionShapeIndex} size={10} color={T.color.warning} />
           )}
-          While we're at it
+          Important
         </div>
         <h3 style={{
           fontFamily: T.font.display, fontSize: "clamp(22px,4vw,28px)", fontWeight: 400,
@@ -50,14 +49,14 @@ export default function SafetyInterstitial({ title, points, children, onContinue
             {points.map((point, i) => (
               <div key={i} style={{
                 padding: "14px 0",
-                borderBottom: i < points.length - 1 ? `1px solid ${T.color.sageBorder}` : "none",
+                borderBottom: i < points.length - 1 ? `1px solid ${T.color.warningBorder}` : "none",
                 opacity: 1,
                 animation: `fadeInNotice 0.4s ease ${0.1 + i * 0.15}s both`,
               }}>
                 <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                   <span style={{
                     flexShrink: 0, marginTop: 1,
-                    color: T.color.sage,
+                    color: T.color.warning,
                     fontSize: 13, fontWeight: 600, lineHeight: "22px",
                     fontFamily: T.font.body,
                   }}>
