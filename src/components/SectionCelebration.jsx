@@ -9,7 +9,7 @@ import OrganicShape, { sectionShapes } from "./OrganicShape.jsx";
    around it, avoiding collisions. Then everyone snakes and twirls.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-const SLOT = 48; // 20px shape + 28px gap (room for 3x hero)
+const SLOT = 36; // 20px shape + 16px gap
 
 export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   const particleCounts = [6, 10, 14];
@@ -45,7 +45,7 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
   }
 
   return (
-    <div style={{ position: "relative", height: 140, marginBottom: 20 }}>
+    <div style={{ position: "relative", height: 120, marginBottom: 20 }}>
       {/* Scatter particles */}
       {particles.map((p, i) => (
         <div key={`p-${i}`} style={{
@@ -61,7 +61,7 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
       {/* Shape line */}
       <div style={{
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-        display: "flex", gap: 28, alignItems: "flex-end",
+        display: "flex", gap: 16, alignItems: "flex-end",
       }}>
         {sectionShapes.map((shapeIdx, i) => {
           const isHero = shapeIdx === heroShapeIndex;
@@ -75,8 +75,9 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
               {/* Layer 2: slide to final position (hero AND others) */}
               <div style={{
                 "--move-x": `${moveX}px`,
+                transformOrigin: isHero ? "bottom center" : "center",
                 animation: isHero
-                  ? `heroLeap 2s linear 1.4s both`
+                  ? `heroLeap 2s linear 1.4s both, heroSpin 4s ease-in-out 3.8s infinite`
                   : `shapeSlide 1.2s ${T.ease.smooth} 1.6s both`,
               }}>
                 {/* Layer 3: ambient motion after rearrangement */}
