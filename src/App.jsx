@@ -25,10 +25,10 @@ import { useSavedState, saveState, clearSavedState } from "./hooks/usePersistenc
 
 /* ━━━ Config ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const SECTION_TRANSITIONS = {
-  [SCREENS.ICEBREAKER]:  { headline: "Time to get your hands dirty.", subtext: "A few quick exercises. Copy, paste, see what happens." },
-  [SCREENS.FOUNDATION]:  { headline: "Now let's build your project.", subtext: "Three skills, one real thing at the end." },
-  [SCREENS.POWERUP]:     { headline: "Time to level up.", subtext: "System prompts, workflows, and what's possible beyond conversation." },
-  [SCREENS.SHIP]:        { headline: "Let's finish this.", subtext: "Review, reflect, and set up what comes next." },
+  [SCREENS.ICEBREAKER]:  { headline: "Let's try a few things.", subtext: "Quick exercises. Copy, paste, see what Claude does." },
+  [SCREENS.FOUNDATION]:  { headline: "Now let's build your project.", subtext: "Three skills, one finished project." },
+  [SCREENS.POWERUP]:     { headline: "Time to go further.", subtext: "System prompts, workflows, and what's possible beyond conversation." },
+  [SCREENS.SHIP]:        { headline: "Almost done.", subtext: "Review, reflect, and plan what's next." },
 };
 
 const SECTIONS_WITH_PROGRESS = [SCREENS.INTERVIEW, SCREENS.ICEBREAKER, SCREENS.FOUNDATION, SCREENS.POWERUP, SCREENS.SHIP];
@@ -260,8 +260,8 @@ export default function App() {
                   notice={
                     interview.currentStep.id === "fork" && interview.currentValue === "work"
                       ? {
-                          title: "While we're at it",
-                          body: "Some workplaces have policies about which AI tools you can use and what data you can share with them. If you're not sure whether yours does, that's worth a quick check with your manager or IT team before you start building with real work data. We'll cover safe data handling in the build sections.",
+                          title: "Quick heads-up",
+                          body: "Some workplaces have rules about AI tools and data. If you're not sure about yours, check with your manager or IT team before sharing real work data. We'll cover this more later.",
                         }
                       : null
                   }

@@ -4,8 +4,8 @@ import T from "../tokens.js";
 /* ━━━ Threshold Interstitial (user-paced transition) ━━━━━━━━━━━ */
 export default function ThresholdInterstitial({
   onComplete,
-  headline = "Let's find your project.",
-  subtext = "A few questions, then we build.",
+  headline = "Let's figure out what to build.",
+  subtext = "A few questions, then we start.",
 }) {
   const [phase, setPhase] = useState(0); // 0=entering, 1=visible
   const [hovered, setHovered] = useState(false);

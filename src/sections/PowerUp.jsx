@@ -35,8 +35,8 @@ function getBuildSteps(answers) {
       skillLabel: "Skill: Multi-step workflows",
       title: "Make Claude critique its own work.",
       explanation:
-        "The most powerful pattern in AI isn't one great prompt. " +
-        "It's a chain: draft, then critique, then revise. " +
+        "One great prompt is good. A chain of prompts is better: " +
+        "draft, then critique, then revise. " +
         "You can tell Claude to write something, then immediately ask it to find the weaknesses, " +
         "then have it fix them. Each step builds on the last. " +
         "The result is dramatically better than a single pass.",
@@ -51,14 +51,14 @@ function getBuildSteps(answers) {
     {
       id: "roast",
       skillLabel: "Skill: Tone and creative control",
-      title: "Stress-test your idea.",
+      title: "Get honest feedback on your idea.",
       explanation:
-        "This isn't part of your project. It's a skill exercise. " +
+        "A quick detour. This one sharpens your project by attacking it. " +
         "You've been giving Claude serious, structured instructions, and it's been agreeable. " +
         "Now ask it to push back. A good roast will sharpen your thinking: " +
         "it surfaces weak spots, challenges assumptions, and gives you the kind of " +
         "honest feedback that makes the next version better.",
-      prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for. Don't tell me to stop building and just use it. I know. Give me something more specific.`,
+      prompt: `Give me a brutally honest but funny roast of this project idea: "${idea}"\n\nBe specific about what's ambitious, what's naive, and what's secretly genius. End with one genuine piece of advice I didn't ask for. Skip the generic advice. Be specific about what's weak and what's strong.`,
       hint: "Same tool, different mode. The ability to shift Claude's voice on purpose is itself a skill.",
     },
     {
@@ -146,11 +146,11 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress, initi
             <div>
               {BackButton}
               <SafetyInterstitial
-                title="More power, more surface area."
+                title="More tools, more to watch for."
                 onContinue={advance}
                 sectionShapeIndex={3}
                 points={[
-                  { title: "Permission scoping.", body: "When you give AI access to files, tools, or services, think of it like handing keys to a valet: competent, but you wouldn't leave your wallet on the seat. What to do: give access only to what the task needs. Review what it's about to do before it does it. If a tool asks for broad permissions, ask yourself: does this task actually require all of that?" },
+                  { title: "Be careful what you give AI access to.", body: "When you give AI access to files, tools, or services, think of it like handing keys to a valet: competent, but you wouldn't leave your wallet on the seat. What to do: give access only to what the task needs. Review what it's about to do before it does it. If a tool asks for broad permissions, ask yourself: does this task actually require all of that?" },
                   { title: "Hidden instructions are real.", body: "When AI processes external content (a web page, a document, an email), that content can contain hidden instructions that change what the AI does. This is called prompt injection. Nothing we're doing in this wizard exposes you to it. You're typing prompts directly into Claude, not connecting it to outside content or building agents. But as your usage grows and you start giving AI access to documents, web pages, or tools, this is the thing to watch for. What to do: when that day comes, never give AI tools blanket permission to act on external content without reviewing the result first." },
                 ]}
               />
@@ -169,12 +169,12 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress, initi
                 fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
                 color: T.color.text, margin: "0 0 12px 0",
               }}>
-                Your project just leveled up.
+                Your project just got serious.
               </h2>
               <p style={{ fontSize: 16, color: T.color.textMuted, lineHeight: 1.7, maxWidth: 520, margin: "0 auto 8px" }}>
                 System prompts, multi-step workflows, and a sense of what's possible
-                beyond conversation. Those are the tools that separate casual use from
-                real capability.
+                beyond conversation. Those are the skills that make AI genuinely useful
+                day to day.
               </p>
               <div style={{
                 background: T.color.bgCard, border: `1px solid ${T.color.border}`,
@@ -199,7 +199,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress, initi
                 learned, and set you up for what comes next.
                 Take a break here if you need one. Your progress is saved.
               </p>
-              <ContinueButton onClick={onComplete} label="Finish strong" />
+              <ContinueButton onClick={onComplete} label="One more section" />
               </div>
             </div>
           );

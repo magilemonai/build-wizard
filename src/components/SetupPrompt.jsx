@@ -12,7 +12,7 @@ export default function SetupPrompt({ status }) {
   return (
     <div style={{ background: T.color.copperSoft, border: `1px solid ${T.color.copperGlow}`, borderRadius: 16, padding: "18px 22px", marginBottom: 24 }}>
       <div style={{ fontSize: 15, fontWeight: 500, color: T.color.copper, marginBottom: 6 }}>
-        {status === "need_account" ? "Quick setup needed" : "One more thing"}
+        {status === "need_account" ? "Quick setup needed" : "Open Claude before we start"}
       </div>
       <p style={{ fontSize: 15, color: T.color.textMuted, lineHeight: 1.6, margin: "0 0 10px 0" }}>
         {status === "need_account"
@@ -21,7 +21,7 @@ export default function SetupPrompt({ status }) {
       </p>
       {status === "need_account" && (
         <p style={{ fontSize: 14, color: T.color.textLight, lineHeight: 1.5, margin: "0 0 10px 0", fontStyle: "italic" }}>
-          Heads up: Claude has its own onboarding when you first sign in. It may suggest projects or ask you questions. Skip all of that and come back here. We'll give you your first prompt.
+          When you sign up, Claude may walk you through its own setup. You can skip that for now and come back here. We'll guide you from here.
         </p>
       )}
       <p style={{ fontSize: 14, color: T.color.textMuted, lineHeight: 1.5, margin: 0 }}>
