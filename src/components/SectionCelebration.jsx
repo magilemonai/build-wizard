@@ -76,8 +76,8 @@ export default function SectionCelebration({ heroShapeIndex, intensity = 1 }) {
               <div style={{
                 "--move-x": `${moveX}px`,
                 animation: isHero
-                  ? `heroLeap 1.4s ${T.ease.smooth} 1.4s both`
-                  : `shapeSlide 1s ${T.ease.smooth} 1.6s both`,
+                  ? `heroLeap 1.6s ease-in-out 1.4s both`
+                  : `shapeSlide 1.2s ${T.ease.smooth} 1.6s both`,
               }}>
                 {/* Layer 3: ambient motion after rearrangement */}
                 <div style={{
