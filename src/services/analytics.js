@@ -88,6 +88,12 @@ export function track(name, properties = {}) {
       properties: safeProps,
     });
 
+    // Real-time per-event log for debugging. console.debug is filtered
+    // out of DevTools' default "All levels" view unless the user opts
+    // in, so this doesn't clutter the main console.
+    // eslint-disable-next-line no-console
+    console.debug("[Build Wizard Analytics]", name, safeProps);
+
     // Track furthest screen reached for the session summary
     if (name === "screen_view" && safeProps.screen) {
       if (screenRank(safeProps.screen) > screenRank(furthestScreen)) {
