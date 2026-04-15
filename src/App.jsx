@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import T from "./tokens.js";
 import GrainOverlay from "./components/GrainOverlay.jsx";
 import PageTransition from "./components/PageTransition.jsx";
@@ -11,7 +11,6 @@ import SetupPrompt from "./components/SetupPrompt.jsx";
 import WelcomeScreen from "./sections/WelcomeScreen.jsx";
 import WelcomeBack from "./sections/WelcomeBack.jsx";
 import ThresholdInterstitial from "./sections/ThresholdInterstitial.jsx";
-import { derivePathCard } from "./data/projectTemplates.js";
 import IceBreaker from "./sections/IceBreaker.jsx";
 import Foundation from "./sections/Foundation.jsx";
 import PowerUp from "./sections/PowerUp.jsx";
@@ -53,11 +52,6 @@ const SECTION_TITLES = {
   [SCREENS.SHIP]: "Ship — Build Wizard",
 };
 
-/* Quick Path: skip IceBreaker for 30-minute users */
-function shouldUseQuickPath(answers) {
-  return answers.time === "30min";
-}
-
 /* ━━━ Main App ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function App() {
   const savedRef = useSavedState();
@@ -72,8 +66,8 @@ export default function App() {
   const progress = useProgress(saved, setScreen);
   const analytics = useAnalytics();
 
-  // Quick path flag
-  const isQuickPath = shouldUseQuickPath(interview.answers);
+  // Quick path flag (derived by the interview hook from answers.time)
+  const isQuickPath = interview.isQuickPath;
 
   // Scroll to top, update title, manage focus on screen changes
   useEffect(() => {
@@ -257,14 +251,7 @@ export default function App() {
                   onContinue={interview.navigateForward}
                   placeholder={interview.currentStep.placeholder}
                   staggerReady={interview.staggerReady}
-                  notice={
-                    interview.currentStep.id === "fork" && interview.currentValue === "work"
-                      ? {
-                          title: "Quick heads-up",
-                          body: "Some workplaces have rules about AI tools and data. If you're not sure about yours, check with your manager or IT team before sharing real work data. We'll cover this more later.",
-                        }
-                      : null
-                  }
+                  notice={interview.forkNotice}
                 />
               </div>
             </PageTransition>
@@ -293,7 +280,7 @@ export default function App() {
                   </p>
                 )}
                 <PathCard
-                  data={derivePathCard(interview.answers)}
+                  data={interview.pathCard}
                   onContinue={() => {
                     if (isQuickPath) {
                       analytics.trackQuickPath();
