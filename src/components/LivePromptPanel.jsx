@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import T from "../tokens.js";
 import { sendMessage } from "../services/api.js";
 import { getApiAvailability } from "../services/apiAvailability.js";
+import { track } from "../services/analytics.js";
 
 /* ━━━ LivePromptPanel ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Renders a "Try it here" button next to PromptCard's Copy button
@@ -21,7 +22,7 @@ import { getApiAvailability } from "../services/apiAvailability.js";
      region, so outcome choices continue to sit below it. Long
      responses scroll inside a max-height container.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function LivePromptPanel({ prompt, getSessionId }) {
+export default function LivePromptPanel({ prompt, getSessionId, analyticsContext }) {
   const [available, setAvailable] = useState(null); // null = checking, true/false = known
   const [status, setStatus] = useState("idle");     // idle | loading | ready
   const [response, setResponse] = useState("");
@@ -45,12 +46,17 @@ export default function LivePromptPanel({ prompt, getSessionId }) {
 
   const handleTryHere = async () => {
     if (status === "loading") return;
+    track("prompt_live_try", {
+      section: analyticsContext?.section,
+      step_index: analyticsContext?.stepIndex,
+    });
     setStatus("loading");
     setResponse("");
     const sessionId = getSessionId();
     const result = await sendMessage(
       [{ role: "user", content: prompt }],
       sessionId,
+      { touchpoint: "live_prompt" },
     );
     if (!mountedRef.current) return;
     if (!result.response) {

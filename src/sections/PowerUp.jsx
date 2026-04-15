@@ -104,6 +104,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress, initi
 
   return (
     <SectionShell
+      sectionKey="powerup"
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
@@ -137,6 +138,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress, initi
                 sectionShapeIndex={3}
                 coachingNote={s.coachingNote}
                 getSessionId={getSessionId}
+                analyticsContext={{ section: "powerup", stepIndex }}
               />
             </div>
           );
@@ -147,6 +149,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress, initi
             <div>
               {BackButton}
               <SafetyInterstitial
+                section="powerup"
                 title="More tools, more to watch for."
                 onContinue={advance}
                 sectionShapeIndex={3}

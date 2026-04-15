@@ -7,7 +7,7 @@ import ContinueButton from "../components/ContinueButton.jsx";
 import SectionCelebration from "../components/SectionCelebration.jsx";
 
 /* ━━━ Exercise Screen ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function ExerciseScreen({ exercise, onConfirm }) {
+function ExerciseScreen({ exercise, onConfirm, analyticsContext }) {
   return (
     <div>
       <h2 style={{
@@ -77,6 +77,7 @@ function ExerciseScreen({ exercise, onConfirm }) {
         prompt={exercise.prompt}
         context={exercise.context}
         onConfirm={onConfirm}
+        analyticsContext={analyticsContext}
       />
     </div>
   );
@@ -195,6 +196,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
 
   return (
     <SectionShell
+      sectionKey="icebreaker"
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
@@ -258,6 +260,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
               <ExerciseScreen
                 exercise={exercises[step.index]}
                 onConfirm={advance}
+                analyticsContext={{ section: "icebreaker", stepIndex }}
               />
               {stepIndex === 0 && canSkipToFoundation && (
                 <button
@@ -289,6 +292,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
               <div>
                 {BackButton}
                 <SafetyInterstitial
+                  section="icebreaker"
                   title="Three things before we go further."
                   onContinue={advance}
                   sectionShapeIndex={1}
@@ -306,6 +310,7 @@ export default function IceBreaker({ answers, onComplete, onBack, onProgress, in
             <div>
               {BackButton}
               <SafetyInterstitial
+                section="icebreaker"
                 title="Two things to know before we keep going."
                 onContinue={advance}
                 sectionShapeIndex={1}

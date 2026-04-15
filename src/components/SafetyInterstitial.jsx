@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import T from "../tokens.js";
 import ContinueButton from "./ContinueButton.jsx";
 import OrganicShape from "./OrganicShape.jsx";
+import { track } from "../services/analytics.js";
 
 /* ━━━ Safety Interstitial ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Safety checkpoint between exercises. Warm red/warning tone to
    signal importance. Points visible at once. Single "Got it" button.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function SafetyInterstitial({ title, points, children, onContinue, sectionShapeIndex }) {
+export default function SafetyInterstitial({ title, points, children, onContinue, sectionShapeIndex, section }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
 
@@ -80,7 +81,16 @@ export default function SafetyInterstitial({ title, points, children, onContinue
           </div>
         )}
       </div>
-      <ContinueButton onClick={onContinue} label="Got it" />
+      <ContinueButton
+        onClick={() => {
+          track("safety_complete", {
+            section: section || null,
+            points_count: hasPoints ? points.length : 0,
+          });
+          onContinue?.();
+        }}
+        label="Got it"
+      />
     </div>
   );
 }

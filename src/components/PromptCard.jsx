@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import T from "../tokens.js";
 import ContinueButton from "./ContinueButton.jsx";
 import LivePromptPanel from "./LivePromptPanel.jsx";
+import { track } from "../services/analytics.js";
 
 /* ━━━ PromptCard ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Shows a prompt the user should copy into Claude in their other tab.
@@ -10,7 +11,7 @@ import LivePromptPanel from "./LivePromptPanel.jsx";
    Flow: copy prompt → paste in Claude → select outcome → read feedback
    → click Continue to advance. No auto-advance.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function PromptCard({ prompt, context, onConfirm, outcomeLabels, getSessionId }) {
+export default function PromptCard({ prompt, context, onConfirm, outcomeLabels, getSessionId, analyticsContext }) {
   const [copied, setCopied] = useState(false);
   const [outcome, setOutcome] = useState(null); // null | "worked" | "snag" | "skip"
   const [copyHovered, setCopyHovered] = useState(false);
@@ -32,7 +33,12 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels, 
       clearTimeout(copyTimer.current);
       copyTimer.current = setTimeout(() => setCopied(false), 4000);
     }
-  }, [prompt, hasPlaceholders]);
+    track("prompt_copy", {
+      section: analyticsContext?.section,
+      step_index: analyticsContext?.stepIndex,
+      had_placeholders: hasPlaceholders,
+    });
+  }, [prompt, hasPlaceholders, analyticsContext]);
 
   const outcomeContent = {
     worked: {
@@ -111,7 +117,12 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels, 
             {/* "Try it here" panel. Self-hides when API is unavailable,
                 so this adds nothing visible when the Worker is offline. */}
             {getSessionId && (
-              <LivePromptPanel key={prompt} prompt={prompt} getSessionId={getSessionId} />
+              <LivePromptPanel
+                key={prompt}
+                prompt={prompt}
+                getSessionId={getSessionId}
+                analyticsContext={analyticsContext}
+              />
             )}
           </div>
 
@@ -132,7 +143,14 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels, 
               <OutcomeButton
                 key={opt.key}
                 selected={outcome === opt.key}
-                onClick={() => setOutcome(opt.key)}
+                onClick={() => {
+                  setOutcome(opt.key);
+                  track("outcome_choice", {
+                    section: analyticsContext?.section,
+                    step_index: analyticsContext?.stepIndex,
+                    outcome: opt.key,
+                  });
+                }}
               >
                 {opt.label}
               </OutcomeButton>

@@ -4,6 +4,7 @@ import SectionShell from "../components/SectionShell.jsx";
 import SafetyInterstitial from "../components/SafetyInterstitial.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import PromptCard from "../components/PromptCard.jsx";
+import { track } from "../services/analytics.js";
 import OrganicShape, { sectionShapes } from "../components/OrganicShape.jsx";
 
 /* ━━━ Review Step ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -38,6 +39,7 @@ function ReviewStep({ answers, onConfirm, BackButton }) {
         context="One last prompt in Claude:"
         outcomeLabels={{ worked: "Review done", snag: "Hit a snag", skip: "Skip review" }}
         onConfirm={onConfirm}
+        analyticsContext={{ section: "ship", stepIndex: 0 }}
       />
       <p style={{
         fontSize: 15, color: T.color.textMuted,
@@ -495,6 +497,8 @@ function FinaleScreen({ answers }) {
           </button>
           <button
             onClick={() => {
+              const format = navigator.share ? "native_share" : "clipboard_link";
+              track("artifact_download", { format });
               if (navigator.share) {
                 navigator.share({ title: "Build Something Real with AI", url: window.location.href });
               } else {
@@ -532,6 +536,7 @@ export default function Ship({ answers, onBack, onProgress, initialStep, onStepC
 
   return (
     <SectionShell
+      sectionKey="ship"
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
@@ -550,6 +555,7 @@ export default function Ship({ answers, onBack, onProgress, initialStep, onStepC
             <div>
               {BackButton}
               <SafetyInterstitial
+                section="ship"
                 title="The long game."
                 onContinue={advance}
                 sectionShapeIndex={4}

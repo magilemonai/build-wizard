@@ -23,6 +23,7 @@ export default function GuidedStep({
   sectionShapeIndex,
   coachingNote,
   getSessionId,
+  analyticsContext,
 }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
@@ -142,6 +143,7 @@ export default function GuidedStep({
         outcomeLabels={{ worked: "Output looks good", snag: "Need to refine", skip: "Skip this step" }}
         onConfirm={onConfirm}
         getSessionId={getSessionId}
+        analyticsContext={analyticsContext}
       />
     </div>
   );

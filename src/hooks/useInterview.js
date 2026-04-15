@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import getInterviewSteps from "../data/interviewSteps.js";
-import { derivePathCard } from "../data/projectTemplates.js";
+import projectTemplates, { derivePathCard, matchProject } from "../data/projectTemplates.js";
 import { SCREENS } from "../screens.js";
+import { track } from "../services/analytics.js";
 
 /* ━━━ Interview State Hook ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Owns everything the interview produces: adaptive question flow,
@@ -48,10 +49,33 @@ export default function useInterview(saved, setScreen) {
     if (!currentStep) return;
     const updated = { ...answers, [currentStep.id]: currentValue };
     setAnswers(updated);
+
+    // interview_answer: structured choices only. Free-text fields
+    // (textarea) record the question_id but omit the value.
+    const isStructured = currentStep.type === "choice";
+    track("interview_answer", {
+      question_id: currentStep.id,
+      ...(isStructured ? { answer_value: currentValue } : {}),
+    });
+
     setCurrentValue(null);
     setStaggerReady(false);
     setDirection(1);
     if (currentStep.id === "setup") {
+      // Setup is the last question — we now have everything derivePathCard
+      // needs. Emit template_match based on the full answer set.
+      const type = updated.fork === "work" ? "work" : "personal";
+      const matched = matchProject(updated.project_idea, type);
+      const fallback = projectTemplates.fallback?.[type] || projectTemplates.fallback?.personal;
+      const wasFallback = matched === fallback;
+      const score = !wasFallback && matched?.keywords
+        ? matched.keywords.filter((kw) => (updated.project_idea || "").toLowerCase().includes(kw)).length
+        : 0;
+      track("template_match", {
+        template_id: wasFallback ? `fallback_${type}` : (matched?.name || null),
+        match_score: score,
+        was_fallback: wasFallback,
+      });
       setScreen(SCREENS.PATHCARD);
     } else {
       setStepIndex((i) => i + 1);
