@@ -8,11 +8,11 @@ Read both files before making changes. When they conflict, this file wins — it
 
 ## Project Structure
 
-Vite + React SPA. All five sections built. Screen routing via string constants in `screens.js`.
+Vite + React SPA. All five sections built. Screen routing via string constants in `screens.js`. Optional Cloudflare Worker in `worker/` proxies Claude API calls server-side.
 
 ```
 src/
-  App.jsx              # Screen router, interview state, section progress
+  App.jsx              # Screen router and section orchestration only
   screens.js           # SCREENS enum (prevents magic string typos)
   tokens.js            # Design tokens (colors, easing, fonts)
   hooks.js             # useIsMobile, usePrefersReducedMotion, getModKey
@@ -25,11 +25,13 @@ src/
     GrainOverlay.jsx     # SVG noise texture
     GuidedStep.jsx       # Teach-then-do pattern for build sections
     InterviewQuestion.jsx # With governance notice gating
-    JourneyProgress.jsx  # Shape-based progress bar (responsive)
+    JourneyProgress.jsx  # Shape-based progress bar (responsive) + "Start over" link
+    LivePromptPanel.jsx  # Optional "Try it here" panel inside PromptCard (Sections 3-4)
     OrganicShape.jsx     # CSS clip-path shape system
     PageTransition.jsx   # Direction-aware animated content swapper (page, rise)
     PathCard.jsx         # Project plan card
-    PromptCard.jsx       # Copy-to-clipboard with outcome feedback
+    ProjectCoachCard.jsx # API-backed personalized coach note under PathCard
+    PromptCard.jsx       # Copy-to-clipboard with outcome feedback; hosts LivePromptPanel
     SafetyInterstitial.jsx # Multi-step "While we're at it" safety lessons
     SectionLabel.jsx
     SectionShell.jsx     # Shared navigation/transition wrapper for all sections
@@ -37,22 +39,47 @@ src/
     TextInput.jsx
   sections/
     WelcomeScreen.jsx    # With clickable claude.ai link
+    WelcomeBack.jsx      # Resume screen for returning users with saved state
     ThresholdInterstitial.jsx  # Auto-advancing section transition
     IceBreaker.jsx       # Section 2: exercises + safety + models intro
     Foundation.jsx       # Section 3: prompting, structured output, context
     PowerUp.jsx          # Section 4: system prompts, workflows, roast, tools
     Ship.jsx             # Section 5: review, save/share, reflection, next steps
+  hooks/
+    useInterview.js      # Owns all interview state + derived values (see below)
+    useProgress.js       # Per-section progress, step positions, visited set
+    useAnalytics.js      # Legacy localStorage event hook (see Known Issues)
+    usePersistence.js    # localStorage schema v2 for saved state
+  services/
+    api.js               # sendMessage + isApiAvailable client for the Worker
+    apiAvailability.js   # Shared session-scoped cache for isApiAvailable
+    analytics.js         # In-memory event sink + beforeunload console dump
   data/
     interviewSteps.js    # Adaptive question flow
     projectTemplates.js  # 18 templates + multi-keyword scoring + path card derivation
   styles/
-    global.css           # Reset, keyframes, celebrations, prefers-reduced-motion
+    global.css           # Reset, keyframes, celebrations, prefers-reduced-motion, sagePulse
 public/
   favicon.svg            # Copper triangle
   og-image.svg           # Editable source for social share image
   og-image.png           # 1200x630 PNG for Open Graph/social platforms
   CNAME                  # build.codywymore.com
+worker/                  # Cloudflare Worker — Claude API proxy
+  src/index.js           # POST /api/chat, CORS, rate limit, system prompt
+  wrangler.toml          # Worker name, compat date, secret binding reference
+  package.json           # wrangler dev dependency
+  README.md              # Setup, secrets, dev, deploy
 ```
+
+### `useInterview` hook
+
+App.jsx is routing + orchestration only. All interview-related state and derived values live in `useInterview`:
+
+- **State**: `stepIndex`, `answers`, `currentValue`, `direction`, `staggerReady`, `showFirstLabel`, `currentStep`, `totalSteps`, `sessionId`
+- **Actions**: `setCurrentValue`, `navigateForward`, `navigateBack`, `handleTransitionEntered`, `resetInterview`, `ensureSessionId` (lazy UUID generator, persisted via `usePersistence`)
+- **Derived**: `isWork` (fork === "work"), `isQuickPath` (time === "30min"), `pathCard` (memoized `derivePathCard(answers)`), `forkNotice` (governance notice shown on work-fork selection)
+
+Principle: don't persist what you can compute. `pathCard` is derived, not stored. Sections that need experience-level variants derive their own from multiple signals — there is no single `experienceLevel` tier because that would create two sources of truth.
 
 ---
 
@@ -264,7 +291,119 @@ Clean "Your Project" card. Shows project name, description, duration, setup stat
 
 18 pre-written templates (10 personal, 8 work). Multi-keyword scoring: each template scored by how many of its keywords appear in the user's input. Highest score wins. Falls back to personalized generic template that echoes the user's exact input.
 
-**When Claude API is integrated:** The API's job narrows to "pick the best template and personalize the framing."
+The API's job is narrow: pick the best template (already handled client-side via keyword scoring) and layer personalized framing on top via `ProjectCoachCard`. The templates remain the source of truth for the plan; the API only writes the 2-3 sentence human note.
+
+---
+
+## API Integration
+
+The wizard is fully usable without the API. When the Worker is unreachable, every API-backed affordance self-hides and the user sees the existing copy-and-paste experience unchanged.
+
+### Architecture
+
+- **Cloudflare Worker** (`worker/src/index.js`) deployed as `build-wizard-api`. Frontend calls it at `VITE_WORKER_URL` (falls back to `http://localhost:8787` in dev).
+- **Single endpoint**: `POST /api/chat` takes `{ messages, sessionId }`, forwards to Anthropic Messages API (`claude-sonnet-4-20250514`, `max_tokens: 1024`), returns `{ response, usage: { input_tokens, output_tokens } }`.
+- **System prompt** is a constant inside `worker/src/index.js` — never sent by the frontend. Frames Claude as a concise, non-condescending learning coach, <150 words, no em-dashes, no "not X but Y" phrasing. If you change the coaching voice, that's where to do it.
+- **API key** lives as a Worker secret (`wrangler secret put ANTHROPIC_API_KEY`). Never in source. Never in the browser.
+- **No streaming**. Simple request/response.
+
+### CORS
+
+Allow-list: `https://build.codywymore.com` and `http://localhost:5173` (Vite dev server). The Worker reflects the matching Origin; unknown origins get the production origin as a safe default. `OPTIONS` preflight handled explicitly.
+
+### Rate limiting
+
+60 requests per hour per IP. In-memory `Map` scoped to a single Worker isolate. Opportunistic TTL sweep (5% of requests trigger a cleanup pass). Best-effort — a Map is per-isolate, so traffic spread across isolates or an IP rotation can exceed the cap. Good enough as a cost cap against accidental loops; not a hard limit against abuse. Upgrade path: swap Map for KV or a Durable Object.
+
+### Frontend contract
+
+`src/services/api.js`:
+
+- `sendMessage(messages, sessionId, meta?)` — returns `{ response, usage }` on success, `{ response: null, error }` on any failure. Never throws. 30-second `AbortController` timeout. The optional `meta.touchpoint` arg labels the call for analytics (`"coach"`, `"live_prompt"`, `"healthcheck"`, default `"unknown"`); it does not change the request body.
+- `isApiAvailable()` — sends a minimal ping through `sendMessage`, returns a boolean. Costs ~10 tokens per session (see "Not Yet Built" for the `/health` endpoint plan).
+
+`src/services/apiAvailability.js`:
+
+- `getApiAvailability()` — session-scoped Promise cache. First caller triggers the ping; every later caller awaits the same result. Prevents `LivePromptPanel` from re-checking per render.
+
+### Session id lifecycle
+
+- Lazy-generated by `useInterview.ensureSessionId()` on the first API call (UUID via `crypto.randomUUID`, or a timestamp+random fallback).
+- Persisted in the `localStorage` save payload (`usePersistence` schema v2), so the same id survives refresh and is shared across `ProjectCoachCard` and `LivePromptPanel`.
+- Reset by `resetInterview` (Ctrl+Shift+R, `window.__restart()`, or the mid-experience "Start over" link).
+- Distinct from the analytics session id (see below) and from the cookie-less Worker rate-limit key (which uses IP).
+
+### Graceful degradation
+
+Both API touchpoints share the same rule: **if the API is unavailable or a call fails, the feature becomes invisible**. No error UI, no empty card, no layout shift, no indication that another option ever existed.
+
+- `ProjectCoachCard`: returns `null` when `isApiAvailable` is false or `sendMessage` fails. The PathCard screen renders identically to the pre-API flow.
+- `LivePromptPanel`: one-time availability check on mount (shared cache). Returns `null` when unavailable. On click failure, silently reverts to idle so the user can retry or fall back to copy. Errors go to `console.warn("[Build Wizard API] …")` only.
+
+All API failures are caught at `sendMessage`'s boundary. Nothing throws. The wizard never shows a raw error to the user.
+
+---
+
+## Analytics
+
+Lightweight in-memory event sink designed to be PostHog/Mixpanel-compatible with a one-line flush swap.
+
+### Event shape
+
+```
+{
+  seq:         monotonically increasing integer,
+  ts:          ISO-8601 timestamp (when track() was called),
+  session_id:  analytics-only session id (UUID, separate from API sessionId),
+  event:       event name (string),
+  properties:  shallow JSON-safe object
+}
+```
+
+Both PostHog (`capture(event, properties)`) and Mixpanel (`track(event, properties)`) accept this as-is. Moving to a real backend is replacing `flushToConsole` with a batched POST.
+
+### `track()` contract
+
+`track(eventName, properties)` in `src/services/analytics.js`:
+
+- Appends to an in-memory array with auto-generated `seq` and `ts`.
+- Lazy-generates `analyticsSessionId` on first call. This is **separate** from the API `sessionId` (it's for grouping events in a future backend, not for passing to the Worker).
+- Every public entry point is `try/catch` wrapped. `track()` silently no-ops on bad input or any internal throw. **Analytics must never break the wizard.**
+
+`getEvents()` returns a copy of the array for debugging.
+
+### Flush behavior
+
+On `pagehide` or `beforeunload`, `flushToConsole`:
+
+1. Appends a `session_end` event with `total_duration_ms`, `furthest_screen`, `total_steps_completed`, `total_api_calls`.
+2. Logs a `[Build Wizard Analytics] session_end — events:N duration_ms:… furthest:… steps_completed:… api_calls:…` summary line.
+3. Logs the full event array as JSON.
+
+Both `pagehide` and `beforeunload` are registered — `pagehide` is more reliable on iOS/Safari, `beforeunload` covers desktop close/refresh.
+
+### Free-text exclusion
+
+User free-text input (project description, followup text) is **never** recorded as an event property. `interview_answer` includes `answer_value` only when `currentStep.type === "choice"`. Textarea questions still emit the event (so drop-off is measurable) but with `question_id` only. If you add a new textarea step, leave `type: "textarea"` and this rule applies automatically.
+
+### Instrumented events
+
+| Event | Where | Properties |
+|---|---|---|
+| `session_start` | App mount | `referrer`, `viewport_width`, `is_mobile`, `is_returning_user` |
+| `screen_view` | every `setScreen` | `screen`, `previous_screen` |
+| `interview_answer` | `useInterview.navigateForward` | `question_id`, `answer_value` (choices only) |
+| `template_match` | on setup completion | `template_id`, `match_score`, `was_fallback` |
+| `step_complete` | `SectionShell.advance` | `section`, `step_index`, `time_on_step_ms` (ref-based timer, reset on stepIndex change) |
+| `prompt_copy` | `PromptCard.handleCopy` | `section`, `step_index`, `had_placeholders` |
+| `prompt_live_try` | `LivePromptPanel.handleTryHere` | `section`, `step_index` |
+| `api_call` | inside `sendMessage` | `touchpoint`, `latency_ms`, `success`, `input_tokens`, `output_tokens` |
+| `outcome_choice` | PromptCard outcome buttons | `section`, `step_index`, `outcome` |
+| `safety_complete` | SafetyInterstitial "Got it" | `section`, `points_count` |
+| `artifact_download` | Ship share button | `format` (`native_share` or `clipboard_link`) |
+| `session_end` | `flushToConsole` on unload | `total_duration_ms`, `furthest_screen`, `total_steps_completed`, `total_api_calls` |
+
+See Known Issues for the `snag` vs `iterate` naming discrepancy and the legacy `useAnalytics` hook that still coexists.
 
 ---
 
@@ -314,23 +453,28 @@ Log bugs in `testing-notes.md` with format: `- [ ] [Section] Description`
 - Progress bar uses solid background through 70% then fades. Content can still peek through the bottom 30% fade zone on very long scrolls.
 - Work vs personal content is mostly noun-swapping in build sections. Deeper differentiation would require substantially different section content per path.
 - JS-side timeouts in entrance animations don't check `usePrefersReducedMotion()` (CSS handles it, but the delays still fire).
+- **Outcome event naming drift**: the analytics `outcome_choice` event records `worked` / `snag` / `skip` (the UI labels), while the original spec called for `worked` / `iterate` / `skip`. Kept the UI value so events mirror what the user saw. If "iterate" is preferred for reporting, relabel in `PromptCard.jsx` and pass through to the event in one step.
+- **Two analytics systems coexist**: the legacy `useAnalytics` hook (localStorage-based, emits `section_start`, `section_complete`, `exercise_outcome`, `interview_complete`, `session_resume`, `quick_path_activated`) still runs alongside the new `services/analytics.js` (in-memory, PostHog-ready shape). App.jsx still imports the hook for its existing call sites. A future cleanup should migrate those sites to `track()` directly and delete the hook. Until then, expect some event duplication in intent (not in event names — they don't overlap).
 
 ---
 
 ## Not Yet Built
 
-- Claude API integration for adaptive interview and project scoping
-- Progress persistence (localStorage for pause-and-return)
 - Quick Path variant (compressed version for 30-minute users)
 - Clickable journey progress bar for section navigation
-- App.jsx extraction into useInterview hook
 - WCAG contrast audit (sage on cream may not pass AA)
 - Community gallery for sharing published artifacts
-- Analytics (completion rates, drop-off points, template match success)
+- Analytics backend wiring (events are recorded — see "Analytics" section — but nothing uploads them yet)
+- `/health` endpoint on the Worker so `isApiAvailable()` can ping at zero token cost (currently costs ~10 tokens per session)
+- Prompt caching (`cache_control: ephemeral`) for the Worker's static system prompt — free win we haven't taken yet
+- Softer fallback messaging when "Try it here" fails. Today the panel silently returns to idle per spec; users get no feedback that their click did anything. A quiet "couldn't reach Claude — copy above instead" line would help without surfacing raw errors.
+- Cleanup: remove the legacy `useAnalytics` hook (see Known Issues) and migrate its remaining call sites in `App.jsx` to `track()` from `services/analytics.js` directly.
 
 ---
 
 ## Deployment
+
+### Frontend
 
 - **Live at:** `build.codywymore.com`
 - **Hosting:** GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`)
@@ -340,14 +484,44 @@ Log bugs in `testing-notes.md` with format: `- [ ] [Section] Description`
 - **Build:** `npm ci && npm run build` → serves `dist/`
 - **Social:** Open Graph + Twitter Card meta tags in index.html, PNG image at `/og-image.png`
 
-### To deploy changes:
+### Worker (Claude API proxy)
+
+Lives in `worker/`. Deployed separately from the frontend via Wrangler.
+
+```bash
+cd worker
+npm install
+npx wrangler login                          # one-time
+npx wrangler secret put ANTHROPIC_API_KEY   # paste key when prompted
+npm run dev                                 # local dev at http://localhost:8787
+npm run deploy                              # deploy to Cloudflare
+```
+
+- **Worker name:** `build-wizard-api` (configured in `worker/wrangler.toml`)
+- **Secret:** `ANTHROPIC_API_KEY` is a Worker secret, never committed
+- **CORS allow-list:** `https://build.codywymore.com`, `http://localhost:5173`
+- **Rate limit:** 60 req/hr per IP, per-isolate in-memory (see "API Integration")
+
+### Environment variables
+
+| Var | Where | Purpose |
+|---|---|---|
+| `VITE_WORKER_URL` | Frontend build env (`.env.production`, GitHub Actions secret, or local `.env`) | Points `src/services/api.js` at the deployed Worker. Falls back to `http://localhost:8787` when unset. |
+| `ANTHROPIC_API_KEY` | Worker secret | Anthropic API key. Set via `wrangler secret put`. |
+
+### To deploy frontend changes:
 1. Merge branch to `main`
 2. GitHub Actions runs automatically
 3. Site updates in ~30 seconds
 
-### Future API integration:
-- Cloudflare Worker will proxy Claude API calls (keeps API key server-side)
-- Cost: ~$0.15-$0.50 per user for API calls (see PDD Section 7)
+### To deploy Worker changes:
+1. `cd worker && npm run deploy`
+2. No automation yet — this is manual per commit
+
+### Cost note
+
+- ~$0.15–$0.50 per user for API calls at current models/usage (see PDD Section 7)
+- `isApiAvailable` currently costs ~10 input tokens per session; a `/health` endpoint would zero this out (see "Not Yet Built")
 
 ---
 
