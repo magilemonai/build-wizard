@@ -9,6 +9,15 @@ import { SCREENS } from "../screens.js";
    downstream sections read (path type, quick-path flag, path card,
    governance notice). App.jsx only handles screen routing.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/** Create a unique session id. Uses crypto.randomUUID when available,
+    falls back to a timestamp-plus-random string otherwise. */
+function generateSessionId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `s-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export default function useInterview(saved, setScreen) {
   const [stepIndex, setStepIndex] = useState(() => saved?.stepIndex || 0);
   const [answers, setAnswers] = useState(() => saved?.answers || {});
@@ -16,6 +25,9 @@ export default function useInterview(saved, setScreen) {
   const [direction, setDirection] = useState(1);
   const [staggerReady, setStaggerReady] = useState(true);
   const [showFirstLabel, setShowFirstLabel] = useState(() => !saved);
+  // sessionId is generated lazily on first API call and persisted so it
+  // survives page refresh. Null until first needed.
+  const [sessionId, setSessionId] = useState(() => saved?.sessionId || null);
 
   const steps = useMemo(() => getInterviewSteps(answers), [answers]);
   const currentStep = steps[stepIndex] || null;
@@ -65,7 +77,16 @@ export default function useInterview(saved, setScreen) {
     setDirection(1);
     setStaggerReady(true);
     setShowFirstLabel(true);
+    setSessionId(null);
   }, []);
+
+  /** Return the existing sessionId, or generate+persist a new one on first call. */
+  const ensureSessionId = useCallback(() => {
+    if (sessionId) return sessionId;
+    const fresh = generateSessionId();
+    setSessionId(fresh);
+    return fresh;
+  }, [sessionId]);
 
   // ── Derived values ──────────────────────────────────────────────
   // Work/personal path tracking
@@ -90,10 +111,10 @@ export default function useInterview(saved, setScreen) {
   return {
     // Raw state
     stepIndex, answers, currentValue, direction, staggerReady,
-    showFirstLabel, currentStep, totalSteps,
+    showFirstLabel, currentStep, totalSteps, sessionId,
     // Actions
     setCurrentValue, navigateForward, navigateBack,
-    handleTransitionEntered, resetInterview,
+    handleTransitionEntered, resetInterview, ensureSessionId,
     // Derived
     isWork, isQuickPath, pathCard, forkNotice,
   };

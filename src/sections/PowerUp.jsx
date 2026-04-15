@@ -98,7 +98,7 @@ function buildStepSequence() {
 }
 
 /* ━━━ PowerUp Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function PowerUp({ answers, onComplete, onBack, onProgress, initialStep, onStepChange }) {
+export default function PowerUp({ answers, onComplete, onBack, onProgress, initialStep, onStepChange, getSessionId }) {
   const buildSteps = getBuildSteps(answers);
   const steps = buildStepSequence();
 
@@ -136,6 +136,7 @@ export default function PowerUp({ answers, onComplete, onBack, onProgress, initi
                 onConfirm={advance}
                 sectionShapeIndex={3}
                 coachingNote={s.coachingNote}
+                getSessionId={getSessionId}
               />
             </div>
           );

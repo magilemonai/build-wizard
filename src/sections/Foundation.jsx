@@ -127,7 +127,7 @@ function CatchUpPrompt({ idea }) {
 }
 
 /* ━━━ Foundation Section ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function Foundation({ answers, onComplete, onBack, onProgress, initialStep, onStepChange, quickPath }) {
+export default function Foundation({ answers, onComplete, onBack, onProgress, initialStep, onStepChange, quickPath, getSessionId }) {
   const buildSteps = getBuildSteps(answers);
   const steps = buildStepSequence(answers, quickPath);
   const idea = answers.project_idea || "my project";
@@ -266,6 +266,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
                 onConfirm={advance}
                 sectionShapeIndex={2}
                 coachingNote={s.coachingNote}
+                getSessionId={getSessionId}
               />
             </div>
           );
