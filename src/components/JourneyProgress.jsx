@@ -30,11 +30,28 @@ export const journeySteps = [
   { key: "ship", label: "Ship" },
 ];
 
-export default function JourneyProgress({ currentSection, questionProgress, onSectionClick, stepCount, currentStep }) {
+export default function JourneyProgress({ currentSection, questionProgress, onSectionClick, stepCount, currentStep, onStartOver }) {
   const idx = journeySteps.findIndex((s) => s.key === currentSection);
   const mobile = useIsMobile();
 
   const isClickable = (i) => onSectionClick && (i < idx || i === idx);
+
+  const handleStartOver = () => {
+    if (!onStartOver) return;
+    if (window.confirm("Start over? This will clear your progress and return to the welcome screen.")) {
+      onStartOver();
+    }
+  };
+
+  const startOverLinkStyle = {
+    position: "absolute",
+    top: 14, right: 20,
+    background: "none", border: "none", padding: 0,
+    fontFamily: T.font.body, fontSize: 12,
+    color: T.color.textLight,
+    textDecoration: "underline", textUnderlineOffset: 3,
+    cursor: "pointer", letterSpacing: "0.02em",
+  };
 
   if (mobile) {
     return (
@@ -43,7 +60,12 @@ export default function JourneyProgress({ currentSection, questionProgress, onSe
         background: `linear-gradient(to bottom, ${T.color.bg} 60%, ${T.color.bg}00 100%)`,
         padding: "14px 20px 20px",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {onStartOver && (
+          <button onClick={handleStartOver} style={startOverLinkStyle} aria-label="Start over">
+            Start over
+          </button>
+        )}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, paddingRight: 80 }}>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {journeySteps.map((s, i) => (
               <div
@@ -72,6 +94,11 @@ export default function JourneyProgress({ currentSection, questionProgress, onSe
       background: `linear-gradient(to bottom, ${T.color.bg} 70%, ${T.color.bg}00 100%)`,
       padding: "14px 0 40px",
     }}>
+      {onStartOver && (
+        <button onClick={handleStartOver} style={startOverLinkStyle} aria-label="Start over">
+          Start over
+        </button>
+      )}
       <div style={{
         maxWidth: 500, margin: "0 auto", padding: "0 24px",
         display: "flex", alignItems: "center",

@@ -223,6 +223,7 @@ export default function App() {
             onSectionClick={handleProgressClick}
             stepCount={(BASE_STEP_COUNTS[screen] || 0) + (screen === SCREENS.FOUNDATION && isQuickPath ? 2 : 0)}
             currentStep={progress.sectionSteps[screen] || 0}
+            onStartOver={restart}
           />
         )}
 
