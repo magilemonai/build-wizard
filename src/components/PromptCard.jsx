@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import T from "../tokens.js";
 import ContinueButton from "./ContinueButton.jsx";
+import LivePromptPanel from "./LivePromptPanel.jsx";
 
 /* ━━━ PromptCard ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Shows a prompt the user should copy into Claude in their other tab.
@@ -9,7 +10,7 @@ import ContinueButton from "./ContinueButton.jsx";
    Flow: copy prompt → paste in Claude → select outcome → read feedback
    → click Continue to advance. No auto-advance.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }) {
+export default function PromptCard({ prompt, context, onConfirm, outcomeLabels, getSessionId }) {
   const [copied, setCopied] = useState(false);
   const [outcome, setOutcome] = useState(null); // null | "worked" | "snag" | "skip"
   const [copyHovered, setCopyHovered] = useState(false);
@@ -106,6 +107,12 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels }
               ? (hasPlaceholders ? "✓ Copied — fill in the [brackets] before pasting" : "✓ Copied")
               : "Copy to clipboard"}
             </button>
+
+            {/* "Try it here" panel. Self-hides when API is unavailable,
+                so this adds nothing visible when the Worker is offline. */}
+            {getSessionId && (
+              <LivePromptPanel key={prompt} prompt={prompt} getSessionId={getSessionId} />
+            )}
           </div>
 
           <div style={{

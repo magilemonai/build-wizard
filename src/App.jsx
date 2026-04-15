@@ -7,6 +7,7 @@ import SectionLabel from "./components/SectionLabel.jsx";
 import JourneyProgress from "./components/JourneyProgress.jsx";
 import InterviewQuestion from "./components/InterviewQuestion.jsx";
 import PathCard from "./components/PathCard.jsx";
+import ProjectCoachCard from "./components/ProjectCoachCard.jsx";
 import SetupPrompt from "./components/SetupPrompt.jsx";
 import WelcomeScreen from "./sections/WelcomeScreen.jsx";
 import WelcomeBack from "./sections/WelcomeBack.jsx";
@@ -86,11 +87,12 @@ export default function App() {
       screen,
       stepIndex: interview.stepIndex,
       answers: interview.answers,
+      sessionId: interview.sessionId,
       sectionProgress: progress.sectionProgress,
       sectionSteps: progress.sectionSteps,
       visited: [...progress.visited.current],
     });
-  }, [screen, interview.stepIndex, interview.answers, progress.sectionProgress, progress.sectionSteps]);
+  }, [screen, interview.stepIndex, interview.answers, interview.sessionId, progress.sectionProgress, progress.sectionSteps]);
 
   // Restart: clear everything
   const restart = useCallback(() => {
@@ -292,6 +294,11 @@ export default function App() {
                   }}
                   quickPath={isQuickPath}
                 />
+                <ProjectCoachCard
+                  answers={interview.answers}
+                  pathCard={interview.pathCard}
+                  ensureSessionId={interview.ensureSessionId}
+                />
               </div>
             </PageTransition>
           )}
@@ -316,6 +323,7 @@ export default function App() {
               initialStep={progress.sectionSteps[SCREENS.FOUNDATION]}
               onStepChange={progress.stepUpdaters[SCREENS.FOUNDATION]}
               quickPath={isQuickPath}
+              getSessionId={interview.ensureSessionId}
             />
           )}
 
@@ -327,6 +335,7 @@ export default function App() {
               onProgress={progress.progressUpdaters[SCREENS.POWERUP]}
               initialStep={progress.sectionSteps[SCREENS.POWERUP]}
               onStepChange={progress.stepUpdaters[SCREENS.POWERUP]}
+              getSessionId={interview.ensureSessionId}
             />
           )}
 

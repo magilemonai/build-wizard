@@ -144,6 +144,13 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Subtle sage-toned pulse used for API loading states.
+   Opacity only — no scale/translate, so it feels ambient rather than busy. */
+@keyframes sagePulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
 /* ━━━ Celebration burst ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 @keyframes celebratePop {
   0% { transform: scale(0); opacity: 0; }
