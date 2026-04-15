@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import T from "./tokens.js";
 import GrainOverlay from "./components/GrainOverlay.jsx";
 import PageTransition from "./components/PageTransition.jsx";
@@ -22,6 +22,7 @@ import useInterview from "./hooks/useInterview.js";
 import useProgress from "./hooks/useProgress.js";
 import useAnalytics from "./hooks/useAnalytics.js";
 import { useSavedState, saveState, clearSavedState } from "./hooks/usePersistence.js";
+import { track } from "./services/analytics.js";
 
 /* ━━━ Config ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const SECTION_TRANSITIONS = {
@@ -70,7 +71,20 @@ export default function App() {
   // Quick path flag (derived by the interview hook from answers.time)
   const isQuickPath = interview.isQuickPath;
 
-  // Scroll to top, update title, manage focus on screen changes
+  // One-time session_start event on mount.
+  useEffect(() => {
+    track("session_start", {
+      referrer: document.referrer || null,
+      viewport_width: window.innerWidth,
+      is_mobile: window.innerWidth < 480,
+      is_returning_user: hasSaved,
+    });
+    // Mount-only: ignore exhaustive-deps for `hasSaved` (stable after init).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Scroll to top, update title, manage focus, and track screen_view on every change.
+  const prevScreenRef = useRef(null);
   useEffect(() => {
     window.scrollTo(0, 0);
     const baseScreen = screen.replace(/-transition$/, "");
@@ -78,6 +92,9 @@ export default function App() {
     // Move focus to main content for keyboard/screen-reader users
     const main = document.querySelector("[data-main-content]");
     if (main) main.focus({ preventScroll: true });
+
+    track("screen_view", { screen, previous_screen: prevScreenRef.current });
+    prevScreenRef.current = screen;
   }, [screen]);
 
   // Persist state on meaningful changes

@@ -134,6 +134,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
 
   return (
     <SectionShell
+      sectionKey="foundation"
       steps={steps}
       onBack={onBack}
       onProgress={onProgress}
@@ -195,6 +196,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
             <div>
               {BackButton}
               <SafetyInterstitial
+                section="foundation"
                 title={isWork ? "Three things before we build." : "Two things before we build."}
                 onContinue={advance}
                 sectionShapeIndex={2}
@@ -267,6 +269,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
                 sectionShapeIndex={2}
                 coachingNote={s.coachingNote}
                 getSessionId={getSessionId}
+                analyticsContext={{ section: "foundation", stepIndex }}
               />
             </div>
           );
@@ -277,7 +280,7 @@ export default function Foundation({ answers, onComplete, onBack, onProgress, in
           return (
             <div>
               {BackButton}
-              <SafetyInterstitial title="AI gets things wrong confidently." onContinue={advance} sectionShapeIndex={2}>
+              <SafetyInterstitial section="foundation" title="AI gets things wrong confidently." onContinue={advance} sectionShapeIndex={2}>
                 <p style={{ margin: "0 0 12px 0" }}>
                   If something in your output looked right but felt off, pay attention to that instinct.
                   AI can cite sources that don't exist and present guesses as facts.

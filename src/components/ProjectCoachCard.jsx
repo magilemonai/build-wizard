@@ -62,6 +62,7 @@ export default function ProjectCoachCard({ answers, pathCard, ensureSessionId })
       const result = await sendMessage(
         [{ role: "user", content: prompt }],
         sessionId,
+        { touchpoint: "coach" },
       );
       if (cancelled || !mountedRef.current) return;
 
