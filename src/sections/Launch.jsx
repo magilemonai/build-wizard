@@ -12,9 +12,8 @@ import { track } from "../services/analytics.js";
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function getModelRecommendation(features) {
-  if (features?.includes("extended_thinking")) return "Sonnet with Extended Thinking turned on";
-  if (features?.includes("model_selection")) return "Sonnet (or Opus for deeper analysis)";
-  return "Sonnet";
+  if (features?.includes("extended_thinking")) return "Opus with Extended Thinking turned on";
+  return "Opus";
 }
 
 function hasResearch(features) {
@@ -191,7 +190,9 @@ function HandoffStep({ BackButton, prompt, features, onCopied }) {
           fontSize: 15, color: T.color.textMuted, lineHeight: 1.75,
         }}>
           <li style={{ marginBottom: 6 }}>Open claude.ai in your other tab</li>
-          <li style={{ marginBottom: 6 }}>Select <strong style={{ color: T.color.text }}>{modelRec}</strong> from the model picker</li>
+          <li style={{ marginBottom: 6 }}>
+            Select <strong style={{ color: T.color.text }}>{modelRec}</strong> from the model picker. It's Claude's most capable model.
+          </li>
           <li style={{ marginBottom: 6 }}>
             Paste your prompt and hit Enter
             {showResearch && (

@@ -309,45 +309,10 @@ function RecapStep({ BackButton, template, assembledPrompt, startedAt, onNext })
               </div>
             </RecapSection>
           )}
-
-          {/* Foxfire mark */}
-          <div style={{
-            marginTop: 22,
-            paddingTop: 14,
-            borderTop: `1px solid ${T.color.border}`,
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            gap: 12,
-          }}>
-            <span style={{
-              fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase",
-              color: T.color.textLight, fontFamily: T.font.body,
-            }}>
-              Built with Foxfire
-            </span>
-            <OrganicShape shapeIndex={4} size={10} color={T.color.copper} />
-          </div>
         </article>
       </div>
 
-      {/* Action buttons */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-        <button
-          onClick={() => { /* hint only — user screenshots manually */ }}
-          style={{
-            padding: "11px 22px",
-            background: "transparent",
-            color: T.color.textMuted,
-            border: `1px solid ${T.color.border}`,
-            borderRadius: 10,
-            fontFamily: T.font.body, fontSize: 14, fontWeight: 500,
-            cursor: "pointer",
-            letterSpacing: "0.01em",
-          }}
-        >
-          Screenshot this
-        </button>
-        <ContinueButton onClick={onNext} label="Continue to finish" />
-      </div>
+      <ContinueButton onClick={onNext} label="Continue to finish" />
     </div>
   );
 }

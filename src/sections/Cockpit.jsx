@@ -184,7 +184,6 @@ function FeatureCard({ feature }) {
 
   return (
     <article style={{
-      position: "relative",
       background: T.color.bgCard,
       border: `1px solid ${T.color.border}`,
       borderRadius: 14,
@@ -193,14 +192,6 @@ function FeatureCard({ feature }) {
       transform: visible ? "translateY(0)" : "translateY(8px)",
       transition: `all 0.5s ${T.ease.smooth}`,
     }}>
-      {/* Ambient decoration, top-right */}
-      <div style={{
-        position: "absolute", top: 14, right: 14,
-        pointerEvents: "none",
-      }}>
-        <SparklyTriangle size={18} container={22} spinDuration={16} />
-      </div>
-
       <div style={{
         fontFamily: T.font.body, fontSize: 12, fontWeight: 500,
         letterSpacing: "0.08em", textTransform: "uppercase",
@@ -212,7 +203,6 @@ function FeatureCard({ feature }) {
         fontFamily: T.font.display, fontSize: 22,
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.25,
         margin: "0 0 12px 0", color: T.color.text,
-        paddingRight: 32,
       }}>
         {feature.heading}
       </h3>

@@ -15,7 +15,9 @@ export default function Orientation({ onBegin }) {
     <div style={{
       minHeight: "100vh", background: T.color.bg, fontFamily: T.font.body,
       color: T.color.text,
-      display: "flex", alignItems: "center", justifyContent: "center",
+      display: "flex", alignItems: "flex-start", justifyContent: "center",
+      paddingTop: "clamp(64px, 16vh, 180px)",
+      paddingBottom: 48,
       overflow: "hidden",
     }}>
       <div style={{ maxWidth: 520, margin: "0 auto", padding: "0 20px", textAlign: "center" }}>
@@ -23,7 +25,7 @@ export default function Orientation({ onBegin }) {
         {/* Shapes fall into place above the headline: top 3, bottom 2 */}
         <div style={{
           position: "relative", width: 220, height: 120,
-          margin: "0 auto 40px", left: 8,
+          margin: "0 auto 48px", left: 8,
         }}>
           {/* Triangle (copper) */}
           <div style={{

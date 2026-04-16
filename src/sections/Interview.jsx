@@ -11,20 +11,59 @@ import { SparklySquare } from "../components/SparklyShape.jsx";
 
 /* ━━━ Keyword fallback matching ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Used when the AI coach is unavailable. Scans user input for
-   bucket-associated keywords. Highest hit count wins. Tie or no
-   matches defaults to "production".
+   bucket-associated keywords. Highest weighted score wins. Tie or
+   no matches defaults to "production".
+
+   Some thinking keywords carry a 3x weight: people often describe
+   brainstorming problems with strong signal words ("ideas",
+   "brainstorm", "stuck") that deserve to outvote one-off words
+   elsewhere.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const BUCKET_KEYWORDS = {
-  information: ["read", "review", "summarize", "analyze", "data", "report", "feedback", "research", "survey", "findings", "document", "understand", "numbers", "trends", "patterns"],
-  production: ["write", "draft", "email", "create", "build", "present", "slides", "deck", "template", "process", "sop", "format", "send", "publish", "prepare"],
-  thinking: ["meeting", "strategy", "decide", "plan", "think", "brainstorm", "evaluate", "compare", "options", "approach"],
+  information: [
+    "read", "review", "summarize", "analyze", "data", "report",
+    "feedback", "research", "survey", "findings", "document",
+    "understand", "numbers", "trends", "patterns",
+  ],
+  production: [
+    "write", "draft", "email", "create", "build", "present", "slides",
+    "deck", "template", "process", "sop", "format", "send", "publish",
+    "prepare",
+  ],
+  thinking: [
+    "meeting", "strategy", "decide", "plan", "think", "brainstorm",
+    "evaluate", "compare", "options", "approach",
+    // Additions: common "help me think this through" signals
+    "ideas", "idea", "concept", "figure", "struggling", "trouble",
+    "challenge", "challenging", "creative", "innovate", "solve",
+    "solution", "problem", "stuck", "perspective", "angles",
+    "feedback", "advise", "advice", "direction", "unclear", "unsure",
+    "weigh", "tradeoff", "tradeoffs", "pros", "cons", "explore",
+    "rethink", "reimagine", "workshop",
+  ],
 };
+
+// High-signal thinking words score 3 points instead of 1.
+const HIGH_WEIGHT_THINKING = new Set([
+  "ideas", "idea", "brainstorm", "think", "strategy", "decide",
+  "figure", "stuck", "perspective", "weigh",
+]);
+
+function scoreBucket(lower, bucket, keywords) {
+  let score = 0;
+  for (const kw of keywords) {
+    if (!lower.includes(kw)) continue;
+    const weight = (bucket === "thinking" && HIGH_WEIGHT_THINKING.has(kw)) ? 3 : 1;
+    score += weight;
+  }
+  return score;
+}
 
 export function matchBucket(input) {
   const lower = (input || "").toLowerCase();
   const scores = {};
   for (const [bucket, keywords] of Object.entries(BUCKET_KEYWORDS)) {
-    scores[bucket] = keywords.filter((kw) => lower.includes(kw)).length;
+    scores[bucket] = scoreBucket(lower, bucket, keywords);
   }
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
   if (sorted[0][1] === 0) return "production"; // no matches
