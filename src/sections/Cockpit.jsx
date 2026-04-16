@@ -168,7 +168,6 @@ function ScreenshotImage({ filename, label }) {
         minHeight: 120,
         borderRadius: 8,
         border: `1px solid ${T.color.border}`,
-        marginBottom: 12,
         background: T.color.bgSubtle,
         display: "flex", alignItems: "center", justifyContent: "center",
         color: T.color.textLight, fontSize: 13,
@@ -185,7 +184,6 @@ function ScreenshotImage({ filename, label }) {
       borderRadius: 8,
       overflow: "hidden",
       border: `1px solid ${T.color.border}`,
-      marginBottom: 12,
       background: T.color.bgSubtle,
     }}>
       <img
@@ -234,15 +232,15 @@ function FeatureCard({ feature }) {
       }}>
         {feature.heading}
       </h3>
-      {feature.image && (
-        <ScreenshotImage filename={feature.image} label={feature.label} />
-      )}
       <p style={{
         fontSize: 15, lineHeight: 1.65, color: T.color.textMuted,
-        margin: 0,
+        margin: "0 0 12px 0",
       }}>
         {feature.body}
       </p>
+      {feature.image && (
+        <ScreenshotImage filename={feature.image} label={feature.label} />
+      )}
     </article>
   );
 }
