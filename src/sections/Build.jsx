@@ -5,7 +5,17 @@ import BackButton from "../components/BackButton.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import SectionCelebration from "../components/SectionCelebration.jsx";
 import TextInput from "../components/TextInput.jsx";
+import { SparklySquare } from "../components/SparklyShape.jsx";
 import { track } from "../services/analytics.js";
+
+/* ── Per-step coaching copy ────────────────────────────────────── */
+const STEP_COACHING = {
+  role: "You're casting Claude in a role. The more specific you are, the more focused its work will be. Think about the person you'd ideally hand this task to: what's their job title, what makes them good at this, what experience do they have?",
+  context: "Now tell Claude what it's working with. What does the input look like? How much of it is there? Where does it come from? Claude doesn't know anything about your situation unless you explain it.",
+  task: "This is the core ask. What exactly should Claude produce? Be specific about what you want in the output. Instead of 'summarize this,' try 'pull out the three most important points and flag anything that looks wrong.'",
+  format: "Tell Claude how to structure the output. Bullets or paragraphs? How long? Any specific sections you want? Getting the format right the first time means you won't have to ask Claude to redo it.",
+  constraints: "This is where you tell Claude what 'good' looks like beyond the basics. What mistakes should it avoid? What should it pay extra attention to? Think about what usually goes wrong when someone else does this task for you.",
+};
 
 /* ━━━ Stage 4: Build Your Prompt ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Five sub-steps (role → context → task → format → constraints)
@@ -167,6 +177,7 @@ export default function Build({
 
           {isInputStep && (
             <InputStep
+              key={currentStepKey}
               stepKey={currentStepKey}
               stepConfig={promptSteps[currentStepKey]}
               stepNumber={stepIndex + 1}
@@ -208,13 +219,15 @@ export default function Build({
   );
 }
 
-/* ━━━ Input step ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ Input step ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NOTE: parent passes `key={stepKey}` so this component unmounts +
+   remounts on every step change. That's what keeps the textarea
+   empty (showing placeholder) on unvisited steps and rehydrates
+   `savedValue` when the user returns to a step they'd answered.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function InputStep({ stepKey, stepConfig, stepNumber, total, savedValue, onSubmit, tip }) {
   const [localValue, setLocalValue] = useState(savedValue || "");
   const canSubmit = localValue.trim().length >= 5;
-
-  // Re-sync if navigating back to a previously filled step
-  useEffect(() => { setLocalValue(savedValue || ""); }, [savedValue]);
 
   const handleSubmit = () => {
     if (!canSubmit) return;
@@ -222,6 +235,7 @@ function InputStep({ stepKey, stepConfig, stepNumber, total, savedValue, onSubmi
   };
 
   const isLast = stepNumber === total;
+  const coaching = STEP_COACHING[stepKey];
 
   return (
     <div>
@@ -235,10 +249,13 @@ function InputStep({ stepKey, stepConfig, stepNumber, total, savedValue, onSubmi
       <h2 style={{
         fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
-        margin: "0 0 8px 0", color: T.color.text,
+        margin: "0 0 12px 0", color: T.color.text,
       }}>
         {stepConfig?.question || `Describe the ${stepKey}.`}
       </h2>
+
+      {coaching && <CoachingNote text={coaching} />}
+
       <TextInput
         value={localValue}
         onChange={setLocalValue}
@@ -247,6 +264,10 @@ function InputStep({ stepKey, stepConfig, stepNumber, total, savedValue, onSubmi
         multiline
       />
 
+      {stepConfig?.exampleOutput && (
+        <ExampleDisclosure example={stepConfig.exampleOutput} />
+      )}
+
       {tip && <FeatureTip text={tip} />}
 
       <ContinueButton
@@ -254,6 +275,78 @@ function InputStep({ stepKey, stepConfig, stepNumber, total, savedValue, onSubmi
         label={isLast ? "Add to prompt" : "Next"}
         disabled={!canSubmit}
       />
+    </div>
+  );
+}
+
+/* ━━━ Coaching note (coach is talking) ━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function CoachingNote({ text }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "flex-start", gap: 12,
+      padding: "12px 14px", marginBottom: 14,
+      background: T.color.bgSubtle,
+      border: `1px solid ${T.color.border}`,
+      borderLeft: `3px solid ${T.color.sage}`,
+      borderRadius: 10,
+    }}>
+      <div style={{ paddingTop: 2 }}>
+        <SparklySquare size={22} container={26} spinDuration={14} />
+      </div>
+      <div style={{
+        fontSize: 14, color: T.color.textMuted, lineHeight: 1.6,
+        fontFamily: T.font.body,
+      }}>
+        {text}
+      </div>
+    </div>
+  );
+}
+
+/* ━━━ Collapsible example ("See an example") ━━━━━━━━━━━━━━━━━━━ */
+function ExampleDisclosure({ example }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ marginTop: 10 }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          background: "none", border: "none", padding: 0,
+          cursor: "pointer",
+          fontFamily: T.font.body, fontSize: 13,
+          color: T.color.textLight,
+          textDecoration: "underline", textUnderlineOffset: 3,
+          letterSpacing: "0.02em",
+        }}
+        aria-expanded={open}
+      >
+        {open ? "Hide example" : "See an example"}
+      </button>
+      {open && (
+        <div style={{
+          marginTop: 10,
+          padding: "12px 14px",
+          background: T.color.bgCard,
+          border: `1px solid ${T.color.border}`,
+          borderRadius: 10,
+          animation: `fadeInNotice 0.25s ease`,
+        }}>
+          <div style={{
+            fontSize: 11, fontWeight: 500,
+            letterSpacing: "0.08em", textTransform: "uppercase",
+            color: T.color.sage, marginBottom: 6,
+          }}>
+            Example
+          </div>
+          <div style={{
+            fontFamily: "'Courier New', Courier, monospace",
+            fontSize: 13, lineHeight: 1.65, color: T.color.text,
+            whiteSpace: "pre-wrap", wordBreak: "break-word",
+          }}>
+            {example}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

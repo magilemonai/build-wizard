@@ -3,7 +3,7 @@ import T from "../tokens.js";
 import SectionShell from "../components/SectionShell.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import SectionCelebration from "../components/SectionCelebration.jsx";
-import OrganicShape from "../components/OrganicShape.jsx";
+import { SparklyTriangle } from "../components/SparklyShape.jsx";
 import cockpitFeatures from "../data/cockpitFeatures.js";
 
 /* ━━━ Stage 2: The Cockpit ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -53,32 +53,6 @@ export default function Cockpit({ onComplete, onBack, onProgress, initialStep, o
         return null;
       }}
     />
-  );
-}
-
-/* ━━━ Sparkly spinning triangle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function SparklyTriangle() {
-  return (
-    <div style={{
-      position: "relative", width: 36, height: 36,
-      display: "inline-block", verticalAlign: "middle",
-    }}>
-      <div style={{ animation: "gentleSpin 12s linear infinite", lineHeight: 0 }}>
-        <OrganicShape shapeIndex={0} size={32} color={T.color.copper} />
-      </div>
-      {[
-        { top: -4, right: -2, delay: 0 },
-        { bottom: -2, left: 2, delay: 0.6 },
-      ].map((pos, i) => (
-        <div key={i} style={{
-          position: "absolute",
-          top: pos.top, right: pos.right, bottom: pos.bottom, left: pos.left,
-          width: 5, height: 5,
-          borderRadius: "50%", background: T.color.copper,
-          animation: `sparkle 2s ease-in-out ${pos.delay}s infinite`,
-        }} />
-      ))}
-    </div>
   );
 }
 
@@ -210,6 +184,7 @@ function FeatureCard({ feature }) {
 
   return (
     <article style={{
+      position: "relative",
       background: T.color.bgCard,
       border: `1px solid ${T.color.border}`,
       borderRadius: 14,
@@ -218,6 +193,14 @@ function FeatureCard({ feature }) {
       transform: visible ? "translateY(0)" : "translateY(8px)",
       transition: `all 0.5s ${T.ease.smooth}`,
     }}>
+      {/* Ambient decoration, top-right */}
+      <div style={{
+        position: "absolute", top: 14, right: 14,
+        pointerEvents: "none",
+      }}>
+        <SparklyTriangle size={18} container={22} spinDuration={16} />
+      </div>
+
       <div style={{
         fontFamily: T.font.body, fontSize: 12, fontWeight: 500,
         letterSpacing: "0.08em", textTransform: "uppercase",
@@ -229,6 +212,7 @@ function FeatureCard({ feature }) {
         fontFamily: T.font.display, fontSize: 22,
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.25,
         margin: "0 0 12px 0", color: T.color.text,
+        paddingRight: 32,
       }}>
         {feature.heading}
       </h3>
