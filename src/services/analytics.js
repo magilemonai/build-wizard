@@ -32,21 +32,32 @@ let lastEventMs = null;
 let furthestScreen = null;
 
 /* Heuristic screen ordering so we can report "furthest reached" in the
-   session summary without relying on the caller to know the order. */
+   session summary without relying on the caller to know the order.
+   Six-stage Launcher taxonomy. */
 const SCREEN_ORDER = [
-  "welcome",
-  "transition",
+  "orientation",
+  "cockpit-transition",
+  "cockpit",
+  "interview-transition",
   "interview",
-  "pathcard",
-  "icebreaker-transition",
-  "icebreaker",
-  "foundation-transition",
-  "foundation",
-  "powerup-transition",
-  "powerup",
-  "ship-transition",
-  "ship",
+  "build-transition",
+  "build",
+  "launch-transition",
+  "launch",
+  "keep_going-transition",
+  "keep_going",
 ];
+
+/* Known Launcher events (for reference — track() accepts any name):
+     session_start, screen_view, session_end           (lifecycle)
+     step_complete                                      (SectionShell)
+     prompt_copy, outcome_choice                        (PromptCard)
+     safety_complete                                    (SafetyInterstitial)
+     api_call                                           (services/api.js)
+     bucket_match, coach_scope_warning                  (Stage 3)
+     prompt_step_complete, prompt_assembled             (Stage 4)
+   Old events removed in the rebuild: template_match,
+   prompt_live_try, interview_answer, artifact_download. */
 
 function screenRank(name) {
   if (!name) return -1;

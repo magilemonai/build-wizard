@@ -1,17 +1,16 @@
 import { useState, useCallback, useMemo, useRef } from "react";
-import { SCREENS, BUILD_SECTIONS } from "../screens.js";
-import { defaultProgress, defaultSteps } from "./usePersistence.js";
+import { defaultProgress, defaultSteps, PROGRESS_STAGES } from "./usePersistence.js";
 
 /* ━━━ Section Progress Hook ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Manages per-section progress bars, step positions, visited set,
-   and section navigation (with transition skip on re-entry).
+   Manages per-stage progress bars, step positions, visited set,
+   and stage navigation (with transition skip on re-entry).
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function useProgress(saved, setScreen) {
   const [sectionProgress, setSectionProgress] = useState(
-    () => saved?.sectionProgress || { ...defaultProgress }
+    () => ({ ...defaultProgress, ...(saved?.sectionProgress || {}) })
   );
   const [sectionSteps, setSectionSteps] = useState(
-    () => saved?.sectionSteps || { ...defaultSteps }
+    () => ({ ...defaultSteps, ...(saved?.sectionSteps || {}) })
   );
   const visited = useRef(new Set(saved?.visited || []));
 
@@ -28,10 +27,10 @@ export default function useProgress(saved, setScreen) {
     visited.current.add(section);
   }, []);
 
-  // Stable per-section updaters (memoized to prevent re-renders)
+  // Stable per-stage updaters (memoized to prevent re-renders)
   const progressUpdaters = useMemo(() => {
     const result = {};
-    for (const s of BUILD_SECTIONS) {
+    for (const s of PROGRESS_STAGES) {
       result[s] = (value) => setSectionProgress((prev) => ({ ...prev, [s]: value }));
     }
     return result;
@@ -39,7 +38,7 @@ export default function useProgress(saved, setScreen) {
 
   const stepUpdaters = useMemo(() => {
     const result = {};
-    for (const s of BUILD_SECTIONS) {
+    for (const s of PROGRESS_STAGES) {
       result[s] = (value) => setSectionSteps((prev) => ({ ...prev, [s]: value }));
     }
     return result;

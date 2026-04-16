@@ -1,15 +1,27 @@
 export const SCREENS = {
-  WELCOME: "welcome",
-  TRANSITION: "transition",
+  ORIENTATION: "orientation",
+  COCKPIT: "cockpit",
   INTERVIEW: "interview",
-  PATHCARD: "pathcard",
-  ICEBREAKER: "icebreaker",
-  FOUNDATION: "foundation",
-  POWERUP: "powerup",
-  SHIP: "ship",
+  BUILD: "build",
+  LAUNCH: "launch",
+  KEEP_GOING: "keep_going",
 };
 
-/** Ordered list of build sections (used for progress, navigation, persistence) */
-export const BUILD_SECTIONS = [
-  SCREENS.ICEBREAKER, SCREENS.FOUNDATION, SCREENS.POWERUP, SCREENS.SHIP,
+/** Ordered list of stages that participate in progress/persistence. */
+export const STAGES = [
+  SCREENS.ORIENTATION,
+  SCREENS.COCKPIT,
+  SCREENS.INTERVIEW,
+  SCREENS.BUILD,
+  SCREENS.LAUNCH,
+  SCREENS.KEEP_GOING,
+];
+
+/** Stages that have a celebration shape (everything except Orientation). */
+export const SHAPED_STAGES = [
+  SCREENS.COCKPIT,
+  SCREENS.INTERVIEW,
+  SCREENS.BUILD,
+  SCREENS.LAUNCH,
+  SCREENS.KEEP_GOING,
 ];

@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import T from "../tokens.js";
 import ContinueButton from "./ContinueButton.jsx";
-import LivePromptPanel from "./LivePromptPanel.jsx";
 import { track } from "../services/analytics.js";
 
 /* ━━━ PromptCard ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -11,7 +10,7 @@ import { track } from "../services/analytics.js";
    Flow: copy prompt → paste in Claude → select outcome → read feedback
    → click Continue to advance. No auto-advance.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function PromptCard({ prompt, context, onConfirm, outcomeLabels, getSessionId, analyticsContext }) {
+export default function PromptCard({ prompt, context, onConfirm, outcomeLabels, analyticsContext }) {
   const [copied, setCopied] = useState(false);
   const [outcome, setOutcome] = useState(null); // null | "worked" | "snag" | "skip"
   const [copyHovered, setCopyHovered] = useState(false);
@@ -114,16 +113,6 @@ export default function PromptCard({ prompt, context, onConfirm, outcomeLabels, 
               : "Copy to clipboard"}
             </button>
 
-            {/* "Try it here" panel. Self-hides when API is unavailable,
-                so this adds nothing visible when the Worker is offline. */}
-            {getSessionId && (
-              <LivePromptPanel
-                key={prompt}
-                prompt={prompt}
-                getSessionId={getSessionId}
-                analyticsContext={analyticsContext}
-              />
-            )}
           </div>
 
           <div style={{

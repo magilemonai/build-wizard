@@ -21,13 +21,16 @@ function HoverShape({ shapeIndex, size, color, active, clickable }) {
   );
 }
 
-/* ━━━ Journey Progress (responsive, clickable) ━━━━━━━━━━━━━━━━━ */
+/* ━━━ Journey Progress (responsive, clickable) ━━━━━━━━━━━━━━━━━
+   Orientation (Stage 1) is pre-progress and has no shape. The five
+   shapes (triangle → circle) are distributed across Stages 2–6.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export const journeySteps = [
+  { key: "cockpit", label: "Cockpit" },
   { key: "interview", label: "Interview" },
-  { key: "icebreaker", label: "Ice Breaker" },
-  { key: "foundation", label: "Foundation" },
-  { key: "powerup", label: "Power Up" },
-  { key: "ship", label: "Ship" },
+  { key: "build", label: "Build" },
+  { key: "launch", label: "Launch" },
+  { key: "keep_going", label: "Keep Going" },
 ];
 
 export default function JourneyProgress({ currentSection, questionProgress, onSectionClick, stepCount, currentStep, onStartOver }) {

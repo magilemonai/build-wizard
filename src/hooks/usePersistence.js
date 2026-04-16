@@ -1,21 +1,18 @@
 import { useRef } from "react";
-import { SCREENS } from "../screens.js";
+import { SCREENS, STAGES } from "../screens.js";
 
 /* ━━━ Persistence (localStorage) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Save/restore wizard state so users can take breaks and return.
+   Schema v3: six-stage Launcher.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const STORAGE_KEY = "build-wizard-state";
-const SCHEMA_VERSION = 2; // Bump when saved state shape changes
+const SCHEMA_VERSION = 3; // Bump when saved state shape changes
 
-export const defaultProgress = {
-  [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0,
-  [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0,
-};
+// Stages that have progress bars (everything after Orientation).
+export const PROGRESS_STAGES = STAGES.filter((s) => s !== SCREENS.ORIENTATION);
 
-export const defaultSteps = {
-  [SCREENS.ICEBREAKER]: 0, [SCREENS.FOUNDATION]: 0,
-  [SCREENS.POWERUP]: 0, [SCREENS.SHIP]: 0,
-};
+export const defaultProgress = Object.fromEntries(PROGRESS_STAGES.map((s) => [s, 0]));
+export const defaultSteps = Object.fromEntries(PROGRESS_STAGES.map((s) => [s, 0]));
 
 export function loadSavedState() {
   try {
@@ -28,7 +25,11 @@ export function loadSavedState() {
       return null;
     }
     return parsed;
-  } catch { return null; }
+  } catch {
+    // Also clear on parse errors so a bad write doesn't stick.
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+    return null;
+  }
 }
 
 export function saveState(state) {
