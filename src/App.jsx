@@ -41,7 +41,7 @@ const BASE_STEP_COUNTS = {
   [SCREENS.INTERVIEW]:  5,  // intro + text input + matching + scoping + anchor (max)
   [SCREENS.BUILD]:      7,  // Role, Context, Task, Format, Constraints, Assembly, Anchor
   [SCREENS.LAUNCH]:     3,  // intro + handoff + transition
-  [SCREENS.KEEP_GOING]: 3,  // intro + seeds + finale
+  [SCREENS.KEEP_GOING]: 4,  // intro + seeds + recap + finale
 };
 
 const SECTION_TITLES = {
@@ -100,7 +100,7 @@ export default function App() {
       sectionSteps: progress.sectionSteps,
       visited: [...progress.visited.current],
     });
-  }, [screen, interview.problem, interview.bucket, interview.selectedTemplate, interview.scopeAnswer, interview.buildAnswers, interview.assembledPrompt, interview.sessionId, progress.sectionProgress, progress.sectionSteps]);
+  }, [screen, interview.problem, interview.bucket, interview.selectedTemplate, interview.scopeAnswer, interview.buildAnswers, interview.assembledPrompt, interview.sessionId, interview.startedAt, progress.sectionProgress, progress.sectionSteps]);
 
   // Restart: clear everything
   const restart = useCallback(() => {
@@ -162,7 +162,10 @@ export default function App() {
     return (
       <>
         <GrainOverlay />
-        <Orientation onBegin={() => progress.goToSection(SCREENS.COCKPIT)} />
+        <Orientation onBegin={() => {
+          interview.markStarted();
+          progress.goToSection(SCREENS.COCKPIT);
+        }} />
       </>
     );
   }
@@ -282,7 +285,9 @@ export default function App() {
               initialStep={progress.sectionSteps[SCREENS.KEEP_GOING]}
               onStepChange={progress.stepUpdaters[SCREENS.KEEP_GOING]}
               onStartOver={restart}
-              templateName={interview.selectedTemplate?.name}
+              selectedTemplate={interview.selectedTemplate}
+              assembledPrompt={interview.assembledPrompt}
+              startedAt={interview.startedAt}
             />
           )}
         </div>

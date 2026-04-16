@@ -46,6 +46,13 @@ export default function useInterview(saved) {
     () => saved?.interview?.assembledPrompt || "",
   );
 
+  // ── Elapsed-time tracking (for the Stage 6 recap card) ──
+  // Stamped lazily the first time the user leaves Orientation.
+  const [startedAt, setStartedAt] = useState(() => saved?.interview?.startedAt || null);
+  const markStarted = useCallback(() => {
+    setStartedAt((prev) => prev || Date.now());
+  }, []);
+
   const ensureSessionId = useCallback(() => {
     if (sessionId) return sessionId;
     const fresh = generateSessionId();
@@ -64,6 +71,7 @@ export default function useInterview(saved) {
     setSessionId(null);
     setBuildAnswers({ ...EMPTY_BUILD });
     setAssembledPrompt("");
+    setStartedAt(null);
   }, []);
 
   /** Serializable snapshot for persistence. */
@@ -74,7 +82,8 @@ export default function useInterview(saved) {
     scopeAnswer,
     buildAnswers,
     assembledPrompt,
-  }), [problem, bucket, selectedTemplate, scopeAnswer, buildAnswers, assembledPrompt]);
+    startedAt,
+  }), [problem, bucket, selectedTemplate, scopeAnswer, buildAnswers, assembledPrompt, startedAt]);
 
   return {
     // Interview
@@ -89,6 +98,8 @@ export default function useInterview(saved) {
     // Build
     buildAnswers, setBuildAnswers,
     assembledPrompt, setAssembledPrompt,
+    // Timing
+    startedAt, markStarted,
     // Persistence + reset
     getInterviewState,
     resetInterview,

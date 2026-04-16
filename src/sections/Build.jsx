@@ -5,7 +5,7 @@ import BackButton from "../components/BackButton.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import SectionCelebration from "../components/SectionCelebration.jsx";
 import TextInput from "../components/TextInput.jsx";
-import { SparklySquare } from "../components/SparklyShape.jsx";
+import { SparklyPentagon } from "../components/SparklyShape.jsx";
 import { track } from "../services/analytics.js";
 
 /* ── Per-step coaching copy ────────────────────────────────────── */
@@ -291,7 +291,7 @@ function CoachingNote({ text }) {
       borderRadius: 10,
     }}>
       <div style={{ paddingTop: 2 }}>
-        <SparklySquare size={22} container={26} spinDuration={14} />
+        <SparklyPentagon size={22} container={26} spinDuration={14} />
       </div>
       <div style={{
         fontSize: 14, color: T.color.textMuted, lineHeight: 1.6,
@@ -502,7 +502,7 @@ function PromptBlock({ label, text }) {
 function AnchorStep({ onContinue }) {
   return (
     <div style={{ padding: "32px 0", textAlign: "center" }}>
-      <SectionCelebration heroShapeIndex={2} intensity={3} />
+      <SectionCelebration heroShapeIndex={2} variant="big" />
       <h2 style={{
         fontFamily: T.font.display, fontSize: "clamp(28px,6vw,38px)",
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,

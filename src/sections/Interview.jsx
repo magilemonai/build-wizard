@@ -7,6 +7,7 @@ import TextInput from "../components/TextInput.jsx";
 import { getTemplatesByBucket, getTemplateById } from "../data/templates.js";
 import { track } from "../services/analytics.js";
 import { fetchInterviewMatch } from "../services/interviewCoach.js";
+import { SparklySquare } from "../components/SparklyShape.jsx";
 
 /* ━━━ Keyword fallback matching ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Used when the AI coach is unavailable. Scans user input for
@@ -316,12 +317,33 @@ function MatchingStep({ BackButton, bucket, coachResponse, isCoachLoading, selec
       }}>
         {headline}
       </h2>
-      <p style={{
-        fontSize: 15, color: T.color.textMuted, lineHeight: 1.7,
-        margin: "0 0 16px 0",
-      }}>
-        {lead}
-      </p>
+      {coachResponse ? (
+        <div style={{
+          display: "flex", alignItems: "flex-start", gap: 12,
+          padding: "12px 14px", marginBottom: 16,
+          background: T.color.bgSubtle,
+          border: `1px solid ${T.color.border}`,
+          borderLeft: `3px solid ${T.color.sage}`,
+          borderRadius: 10,
+        }}>
+          <div style={{ paddingTop: 2 }}>
+            <SparklySquare size={22} container={26} spinDuration={14} />
+          </div>
+          <p style={{
+            margin: 0, fontSize: 15, color: T.color.text,
+            lineHeight: 1.65, fontFamily: T.font.body,
+          }}>
+            {lead}
+          </p>
+        </div>
+      ) : (
+        <p style={{
+          fontSize: 15, color: T.color.textMuted, lineHeight: 1.7,
+          margin: "0 0 16px 0",
+        }}>
+          {lead}
+        </p>
+      )}
 
       {coachResponse?.scopeWarning && (
         <ScopeWarning text={coachResponse.scopeWarning} />
@@ -431,12 +453,24 @@ function ScopingStep({ BackButton, template, scopeAnswer, setScopeAnswer, onSubm
       }}>
         One more detail.
       </h2>
-      <p style={{
-        fontSize: 16, color: T.color.textMuted, lineHeight: 1.7,
-        margin: "0 0 4px 0",
+      <div style={{
+        display: "flex", alignItems: "flex-start", gap: 12,
+        padding: "12px 14px", marginBottom: 8,
+        background: T.color.bgSubtle,
+        border: `1px solid ${T.color.border}`,
+        borderLeft: `3px solid ${T.color.sage}`,
+        borderRadius: 10,
       }}>
-        {template?.scopingQuestion}
-      </p>
+        <div style={{ paddingTop: 2 }}>
+          <SparklySquare size={22} container={26} spinDuration={14} />
+        </div>
+        <p style={{
+          margin: 0, fontSize: 15, color: T.color.text,
+          lineHeight: 1.65, fontFamily: T.font.body,
+        }}>
+          {template?.scopingQuestion}
+        </p>
+      </div>
       <TextInput
         value={localValue}
         onChange={setLocalValue}
@@ -458,7 +492,7 @@ function AnchorStep({ BackButton, onContinue, templateName }) {
   return (
     <div style={{ padding: "32px 0", textAlign: "center" }}>
       {BackButton}
-      <SectionCelebration heroShapeIndex={1} intensity={1} />
+      <SectionCelebration heroShapeIndex={1} variant="small_medium" />
       <h2 style={{
         fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,

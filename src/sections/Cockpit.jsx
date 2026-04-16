@@ -234,7 +234,7 @@ function AnchorView({ onContinue, BackButton }) {
   return (
     <div style={{ padding: "32px 0", textAlign: "center" }}>
       {BackButton}
-      <SectionCelebration heroShapeIndex={0} intensity={1} />
+      <SectionCelebration heroShapeIndex={0} variant="small" />
       <h2 style={{
         fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,

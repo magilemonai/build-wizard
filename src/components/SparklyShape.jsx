@@ -51,7 +51,12 @@ export function SparklyTriangle(props) {
   return <SparklyShape shapeIndex={0} color={T.color.copper} {...props} />;
 }
 
-/** Sage square variant — used throughout the Build stage. */
+/** Sage square variant — used throughout the Interview stage. */
 export function SparklySquare(props) {
   return <SparklyShape shapeIndex={1} color={T.color.sage} {...props} />;
+}
+
+/** Sage pentagon variant — used throughout the Build stage. */
+export function SparklyPentagon(props) {
+  return <SparklyShape shapeIndex={2} color={T.color.sage} {...props} />;
 }

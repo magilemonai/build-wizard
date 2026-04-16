@@ -132,7 +132,7 @@ function HandoffStep({ BackButton, prompt, features, onCopied }) {
       {/* Celebration fires after copy */}
       {celebrated && (
         <div style={{ marginBottom: 16 }}>
-          <SectionCelebration heroShapeIndex={3} intensity={2} />
+          <SectionCelebration heroShapeIndex={3} variant="medium" />
         </div>
       )}
 
@@ -245,7 +245,7 @@ function TransitionStep({ BackButton, onContinue }) {
   return (
     <div style={{ padding: "32px 0", textAlign: "center" }}>
       {BackButton}
-      <SectionCelebration heroShapeIndex={3} intensity={2} />
+      <SectionCelebration heroShapeIndex={3} variant="medium" />
       <h2 style={{
         fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
