@@ -7,11 +7,20 @@ import OrganicShape from "../components/OrganicShape.jsx";
 import cockpitFeatures from "../data/cockpitFeatures.js";
 
 /* ━━━ Stage 2: The Cockpit ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Six Claude capabilities explained with plain-language analogies.
-   Vertical stack, one screen, scrollable. Celebration on advance.
+   Six Claude capabilities, one card at a time. Each card is its own
+   SectionShell step so the PageTransition handles slide/fade between
+   them. The final step is the anchor celebration.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const TOTAL_CARDS = cockpitFeatures.length;
+
+function buildSteps() {
+  const steps = cockpitFeatures.map((f) => ({ type: "card", id: f.id }));
+  steps.push({ type: "anchor" });
+  return steps;
+}
+
 export default function Cockpit({ onComplete, onBack, onProgress, initialStep, onStepChange }) {
-  const steps = [{ type: "cards" }, { type: "anchor" }];
+  const steps = buildSteps();
 
   return (
     <SectionShell
@@ -21,9 +30,22 @@ export default function Cockpit({ onComplete, onBack, onProgress, initialStep, o
       onProgress={onProgress}
       initialStep={initialStep}
       onStepChange={onStepChange}
-      renderStep={({ step, advance, BackButton }) => {
-        if (step.type === "cards") {
-          return <CardsView advance={advance} BackButton={BackButton} />;
+      renderStep={({ step, stepIndex, advance, BackButton }) => {
+        if (step.type === "card") {
+          const feature = cockpitFeatures.find((f) => f.id === step.id);
+          const isLast = stepIndex === TOTAL_CARDS - 1;
+          const nextLabel = isLast
+            ? "Got it, let's build"
+            : `Next: ${cockpitFeatures[stepIndex + 1]?.heading}`;
+          return (
+            <SingleCardView
+              feature={feature}
+              cardIndex={stepIndex}
+              nextLabel={nextLabel}
+              onNext={advance}
+              BackButton={BackButton}
+            />
+          );
         }
         if (step.type === "anchor") {
           return <AnchorView onContinue={onComplete} BackButton={BackButton} />;
@@ -34,11 +56,7 @@ export default function Cockpit({ onComplete, onBack, onProgress, initialStep, o
   );
 }
 
-/* ━━━ Sparkly spinning triangle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Decorative animated shape: slow-spinning triangle with two
-   pulsing sparkle dots. Uses gentleSpin + sparkle keyframes from
-   global.css.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ Sparkly spinning triangle ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function SparklyTriangle() {
   return (
     <div style={{
@@ -64,46 +82,73 @@ function SparklyTriangle() {
   );
 }
 
-/* ━━━ Cards view ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function CardsView({ advance, BackButton }) {
+/* ━━━ Progress dots ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function CardDots({ current, total }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 6,
+      marginBottom: 16,
+    }}>
+      {Array.from({ length: total }, (_, i) => (
+        <div key={i} style={{
+          width: i === current ? 18 : 6,
+          height: 6,
+          borderRadius: 3,
+          background: i === current ? T.color.copper : i < current ? T.color.sage : T.color.border,
+          transition: `all 0.35s ${T.ease.smooth}`,
+        }} />
+      ))}
+      <span style={{
+        marginLeft: 6, fontSize: 12, color: T.color.textLight,
+        fontFamily: T.font.body, letterSpacing: "0.02em",
+      }}>
+        {current + 1} of {total}
+      </span>
+    </div>
+  );
+}
+
+/* ━━━ Single card view (one card per step) ━━━━━━━━━━━━━━━━━━━━━ */
+function SingleCardView({ feature, cardIndex, nextLabel, onNext, BackButton }) {
   return (
     <div>
       {BackButton}
-      <header style={{ marginBottom: 20 }}>
-        <div style={{
-          fontFamily: T.font.body, fontSize: 13, fontWeight: 500,
-          letterSpacing: "0.08em", textTransform: "uppercase",
-          color: T.color.copper, marginBottom: 10,
-        }}>
-          The cockpit
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <h2 style={{
-            fontFamily: T.font.display, fontSize: "clamp(26px,5vw,32px)",
-            fontWeight: 400, fontStyle: "italic", lineHeight: 1.25,
-            margin: 0, color: T.color.text, flex: 1,
+
+      {/* Header on first card only */}
+      {cardIndex === 0 && (
+        <header style={{ marginBottom: 20 }}>
+          <div style={{
+            fontFamily: T.font.body, fontSize: 13, fontWeight: 500,
+            letterSpacing: "0.08em", textTransform: "uppercase",
+            color: T.color.copper, marginBottom: 10,
           }}>
-            Six things Claude does.
-          </h2>
-          <SparklyTriangle />
-        </div>
-        <p style={{
-          fontSize: 15, lineHeight: 1.65, color: T.color.textMuted,
-          margin: "10px 0 0",
-        }}>
-          A quick tour of the dials and toggles. You don't need to memorize
-          these. Come back here any time.
-        </p>
-      </header>
+            The cockpit
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <h2 style={{
+              fontFamily: T.font.display, fontSize: "clamp(26px,5vw,32px)",
+              fontWeight: 400, fontStyle: "italic", lineHeight: 1.25,
+              margin: 0, color: T.color.text, flex: 1,
+            }}>
+              Six things Claude does.
+            </h2>
+            <SparklyTriangle />
+          </div>
+          <p style={{
+            fontSize: 15, lineHeight: 1.65, color: T.color.textMuted,
+            margin: "10px 0 0",
+          }}>
+            A quick tour of the dials and toggles. You don't need to memorize
+            these. Come back here any time.
+          </p>
+        </header>
+      )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        {cockpitFeatures.map((f, i) => (
-          <FeatureCard key={f.id} feature={f} index={i} />
-        ))}
-      </div>
+      <CardDots current={cardIndex} total={TOTAL_CARDS} />
+      <FeatureCard feature={feature} />
 
-      <div style={{ marginTop: 28 }}>
-        <ContinueButton onClick={advance} label="Got it, let's build" />
+      <div style={{ marginTop: 20 }}>
+        <ContinueButton onClick={onNext} label={nextLabel} />
       </div>
     </div>
   );
@@ -116,47 +161,54 @@ function ScreenshotImage({ filename, label }) {
   const [failed, setFailed] = useState(false);
   const src = `${IMAGE_BASE}${filename}`;
 
+  if (failed) {
+    return (
+      <div style={{
+        width: "100%",
+        minHeight: 120,
+        borderRadius: 8,
+        border: `1px solid ${T.color.border}`,
+        marginBottom: 12,
+        background: T.color.bgSubtle,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        color: T.color.textLight, fontSize: 13,
+        fontFamily: T.font.body, letterSpacing: "0.02em",
+      }}>
+        {label} screenshot
+      </div>
+    );
+  }
+
   return (
     <div style={{
       width: "100%",
-      aspectRatio: "16 / 9",
       borderRadius: 8,
       overflow: "hidden",
       border: `1px solid ${T.color.border}`,
       marginBottom: 12,
       background: T.color.bgSubtle,
     }}>
-      {!failed ? (
-        <img
-          src={src}
-          alt={`Claude ${label} interface`}
-          onError={() => setFailed(true)}
-          style={{
-            display: "block", width: "100%", height: "100%",
-            objectFit: "cover",
-          }}
-        />
-      ) : (
-        <div style={{
-          width: "100%", height: "100%",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          color: T.color.textLight, fontSize: 13,
-          fontFamily: T.font.body, letterSpacing: "0.02em",
-        }}>
-          {label} screenshot
-        </div>
-      )}
+      <img
+        src={src}
+        alt={`Claude ${label} interface`}
+        onError={() => setFailed(true)}
+        style={{
+          display: "block",
+          width: "100%",
+          height: "auto",
+        }}
+      />
     </div>
   );
 }
 
 /* ━━━ Single feature card ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function FeatureCard({ feature, index }) {
+function FeatureCard({ feature }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 60 + index * 50);
+    const t = setTimeout(() => setVisible(true), 60);
     return () => clearTimeout(t);
-  }, [index]);
+  }, []);
 
   return (
     <article style={{

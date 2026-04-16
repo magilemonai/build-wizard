@@ -37,7 +37,7 @@ const STAGES_WITH_PROGRESS = [
 
 // Step counts per stage (must match the stub step sequences in each section file).
 const BASE_STEP_COUNTS = {
-  [SCREENS.COCKPIT]:    2,
+  [SCREENS.COCKPIT]:    7,  // 6 feature cards + anchor
   [SCREENS.INTERVIEW]:  2,
   [SCREENS.BUILD]:      6,  // Role, Context, Task, Format, Constraints, Review
   [SCREENS.LAUNCH]:     2,
