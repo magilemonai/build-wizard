@@ -38,7 +38,7 @@ const STAGES_WITH_PROGRESS = [
 // Step counts per stage (must match the stub step sequences in each section file).
 const BASE_STEP_COUNTS = {
   [SCREENS.COCKPIT]:    7,  // 6 feature cards + anchor
-  [SCREENS.INTERVIEW]:  2,
+  [SCREENS.INTERVIEW]:  5,  // intro + text input + matching + scoping + anchor (max)
   [SCREENS.BUILD]:      6,  // Role, Context, Task, Format, Constraints, Review
   [SCREENS.LAUNCH]:     2,
   [SCREENS.KEEP_GOING]: 2,
@@ -94,13 +94,13 @@ export default function App() {
     if (screen === SCREENS.ORIENTATION) return;
     saveState({
       screen,
-      answers: interview.answers,
+      interview: interview.getInterviewState(),
       sessionId: interview.sessionId,
       sectionProgress: progress.sectionProgress,
       sectionSteps: progress.sectionSteps,
       visited: [...progress.visited.current],
     });
-  }, [screen, interview.answers, interview.sessionId, progress.sectionProgress, progress.sectionSteps]);
+  }, [screen, interview.problem, interview.bucket, interview.selectedTemplate, interview.scopeAnswer, interview.sessionId, progress.sectionProgress, progress.sectionSteps]);
 
   // Restart: clear everything
   const restart = useCallback(() => {
@@ -149,7 +149,7 @@ export default function App() {
         <GrainOverlay />
         <WelcomeBack
           savedScreen={saved?.screen}
-          projectIdea={saved?.answers?.problem}
+          projectIdea={saved?.interview?.problem}
           onResume={() => setShowResumeScreen(false)}
           onStartOver={restart}
         />
@@ -229,7 +229,14 @@ export default function App() {
               onProgress={progress.progressUpdaters[SCREENS.INTERVIEW]}
               initialStep={progress.sectionSteps[SCREENS.INTERVIEW]}
               onStepChange={progress.stepUpdaters[SCREENS.INTERVIEW]}
-              ensureSessionId={interview.ensureSessionId}
+              problem={interview.problem}
+              setProblem={interview.setProblem}
+              bucket={interview.bucket}
+              setBucket={interview.setBucket}
+              selectedTemplate={interview.selectedTemplate}
+              setSelectedTemplate={interview.setSelectedTemplate}
+              scopeAnswer={interview.scopeAnswer}
+              setScopeAnswer={interview.setScopeAnswer}
             />
           )}
 

@@ -3,10 +3,10 @@ import { SCREENS, STAGES } from "../screens.js";
 
 /* ━━━ Persistence (localStorage) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Save/restore wizard state so users can take breaks and return.
-   Schema v3: six-stage Launcher.
+   Schema v4: interview state as structured sub-object.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const STORAGE_KEY = "build-wizard-state";
-const SCHEMA_VERSION = 3; // Bump when saved state shape changes
+const SCHEMA_VERSION = 4; // Bump when saved state shape changes
 
 // Stages that have progress bars (everything after Orientation).
 export const PROGRESS_STAGES = STAGES.filter((s) => s !== SCREENS.ORIENTATION);
