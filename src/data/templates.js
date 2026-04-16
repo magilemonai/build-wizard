@@ -188,9 +188,188 @@ const templates = [
     },
   },
 
-  // ── Remaining 5 templates (report-builder, process-writer,
-  //    deck-architect, meeting-prep-brief, strategy-brainstorm)
-  //    will be added in the next task. ─────────────────────────────
+  {
+    id: "report-builder",
+    name: "The Report Builder",
+    bucket: "production",
+    bucketLabel: "I need to produce something",
+    oneLiner: "Turn raw notes into something presentable.",
+    scopingQuestion: null,
+    features: ["artifacts", "projects"],
+    promptSteps: {
+      role: {
+        question: "Who should Claude be for this job?",
+        placeholder: "e.g., A sharp executive assistant who turns my messy notes into polished reports",
+        exampleOutput: "You are an experienced executive assistant who specializes in transforming rough notes and data into clear, polished reports.",
+      },
+      context: {
+        question: "What kind of raw material will you give Claude?",
+        placeholder: "e.g., My scribbled notes from this week's team meetings plus some Slack highlights",
+        exampleOutput: "I'm going to give you my rough notes from several team meetings this week, along with some copied Slack messages about key decisions and updates.",
+      },
+      task: {
+        question: "What report do you need?",
+        placeholder: "e.g., A weekly team status report I can send to my director",
+        exampleOutput: "Synthesize these notes into a weekly team status report suitable for my director. Cover: key accomplishments, decisions made, open issues, and priorities for next week.",
+      },
+      format: {
+        question: "How should it look?",
+        placeholder: "e.g., Clean sections with headers, bullets for key items, no more than one page",
+        exampleOutput: "Format with clear section headers. Use bullets for individual items. Keep the total length to one page. Lead with the most important information.",
+      },
+      constraints: {
+        question: "Anything Claude should watch out for?",
+        placeholder: "e.g., If my notes are vague on a point, flag it as needing clarification rather than making something up",
+        exampleOutput: "If my notes are ambiguous or incomplete on any point, flag it with [NEEDS CLARIFICATION] rather than inventing details. Maintain a neutral, factual tone throughout.",
+      },
+    },
+  },
+  {
+    id: "process-writer",
+    name: "The Process Writer",
+    bucket: "production",
+    bucketLabel: "I need to produce something",
+    oneLiner: "Get that process out of your head and into a document.",
+    scopingQuestion: null,
+    features: ["artifacts"],
+    promptSteps: {
+      role: {
+        question: "Who should Claude be for this job?",
+        placeholder: "e.g., A technical writer who's great at making complex processes easy to follow",
+        exampleOutput: "You are a technical writer who specializes in creating clear, step-by-step process documentation that anyone can follow without prior context.",
+      },
+      context: {
+        question: "What's the process you need documented?",
+        placeholder: "e.g., How we onboard a new client from signed contract to first campaign launch",
+        exampleOutput: "I need to document our client onboarding process, from the moment a contract is signed through to the launch of the first campaign.",
+      },
+      task: {
+        question: "What should the document cover?",
+        placeholder: "e.g., Every step in order, who's responsible, what tools they use, and what 'done' looks like at each step",
+        exampleOutput: "Create a standard operating procedure that covers: each step in chronological order, who is responsible, what tools or systems are involved, expected timeline, and the definition of done for each step.",
+      },
+      format: {
+        question: "How should it look?",
+        placeholder: "e.g., Numbered steps with sub-steps, a summary at the top, formatted so someone new could follow it",
+        exampleOutput: "Format as numbered steps with sub-steps where needed. Include a brief overview at the top summarizing the full process in 2-3 sentences. Bold the responsible party for each step.",
+      },
+      constraints: {
+        question: "Anything Claude should watch out for?",
+        placeholder: "e.g., Don't assume knowledge of our internal tools. Explain any acronyms the first time they appear.",
+        exampleOutput: "Don't assume the reader knows our internal tools or jargon. Define acronyms on first use. If I describe a step vaguely, ask me to clarify rather than guessing. Include a 'common mistakes' note for any step where people typically get tripped up.",
+      },
+    },
+  },
+  {
+    id: "deck-architect",
+    name: "The Deck Architect",
+    bucket: "production",
+    bucketLabel: "I need to produce something",
+    oneLiner: "Find the story in your existing slides.",
+    scopingQuestion: "Roughly how many slides are you working with, and what's the presentation for?",
+    features: ["extended_thinking", "artifacts"],
+    promptSteps: {
+      role: {
+        question: "Who should Claude be for this job?",
+        placeholder: "e.g., A presentation strategist who knows how to build a compelling narrative from existing material",
+        exampleOutput: "You are a presentation strategist who excels at curating and sequencing existing slide content into a compelling narrative tailored to a specific audience and goal.",
+      },
+      context: {
+        question: "What slides do you have and what's the occasion?",
+        placeholder: "e.g., We have a master deck of about 80 slides covering our platform, case studies, and pricing. I need a 25-minute pitch for a retail client.",
+        exampleOutput: "I have a master slide library of approximately 80 slides covering our platform overview, case studies across industries, technical capabilities, and pricing options. I need to build a 25-minute pitch deck for a meeting with a retail industry prospect.",
+      },
+      task: {
+        question: "What do you need Claude to produce?",
+        placeholder: "e.g., A recommended slide sequence, which slides to cut, and what's missing that I'd need to create",
+        exampleOutput: "Review the slide inventory I'll provide and recommend: which slides to include and in what order, which slides to cut, where to place transitions or section breaks, and identify any gaps where new slides need to be created.",
+      },
+      format: {
+        question: "How should the recommendation look?",
+        placeholder: "e.g., A numbered sequence with the slide title, why it's included, and notes on any modifications",
+        exampleOutput: "Format as a numbered slide sequence with:\n- Slide title/description\n- Why it's included at this point in the narrative\n- Any modifications needed\nThen a separate 'Gaps' section listing slides that need to be created from scratch.",
+      },
+      constraints: {
+        question: "Anything Claude should watch out for?",
+        placeholder: "e.g., Keep it under 20 slides. Lead with the client's problem, not our product features.",
+        exampleOutput: "The final deck should not exceed 20 slides. Structure the narrative around the client's challenges first, then show how we address them. Don't lead with product features. If multiple case studies could work, recommend the one closest to the client's industry.",
+      },
+    },
+  },
+
+  // ── Bucket: thinking ────────────────────────────────────────────
+  {
+    id: "meeting-prep-brief",
+    name: "The Meeting Prep Brief",
+    bucket: "thinking",
+    bucketLabel: "I need to think more clearly",
+    oneLiner: "Walk into every meeting ready.",
+    scopingQuestion: null,
+    features: ["research", "artifacts"],
+    promptSteps: {
+      role: {
+        question: "Who should Claude be for this job?",
+        placeholder: "e.g., A chief of staff who always has me prepared for any meeting",
+        exampleOutput: "You are a chief of staff who prepares thorough, practical meeting briefs that ensure I walk in informed and ready to contribute.",
+      },
+      context: {
+        question: "What's the meeting?",
+        placeholder: "e.g., Quarterly business review with our biggest client, their CMO will be there, we're trying to expand the contract",
+        exampleOutput: "I have a quarterly business review meeting with our largest client. Their CMO will attend. Our goal is to demonstrate value from the current engagement and build the case for expanding the contract.",
+      },
+      task: {
+        question: "What do you need to walk in with?",
+        placeholder: "e.g., Background on the attendees, talking points, potential objections and how to handle them",
+        exampleOutput: "Prepare a meeting brief that includes: background context on the client and key attendees, 3-5 talking points aligned with our expansion goal, potential objections or tough questions with suggested responses, and specific questions I should ask.",
+      },
+      format: {
+        question: "How should the brief look?",
+        placeholder: "e.g., One page max, scannable, something I can glance at in the elevator",
+        exampleOutput: "Keep to one page. Use short bullets, not paragraphs. Organize as: Context (3 bullets), Talking Points, Potential Objections, Questions to Ask. It should be scannable in 2 minutes.",
+      },
+      constraints: {
+        question: "Anything Claude should watch out for?",
+        placeholder: "e.g., Don't be generic. If you don't know specifics about the client, say so and I'll fill them in.",
+        exampleOutput: "Be specific, not generic. If you lack information about the client or their business, flag it as [NEED INPUT] so I can fill in the details. Prioritize practical, actionable points over general advice.",
+      },
+    },
+  },
+  {
+    id: "strategy-brainstorm",
+    name: "The Strategy Brainstorm",
+    bucket: "thinking",
+    bucketLabel: "I need to think more clearly",
+    oneLiner: "Think through a problem from every angle.",
+    scopingQuestion: "What's the decision or question you're trying to work through? (Give me a sentence or two so I can help scope the brainstorm.)",
+    features: ["extended_thinking", "model_selection"],
+    promptSteps: {
+      role: {
+        question: "Who should Claude be for this job?",
+        placeholder: "e.g., A strategy consultant who pressure-tests ideas from multiple perspectives",
+        exampleOutput: "You are a strategy consultant who examines business questions from multiple perspectives, pressure-testing assumptions and surfacing risks that internal teams often miss.",
+      },
+      context: {
+        question: "What's the situation?",
+        placeholder: "e.g., We're deciding whether to build an AI feature in-house or partner with a vendor. Timeline is Q3.",
+        exampleOutput: "We're evaluating whether to build an AI feature in-house or partner with an external vendor. The target launch is Q3. Our engineering team is already at capacity on core product work.",
+      },
+      task: {
+        question: "What kind of thinking do you need?",
+        placeholder: "e.g., Give me the strongest case for each option, the risks of each, and what questions I should be asking that I'm probably not",
+        exampleOutput: "For each option (build vs. partner), give me: the strongest case for choosing it, the top 3 risks, estimated timeline and resource implications, and questions I should be asking that I might not have considered.",
+      },
+      format: {
+        question: "How should it look?",
+        placeholder: "e.g., Side-by-side comparison, then a recommendation with caveats",
+        exampleOutput: "Structure as a side-by-side comparison (Build vs. Partner) with matching categories for easy scanning. Follow with a recommendation that includes caveats and conditions.",
+      },
+      constraints: {
+        question: "Anything Claude should watch out for?",
+        placeholder: "e.g., Don't default to 'it depends.' Take a position and defend it, then show me the counter-argument.",
+        exampleOutput: "Don't hedge with 'it depends' — take a clear position and defend it, then present the strongest counter-argument. Be direct about trade-offs. If an option has a dealbreaker risk, say so plainly.",
+      },
+    },
+  },
 ];
 
 export default templates;
