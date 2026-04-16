@@ -40,8 +40,8 @@ const BASE_STEP_COUNTS = {
   [SCREENS.COCKPIT]:    7,  // 6 feature cards + anchor
   [SCREENS.INTERVIEW]:  5,  // intro + text input + matching + scoping + anchor (max)
   [SCREENS.BUILD]:      7,  // Role, Context, Task, Format, Constraints, Assembly, Anchor
-  [SCREENS.LAUNCH]:     2,
-  [SCREENS.KEEP_GOING]: 2,
+  [SCREENS.LAUNCH]:     3,  // intro + handoff + transition
+  [SCREENS.KEEP_GOING]: 3,  // intro + seeds + finale
 };
 
 const SECTION_TITLES = {
@@ -262,6 +262,8 @@ export default function App() {
               onProgress={progress.progressUpdaters[SCREENS.LAUNCH]}
               initialStep={progress.sectionSteps[SCREENS.LAUNCH]}
               onStepChange={progress.stepUpdaters[SCREENS.LAUNCH]}
+              assembledPrompt={interview.assembledPrompt}
+              selectedTemplate={interview.selectedTemplate}
             />
           )}
 
@@ -273,6 +275,7 @@ export default function App() {
               initialStep={progress.sectionSteps[SCREENS.KEEP_GOING]}
               onStepChange={progress.stepUpdaters[SCREENS.KEEP_GOING]}
               onStartOver={restart}
+              templateName={interview.selectedTemplate?.name}
             />
           )}
         </div>
