@@ -237,6 +237,13 @@ export default function App() {
               setSelectedTemplate={interview.setSelectedTemplate}
               scopeAnswer={interview.scopeAnswer}
               setScopeAnswer={interview.setScopeAnswer}
+              coachResponse={interview.coachResponse}
+              setCoachResponse={interview.setCoachResponse}
+              isCoachLoading={interview.isCoachLoading}
+              setIsCoachLoading={interview.setIsCoachLoading}
+              coachError={interview.coachError}
+              setCoachError={interview.setCoachError}
+              ensureSessionId={interview.ensureSessionId}
             />
           )}
 

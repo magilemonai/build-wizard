@@ -4,12 +4,14 @@ import SectionShell from "../components/SectionShell.jsx";
 import ContinueButton from "../components/ContinueButton.jsx";
 import SectionCelebration from "../components/SectionCelebration.jsx";
 import TextInput from "../components/TextInput.jsx";
-import { getTemplatesByBucket } from "../data/templates.js";
+import { getTemplatesByBucket, getTemplateById } from "../data/templates.js";
 import { track } from "../services/analytics.js";
+import { fetchInterviewMatch } from "../services/interviewCoach.js";
 
 /* ━━━ Keyword fallback matching ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Scans user input for bucket-associated keywords. Highest hit
-   count wins. Tie or no matches defaults to "production".
+   Used when the AI coach is unavailable. Scans user input for
+   bucket-associated keywords. Highest hit count wins. Tie or no
+   matches defaults to "production".
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const BUCKET_KEYWORDS = {
   information: ["read", "review", "summarize", "analyze", "data", "report", "feedback", "research", "survey", "findings", "document", "understand", "numbers", "trends", "patterns"],
@@ -43,19 +45,67 @@ function buildSteps(selectedTemplate) {
   return steps;
 }
 
-/* ━━━ Stage 3: Interview ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   "What's Eating Your Time?" One open text field, keyword-matched
-   bucket + templates, optional scoping question, celebration.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ━━━ Stage 3: Interview ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Interview({
   onComplete, onBack, onProgress, initialStep, onStepChange,
-  // interview state from useInterview (passed through App)
+  // interview state
   problem, setProblem,
   bucket, setBucket,
   selectedTemplate, setSelectedTemplate,
   scopeAnswer, setScopeAnswer,
+  coachResponse, setCoachResponse,
+  isCoachLoading, setIsCoachLoading,
+  coachError, setCoachError,
+  ensureSessionId,
 }) {
   const steps = buildSteps(selectedTemplate);
+
+  /** Kick off the coach call, then fall back to keyword matching on
+   *  any failure. Always resolves; never throws. */
+  const runMatch = async (text) => {
+    setIsCoachLoading(true);
+    setCoachError(false);
+    setCoachResponse(null);
+
+    const sid = ensureSessionId();
+    const result = await fetchInterviewMatch(text, sid);
+
+    if (result.ok) {
+      const { bucket: coachBucket, templateIds, message, scopeWarning } = result.data;
+      setBucket(coachBucket);
+      setCoachResponse({
+        bucket: coachBucket,
+        templateIds,
+        message,
+        scopeWarning,
+      });
+      setIsCoachLoading(false);
+      track("bucket_match", {
+        method: "coach",
+        bucket: coachBucket,
+        template_count: templateIds.length,
+        had_scope_warning: !!scopeWarning,
+      });
+      if (scopeWarning) {
+        track("coach_scope_warning", { bucket: coachBucket });
+      }
+      return;
+    }
+
+    // Fallback: keyword matching
+    const kwBucket = matchBucket(text);
+    setBucket(kwBucket);
+    setCoachResponse(null);
+    setCoachError(true);
+    setIsCoachLoading(false);
+    const fallbackTemplates = getTemplatesByBucket(kwBucket);
+    track("bucket_match", {
+      method: "fallback",
+      bucket: kwBucket,
+      template_count: fallbackTemplates.length,
+      had_scope_warning: false,
+    });
+  };
 
   return (
     <SectionShell
@@ -65,7 +115,7 @@ export default function Interview({
       onProgress={onProgress}
       initialStep={initialStep}
       onStepChange={onStepChange}
-      renderStep={({ step, stepIndex, advance, BackButton }) => {
+      renderStep={({ step, advance, BackButton }) => {
         if (step.type === "intro") {
           return <IntroStep BackButton={BackButton} onNext={advance} />;
         }
@@ -76,9 +126,10 @@ export default function Interview({
               problem={problem}
               setProblem={setProblem}
               onSubmit={(text) => {
-                const matched = matchBucket(text);
-                setBucket(matched);
-                track("bucket_match", { bucket: matched, input_length: text.length });
+                // Reset any previously selected template on resubmit
+                setSelectedTemplate(null);
+                // Fire and forget; the matching step will consume state.
+                runMatch(text);
                 advance();
               }}
             />
@@ -89,6 +140,8 @@ export default function Interview({
             <MatchingStep
               BackButton={BackButton}
               bucket={bucket}
+              coachResponse={coachResponse}
+              isCoachLoading={isCoachLoading}
               selectedTemplate={selectedTemplate}
               setSelectedTemplate={setSelectedTemplate}
               onConfirm={advance}
@@ -193,11 +246,65 @@ function TextInputStep({ BackButton, problem, setProblem, onSubmit }) {
   );
 }
 
-/* ━━━ Step 3: Matching results ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function MatchingStep({ BackButton, bucket, selectedTemplate, setSelectedTemplate, onConfirm }) {
-  const templates = getTemplatesByBucket(bucket || "production");
+/* ━━━ Step 3: Matching results ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Renders the coach message + coach-picked templates when available.
+   Falls back to the full bucket + generic framing when the coach is
+   unavailable. Shows a loading state while the coach call is in
+   flight.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function MatchingStep({ BackButton, bucket, coachResponse, isCoachLoading, selectedTemplate, setSelectedTemplate, onConfirm }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
+
+  // Loading state
+  if (isCoachLoading) {
+    return (
+      <div>
+        {BackButton}
+        <h2 style={{
+          fontFamily: T.font.display, fontSize: "clamp(24px,5vw,30px)",
+          fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
+          margin: "0 0 10px 0", color: T.color.text,
+        }}>
+          Finding your match…
+        </h2>
+        <div
+          aria-live="polite"
+          style={{
+            marginTop: 20,
+            padding: "16px 20px",
+            background: T.color.bgSubtle,
+            border: `1px solid ${T.color.border}`,
+            borderRadius: 14,
+            display: "flex", alignItems: "center", gap: 12,
+            animation: `sagePulse 1.8s ease-in-out infinite`,
+          }}
+        >
+          <div style={{
+            width: 8, height: 8, borderRadius: "50%",
+            background: T.color.sage,
+          }} />
+          <div style={{
+            fontSize: 14, color: T.color.textLight, fontFamily: T.font.body,
+            letterSpacing: "0.02em",
+          }}>
+            Your coach is reading what you wrote…
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Resolved. Pick templates to show: coach-provided when available,
+  // otherwise the full bucket via keyword fallback.
+  const displayTemplates = coachResponse?.templateIds
+    ? coachResponse.templateIds.map(getTemplateById).filter(Boolean)
+    : getTemplatesByBucket(bucket || "production");
+
+  const headline = coachResponse ? "Here are a few directions." : "Here are a few directions.";
+  const lead = coachResponse
+    ? coachResponse.message
+    : "Based on what you described, here are a few directions for your first build:";
 
   return (
     <div>
@@ -207,22 +314,25 @@ function MatchingStep({ BackButton, bucket, selectedTemplate, setSelectedTemplat
         fontWeight: 400, fontStyle: "italic", lineHeight: 1.3,
         margin: "0 0 10px 0", color: T.color.text,
       }}>
-        Here are a few directions.
+        {headline}
       </h2>
       <p style={{
-        fontSize: 15, color: T.color.textMuted, lineHeight: 1.65,
-        margin: "0 0 20px 0",
+        fontSize: 15, color: T.color.textMuted, lineHeight: 1.7,
+        margin: "0 0 16px 0",
       }}>
-        Based on what you described, here are a few directions for your
-        first build:
+        {lead}
       </p>
+
+      {coachResponse?.scopeWarning && (
+        <ScopeWarning text={coachResponse.scopeWarning} />
+      )}
 
       <div style={{
         display: "flex", flexDirection: "column", gap: 10,
         opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(10px)",
         transition: `all 0.5s ${T.ease.smooth}`,
       }}>
-        {templates.map((t) => (
+        {displayTemplates.map((t) => (
           <TemplateCard
             key={t.id}
             template={t}
@@ -237,6 +347,30 @@ function MatchingStep({ BackButton, bucket, selectedTemplate, setSelectedTemplat
         label="Let's go with this"
         disabled={!selectedTemplate}
       />
+    </div>
+  );
+}
+
+/* ━━━ Scope warning (softer, advisory) ━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function ScopeWarning({ text }) {
+  return (
+    <div style={{
+      marginBottom: 18,
+      padding: "12px 14px",
+      background: T.color.bgSubtle,
+      border: `1px solid ${T.color.border}`,
+      borderLeft: `3px solid ${T.color.copper}`,
+      borderRadius: 10,
+      fontSize: 14, color: T.color.textMuted, lineHeight: 1.6,
+      fontStyle: "italic",
+    }}>
+      <span style={{
+        fontStyle: "normal", fontWeight: 500, color: T.color.copper,
+        marginRight: 6,
+      }}>
+        A suggestion:
+      </span>
+      {text}
     </div>
   );
 }

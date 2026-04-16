@@ -34,7 +34,10 @@ export async function sendMessage(messages, sessionId, meta = {}) {
     const res = await fetch(`${WORKER_URL}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages, sessionId }),
+      // touchpoint is forwarded to the Worker so it can pick the right
+      // system prompt. Older Workers that don't know the field will
+      // just ignore it and use the default prompt.
+      body: JSON.stringify({ messages, sessionId, touchpoint }),
       signal: controller.signal,
     });
 
