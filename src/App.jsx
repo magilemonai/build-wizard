@@ -39,7 +39,7 @@ const STAGES_WITH_PROGRESS = [
 const BASE_STEP_COUNTS = {
   [SCREENS.COCKPIT]:    7,  // 6 feature cards + anchor
   [SCREENS.INTERVIEW]:  5,  // intro + text input + matching + scoping + anchor (max)
-  [SCREENS.BUILD]:      6,  // Role, Context, Task, Format, Constraints, Review
+  [SCREENS.BUILD]:      7,  // Role, Context, Task, Format, Constraints, Assembly, Anchor
   [SCREENS.LAUNCH]:     2,
   [SCREENS.KEEP_GOING]: 2,
 };
@@ -100,7 +100,7 @@ export default function App() {
       sectionSteps: progress.sectionSteps,
       visited: [...progress.visited.current],
     });
-  }, [screen, interview.problem, interview.bucket, interview.selectedTemplate, interview.scopeAnswer, interview.sessionId, progress.sectionProgress, progress.sectionSteps]);
+  }, [screen, interview.problem, interview.bucket, interview.selectedTemplate, interview.scopeAnswer, interview.buildAnswers, interview.assembledPrompt, interview.sessionId, progress.sectionProgress, progress.sectionSteps]);
 
   // Restart: clear everything
   const restart = useCallback(() => {
@@ -247,6 +247,11 @@ export default function App() {
               onProgress={progress.progressUpdaters[SCREENS.BUILD]}
               initialStep={progress.sectionSteps[SCREENS.BUILD]}
               onStepChange={progress.stepUpdaters[SCREENS.BUILD]}
+              selectedTemplate={interview.selectedTemplate}
+              buildAnswers={interview.buildAnswers}
+              setBuildAnswers={interview.setBuildAnswers}
+              assembledPrompt={interview.assembledPrompt}
+              setAssembledPrompt={interview.setAssembledPrompt}
             />
           )}
 

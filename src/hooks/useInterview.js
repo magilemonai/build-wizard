@@ -1,19 +1,19 @@
 import { useState, useCallback } from "react";
 import { getTemplateById } from "../data/templates.js";
 
-/* ━━━ Interview State Hook ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Owns everything Stage 3 (Interview) produces:
-     - problem:          user's free-text work problem
-     - bucket:           matched bucket ("information"|"production"|"thinking")
-     - selectedTemplate: full template object (or null)
-     - scopeAnswer:      response to the template's scoping question (or null)
-     - coachResponse:    AI coach response (null until wired)
-     - isCoachLoading:   whether an AI call is in flight
-     - coachError:       whether the AI call failed
-     - sessionId:        lazy API session id for the coach call
+/* ━━━ Interview + Build State Hook ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Owns everything Stage 3 (Interview) and Stage 4 (Build) produce:
 
-   Downstream stages (Build, Launch) read selectedTemplate and
-   scopeAnswer to drive prompt construction.
+   Interview:
+     - problem, bucket, selectedTemplate, scopeAnswer
+     - coachResponse, isCoachLoading, coachError
+     - sessionId
+
+   Build:
+     - buildAnswers: { role, context, task, format, constraints }
+     - assembledPrompt: final joined prompt text (editable)
+
+   Downstream stages (Launch) read assembledPrompt.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function generateSessionId() {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -22,11 +22,13 @@ function generateSessionId() {
   return `s-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
+const EMPTY_BUILD = { role: "", context: "", task: "", format: "", constraints: "" };
+
 export default function useInterview(saved) {
+  // ── Interview state ──
   const [problem, setProblem] = useState(() => saved?.interview?.problem || "");
   const [bucket, setBucket] = useState(() => saved?.interview?.bucket || null);
   const [selectedTemplate, setSelectedTemplate] = useState(() => {
-    // Rehydrate from saved id to full object
     const id = saved?.interview?.selectedTemplateId;
     return id ? (getTemplateById(id) || null) : null;
   });
@@ -35,6 +37,14 @@ export default function useInterview(saved) {
   const [isCoachLoading, setIsCoachLoading] = useState(false);
   const [coachError, setCoachError] = useState(false);
   const [sessionId, setSessionId] = useState(() => saved?.sessionId || null);
+
+  // ── Build state ──
+  const [buildAnswers, setBuildAnswers] = useState(
+    () => saved?.interview?.buildAnswers || { ...EMPTY_BUILD },
+  );
+  const [assembledPrompt, setAssembledPrompt] = useState(
+    () => saved?.interview?.assembledPrompt || "",
+  );
 
   const ensureSessionId = useCallback(() => {
     if (sessionId) return sessionId;
@@ -52,19 +62,22 @@ export default function useInterview(saved) {
     setIsCoachLoading(false);
     setCoachError(false);
     setSessionId(null);
+    setBuildAnswers({ ...EMPTY_BUILD });
+    setAssembledPrompt("");
   }, []);
 
-  /** Serializable snapshot for persistence. We store the template id,
-      not the full object, so templates.js remains the source of truth. */
+  /** Serializable snapshot for persistence. */
   const getInterviewState = useCallback(() => ({
     problem,
     bucket,
     selectedTemplateId: selectedTemplate?.id || null,
     scopeAnswer,
-  }), [problem, bucket, selectedTemplate, scopeAnswer]);
+    buildAnswers,
+    assembledPrompt,
+  }), [problem, bucket, selectedTemplate, scopeAnswer, buildAnswers, assembledPrompt]);
 
   return {
-    // State
+    // Interview
     problem, setProblem,
     bucket, setBucket,
     selectedTemplate, setSelectedTemplate,
@@ -73,9 +86,11 @@ export default function useInterview(saved) {
     isCoachLoading, setIsCoachLoading,
     coachError, setCoachError,
     sessionId, ensureSessionId,
-    // Persistence helper
+    // Build
+    buildAnswers, setBuildAnswers,
+    assembledPrompt, setAssembledPrompt,
+    // Persistence + reset
     getInterviewState,
-    // Reset
     resetInterview,
   };
 }
