@@ -95,6 +95,26 @@ export default function App() {
 
     track("screen_view", { screen, previous_screen: prevScreenRef.current });
     prevScreenRef.current = screen;
+
+    // GoatCounter SPA pageview. count.js is loaded async, so if it's not ready
+    // yet (possible for the very first screen) poll briefly, then give up.
+    // Skip -transition screens: they double-count every real screen visit.
+    if (screen.endsWith("-transition")) return;
+    const path = `/${screen}`;
+    if (window.goatcounter?.count) {
+      window.goatcounter.count({ path });
+    } else {
+      let attempts = 0;
+      const timer = setInterval(() => {
+        if (window.goatcounter?.count) {
+          window.goatcounter.count({ path });
+          clearInterval(timer);
+        } else if (++attempts >= 50) {
+          clearInterval(timer);
+        }
+      }, 100);
+      return () => clearInterval(timer);
+    }
   }, [screen]);
 
   // Persist state on meaningful changes
