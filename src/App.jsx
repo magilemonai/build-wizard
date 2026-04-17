@@ -98,6 +98,8 @@ export default function App() {
 
     // GoatCounter SPA pageview. count.js is loaded async, so if it's not ready
     // yet (possible for the very first screen) poll briefly, then give up.
+    // Skip -transition screens: they double-count every real screen visit.
+    if (screen.endsWith("-transition")) return;
     const path = `/${screen}`;
     if (window.goatcounter?.count) {
       window.goatcounter.count({ path });
